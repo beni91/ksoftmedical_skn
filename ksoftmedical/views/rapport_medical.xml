@@ -1,0 +1,81 @@
+<odoo>
+
+	<record id="view_rapport_medical_tree" model="ir.ui.view">
+		<field name="name">fertility.medical.labo.tree</field>
+		<field name="model">ksoft.rapport.dailly</field>
+		<field name="arch" type="xml">
+			<tree>
+				<field name="date_record"/>
+				<field name="medecin"/>
+				<field name="resume"/>
+			</tree>
+		</field>
+	</record>
+	
+	
+	
+	<record id="view_rapport_medical_form" model="ir.ui.view">
+		<field name="name">fertility.medical.labo.form</field>
+		<field name="model">ksoft.rapport.dailly</field>
+		<field name="arch" type="xml">
+			<form string="Rapport Médical Journalier">
+				<header>
+					<!--field name="status" widget="statusbar"/>
+					<button name="action_sample_done" class="oe_highlight" type="object" 
+						attrs="{'invisible': [('status', '!=', 'sample')]}" string="Valider" 
+						groups="ksoftmedical.group_fertility_laboratoire"/>
+					<button name="action_done" class="oe_highlight" type="object" 
+					attrs="{'invisible': [('status', '!=', 'ongoing')]}" 
+					groups="ksoftmedical.group_fertility_laboratoire" string="Valider" /-->
+				</header>
+				<sheet>
+					<group>
+						<group string="Patient">
+							<field name="date_record"/>
+						</group>
+						<group>			
+							<field name="medecin"/>
+						</group>
+					</group>
+					<group string="Rapport du jour">
+						<field name="resume"/>
+					</group>				
+				</sheet>
+			</form>
+		</field>
+	</record>
+
+	<record id="action_view_rapport_medical" model="ir.actions.act_window">
+		<field name="name">Rapport Médical Journalier</field>
+		<field name="res_model">ksoft.rapport.dailly</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+	</record>
+
+	<!--record id="action_resultat_form_view2" model="ir.actions.act_window.view">
+		<field eval="2" name="sequence"/>
+		<field name="view_mode">form</field>
+		<field name="view_id" ref="view_labo_form"/>
+		<field name="act_window_id" ref="action_resultat_today"/>
+	</record>
+	<record id="action_resultat_tree_view1" model="ir.actions.act_window.view">
+		<field name="sequence" eval="1"/>
+		<field name="view_mode">tree</field>
+		<field name="view_id" ref="view_labo_tree_resultats"/>
+		<field name="act_window_id" ref="action_resultat_today"/>
+	</record-->
+	
+
+	<!-- Menu Laboratoire -->
+	<menuitem id="menu_rapport_medical"  groups="group_fertility_medecin,group_fertility_infirmier"
+		sequence="30"
+		name="Rapport Médical"
+		/>
+		
+		<menuitem id="menu_rapport_medical1" parent="menu_rapport_medical" groups="group_fertility_medecin,group_fertility_infirmier"
+              action="action_view_rapport_medical"
+              sequence="1"
+              name="Rapport Journalier"
+		/>
+			
+</odoo>

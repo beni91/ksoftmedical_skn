@@ -1,0 +1,285 @@
+<odoo>
+
+	<!-- Rendez-vous -->
+	<menuitem id="menu_appointment_patient" sequence="5" 
+		name="Rendez-vous" web_icon="ksoftmedical,static/description/icon.png"
+		/>
+		<menuitem id="menu_appointment_patient1" parent="menu_appointment_patient" 
+			sequence="1"
+			name="Rendez-vous">
+
+			<menuitem id="menu_appointment_today" action="action_todayappointment_patient"
+			sequence="1"
+			name="Rendez-vous du jour"/>
+			<menuitem id="menu_appointment_next" action="action_nextappointment_patient"
+			sequence="2"
+			name="Prochain Rendez-vous"/>
+			<menuitem id="menu_appointment_all" action="action_appointment_patient"
+			sequence="3"
+			name="Tous les Rendez-vous"/>
+		</menuitem>
+		
+	<menuitem id="menu_reception_factures" parent="menu_appointment_patient"  groups="group_fertility_reception" 
+		sequence="3"
+		name="Services"
+		/>
+		
+	<menuitem id="menu_reception_labo_demandes" parent="menu_reception_factures"  groups="group_fertility_reception" 
+		sequence="2"
+		name="Menu Laboratoire">
+			
+				<menuitem id="menu_rec_labo_externe_demande1" groups="group_fertility_reception"
+				sequence="1"
+				action="action_externe_demande_today"
+				name="Demande externes du jour"/>
+				
+				<menuitem id="menu_rec_labo_externe_demande2" groups="group_fertility_reception"
+				sequence="2"				
+				action="action_externe_demande_all"
+				name="Toutes les demandes externes"/>
+				
+			
+				<!--menuitem id="menu_rec_labo_facture_today" groups="group_fertility_recept_labo" 
+				sequence="3"
+				action="action_laboratory_invoice_today" name="Factures labo du jour"
+					/>
+					
+				<menuitem id="menu_rec_labo_facture_all" groups="group_fertility_reception"
+				sequence="4"
+				action="action_laboratory_invoice_all"
+				name="Factures laboratoires"
+				/-->
+			
+	</menuitem>
+
+	<menuitem id="menu_rec_externe_imagerie_demande" parent="menu_reception_factures" groups="group_fertility_reception" 
+		sequence="3" name="Menu Imagerie"/>
+
+				<!--menuitem id="menu_rec_imagerie_facture_today" parent="menu_rec_externe_imagerie_demande" groups="group_fertility_recept_labo" 
+					action="action_imagerie_invoice_today"
+					sequence="1"
+					name="Factures imagerie du jour"
+					/>
+					
+				<menuitem id="menu_rec_imagerie_facture_all" parent="menu_rec_externe_imagerie_demande"  groups="group_fertility_reception" 
+				sequence="2"
+				action="action_imagerie_invoice_all"
+				name="Factures imageries"
+				/-->
+
+	<menuitem id="menu_rec_pharmacie" parent="menu_reception_factures" groups="group_fertility_reception"
+              sequence="4"
+              name="Menu Pharmacie"/>
+		<menuitem id="menu_rec_pharmacie_today" parent="menu_rec_pharmacie"  groups="group_fertility_reception"
+				sequence="1"
+				action="action_pharmacie_not_invoiced_today"
+				name="Ordonnance du jour"
+				/>
+				
+		<menuitem id="menu_rec_pharmacie_all" parent="menu_rec_pharmacie"  groups="group_fertility_reception" 
+				sequence="2"
+				action="action_pharmacie_not_invoiced_all"
+				name="Toutes les ordonnances"
+				/>
+	
+	<menuitem id="menu_rec_factures" parent="menu_appointment_patient" groups="group_fertility_reception"
+            sequence="4"
+            name="Factures"/>
+		
+		<menuitem id="menu_rec_factures_today" parent="menu_rec_factures"  groups="group_fertility_reception"
+				sequence="1"
+				action="action_reception_invoice_today"
+				name="Factures du jour"
+				/>
+				
+		<menuitem id="menu_rec_factures_all" parent="menu_rec_factures"  groups="group_fertility_reception" 
+				sequence="2"
+				action="action_reception_invoice_all"
+				name="Toutes les factures"/>
+			
+		
+		<!--menuitem id="menu_rec_pharmacie_facture_today" parent="menu_rec_pharmacie" groups="group_fertility_reception" 
+					action="action_pharmacie_invoice_today"
+					sequence="3"
+					name="Factures du jour"
+				/>
+				
+		<menuitem id="menu_rec_pharmacie_facture_all" parent="menu_rec_pharmacie" groups="group_fertility_reception" 
+					action="action_pharmacie_invoice_all"
+					sequence="4"
+					name="Factures pharmacie"
+				/	
+				
+	<menuitem id="menu_rec_autres" parent="menu_reception_factures" groups="group_fertility_reception"
+              action="action_pharmacie_all"
+              sequence="5"
+              name="Menu Autres Services"
+			/>
+			
+			<menuitem id="menu_rec_soins_facture" parent="menu_rec_autres" groups="group_fertility_reception" 
+					action="action_pharmacie_invoice_today"
+					sequence="1"
+					name="Factures Kinés"
+				/>-->
+		
+	<!--menuitem id="menu_reception_labo_demandes" parent="menu_appointment_patient"  groups="group_fertility_reception" 
+		sequence="2"
+		name="Laboratoire"
+		/>
+			<menuitem id="menu_rec_externe_labo_demande" parent="menu_reception_labo_demandes"  groups="group_fertility_reception" 
+			sequence="1"
+			name="Demandes externes"
+			/>
+				<menuitem id="menu_rec_labo_externe_demande1" parent="menu_rec_externe_labo_demande"  groups="group_fertility_reception"
+				sequence="1"
+				action="action_externe_demande_today"
+				name="Demande du jour"
+				/>
+				
+				<menuitem id="menu_rec_labo_externe_demande2" parent="menu_rec_externe_labo_demande"  groups="group_fertility_reception" 
+				sequence="2"
+				action="action_externe_demande_all"
+				name="Toutes les demandes"
+				/>
+			
+			<menuitem id="menu_rec_labo_facture" parent="menu_reception_labo_demandes"  groups="group_fertility_reception" 
+			sequence="2"
+			name="Factures Laboratoires"
+			/>
+				<menuitem id="menu_rec_labo_facture_today" parent="menu_rec_labo_facture" groups="group_fertility_recept_labo" 
+					action="action_laboratory_invoice_today"
+					sequence="1"
+					name="Factures du jour"
+					/>
+					
+				<menuitem id="menu_rec_labo_facture_all" parent="menu_rec_labo_facture"  groups="group_fertility_reception" 
+				sequence="2"
+				action="action_laboratory_invoice_all"
+				name="Factures laboratoires"
+				/>
+
+
+		<menuitem id="menu_rec_externe_imagerie_demande" parent="menu_appointment_patient" groups="group_fertility_reception" 
+		sequence="2" name="Imagerie"/>
+		
+			<menuitem id="menu_rec_imagerie_facture" parent="menu_rec_externe_imagerie_demande"  groups="group_fertility_reception" 
+			sequence="1"
+			name="Factures Imageries"
+			/>
+				<menuitem id="menu_rec_imagerie_facture_today" parent="menu_rec_imagerie_facture" groups="group_fertility_recept_labo" 
+					action="action_imagerie_invoice_today"
+					sequence="1"
+					name="Factures du jour"
+					/>
+					
+				<menuitem id="menu_rec_imagerie_facture_all" parent="menu_rec_imagerie_facture"  groups="group_fertility_reception" 
+				sequence="2"
+				action="action_imagerie_invoice_all"
+				name="Factures imageries"
+				/>
+
+
+		<menuitem id="menu_rec_pharmacie" parent="menu_appointment_patient" groups="group_fertility_reception"
+              action="action_pharmacie_all"
+              sequence="3"
+              name="Pharmacie"
+			/>
+
+				<menuitem id="menu_rec_pharmacie_today" parent="menu_rec_pharmacie"  groups="group_fertility_reception"
+				sequence="1"
+				action="action_externe_demande_today"
+				name="Ordonnance du jour"
+				/>
+				
+				<menuitem id="menu_rec_pharmacie_all" parent="menu_rec_pharmacie"  groups="group_fertility_reception" 
+				sequence="2"
+				action="action_externe_demande_all"
+				name="Toutes les ordonnances"
+				/>
+			
+				<menuitem id="menu_rec_pharmacie_facture_today" parent="menu_rec_pharmacie" groups="group_fertility_reception" 
+					action="action_pharmacie_invoice_today"
+					sequence="3"
+					name="Factures du jour"
+				/>
+				
+				<menuitem id="menu_rec_pharmacie_facture_all" parent="menu_rec_pharmacie" groups="group_fertility_reception" 
+					action="action_pharmacie_invoice_all"
+					sequence="3"
+					name="Factures pharmacie"
+				/-->
+				
+
+	<menuitem id="menu_ksoftpatient" parent="menu_appointment_patient" groups="group_fertility_reception"
+		sequence="2"
+		name="Patient"/>
+
+		<menuitem id="menu_ksoftpatient1" parent="menu_ksoftpatient" groups="group_fertility_reception" 
+		action="action_ksoftpatient_tree" sequence="1" name="Patient"/>
+
+		<!--menuitem id="menu_ksoftconvention" parent="menu_ksoftpatient" groups="group_fertility_reception" 
+		action="contacts.action_contacts" sequence="2" name="Convention"  /-->
+		
+		<menuitem id="menu_ksoftconvention_custom" parent="menu_ksoftpatient" groups="group_fertility_reception" 
+		action="action_convention_custom" sequence="2" name="Conventions"  />
+		
+		<menuitem id="menu_ksoftpricelist" parent="menu_ksoftpatient" groups="group_fertility_reception"
+		action="product.product_pricelist_action2" sequence="3" name="Listes des prix"/>
+
+	<menuitem id="menu_appointment_followUp" parent="menu_appointment_patient" action="action_appointment_patient_follow_up"
+	sequence="1"
+	name="Follow up" groups="group_fertility_reception"/>
+	
+	
+	<menuitem id="menu_appointment_rapport" parent="menu_appointment_patient" 
+	sequence="5" name="Rapport" groups="group_fertility_reception"/>
+	
+		<menuitem id="menu_caisse_rapport" parent="menu_appointment_rapport" groups="group_fertility_reception" 
+		action="action_releve_caisse_rotondo" sequence="1" name="Rapport de caisse privés"/>
+		
+		<menuitem id="menu_caisse_rapport2" parent="menu_appointment_rapport" groups="group_fertility_reception" 
+		action="action_releve_caisse_rotondo2" sequence="2" name="Rapport de caisse abonné"/>
+		
+
+	
+	
+	
+	<menuitem id="menu_pharmacie_report" parent="ksoftmedical.menu_pharmacie" groups="group_fertility_pharmacie"
+              sequence="10"
+              name="Rapport Pharmacie">
+			  
+		<menuitem id="menu_pharmacie_sales_report1" 
+			groups="group_fertility_pharmacie"
+            action="action_releve_vente_pharmacie"
+            sequence="2"
+            name="Rapport de vente"/>
+			
+		<!--menuitem id="menu_pharmacie_myinvoices" 
+			groups="group_fertility_pharmacie"
+            action="action_my_invoice"
+            sequence="2"
+            name="Voir mes factures"/-->
+			
+			
+			  
+	</menuitem>
+
+	<menuitem id="menu_labo_reporting" parent="menu_labo_demandes"  groups="group_fertility_recept_labo"
+		sequence="3"
+		name="Raport labo"
+		/>
+			<menuitem id="menu_labo_caisse" parent="menu_labo_reporting"  groups="group_fertility_recept_labo"
+			sequence="1"
+			action="action_releve_caisse_labo"
+			name="Rapport privés"
+			/>
+			
+			<menuitem id="menu_labo_caisse2" parent="menu_labo_reporting"  groups="group_fertility_recept_labo"
+			sequence="2"
+			action="action_releve_caisse_labo2"
+			name="Rapport abonné"
+			/>
+			
+			
+
+</odoo>

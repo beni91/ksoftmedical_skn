@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<record id="wizard_sortie_hospie_view_form" model="ir.ui.view">
+        <field name="name">view.transfert.patient.form2</field>
+        <field name="model">module.transfert.patient.wizard</field>
+        <field name="arch" type="xml">
+            <form create="0">
+                <sheet>
+					<group>
+						<field name="type_transfert" required="1"/>
+					</group> 
+					<group>
+						<group>
+							<field name="date_transfert" readonly="1"/>
+							<field name="patient_id" invisible="1"/>
+							<field name="service_id" domain="[('type_unite','=',type_transfert),('type_rdv','in',('hospi','rea'))]"
+							wideget="selection"/>
+							<!--field name="service_id" domain="[('type_rdv','in',('hospi','urg','rea'))]"/-->
+							<field name="pavillon_origin" invisible="1" />
+							<field name="pavillon_dest" required="1" domain="[('service_id','=',service_id)]" wideget="selection"/>
+						</group> 
+						<group>
+							
+							<field name="hospi_id" invisible="0"/>
+							<field name="user_id" readonly="1"/>
+							<field name="status" widget="badge" invisible="1"/>
+						</group> 
+					</group> 
+                    
+                    <group string="Traitements" attrs="{'invisible': [('type_transfert', '=', 'externe')]}">
+                        <field name="note_medecin" widget="html"/>
+                    </group>
+
+                </sheet>
+
+                <footer>
+				
+					<!--button name="ksoftmedical.action_confirm_transfert_patient2" class="oe_highlight" type="action" data-hotkey="z"
+                                    string="Suivant"/-->
+                    <button name="make_out_patient" string="Transferer/Sortir" type="object" 
+                            confirm="Voulez-vous vraiment transferer ce patient ?" 
+                            class="btn-primary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+	
+	<record id="action_wizard_transfert_hospi_patient" model="ir.actions.act_window">
+        <field name="name">Transfert/Sortie patient</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">module.transfert.patient.wizard</field>
+        <field name="binding_view_types">form</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="wizard_sortie_hospie_view_form"/>
+        <field name="target">new</field>
+        <field name="context">{'default_hospi_id':active_id}</field>
+    </record>
+	
+
+  
+   
+</odoo>

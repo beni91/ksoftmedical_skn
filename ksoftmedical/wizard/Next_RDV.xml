@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<odoo>
+    <record id="next_rdv_view_form" model="ir.ui.view">
+        <field name="name">next.appointement.wizard.form</field>
+        <field name="model">next.appointement.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Prochain rendez-vous">
+                <group>
+                    <field name="patient" required="1"/>
+                    <field name="medecin" required="1"/>
+                    <field name="date_heure" required="1"/>
+                    <!--field name="receptioniste" required="0"/-->
+                    <field name="motif_rdv"/>
+                </group>
+                <footer>
+                    <button name="create_notify_followUp" string="valider" type="object" data-hotkey="z"
+                            class="btn-primary"/>
+                    <button string="Annuler" class="btn-secondary" special="cancel" data-hotkey="z"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_prochain_rdv" model="ir.actions.act_window">
+        <field name="name">Prochain rdv</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">next.appointement.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="next_rdv_view_form"/>
+        <field name="target">new</field>
+    </record>
+</odoo>

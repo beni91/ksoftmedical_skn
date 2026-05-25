@@ -1,0 +1,56 @@
+<odoo>
+
+	<!--record id="view_disease_tree" model="ir.ui.view">
+		<field name="name">pathologie.medical.tree</field>
+		<field name="model">pathologie.medical</field>
+		<field name="arch" type="xml">
+			<tree>
+				<field name="code" />
+				<field name="pathologie" />
+				<field name="speciality" />
+			</tree>
+		</field>
+	</record>
+
+	<record id="view_disease_form" model="ir.ui.view">
+		<field name="name">pathologie.medical.form</field>
+		<field name="model">pathologie.medical</field>
+		<field name="arch" type="xml">
+			<form>
+				<sheet>
+					<div>
+						<h1 class="mt0">
+							<field name="pathologie" />
+						</h1>
+						<group id="header_left_group">
+							<field name="code"/>
+						</group>
+						<group id="header_right_group">
+							<field name="speciality"/>
+						</group>
+					</div>				
+				</sheet>
+			</form>
+		</field>
+	</record>
+
+	<record id="action_disease_dashboard" model="ir.actions.act_window">
+		<field name="name">Pathologie</field>
+		<field name="res_model">pathologie.medical</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain"></field> 
+		<field name="context">{}</field>
+	</record>
+
+
+
+
+	<menuitem id="menu_config_pathologie" parent="fertility.menu_config" groups="base.group_user"
+			sequence="3" action="action_disease_dashboard"
+			name="Pathologie" /-->
+
+
+
+
+</odoo>

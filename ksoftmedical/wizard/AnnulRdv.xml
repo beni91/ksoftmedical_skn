@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<odoo>
+    <record id="annuler_rdv_view_form" model="ir.ui.view">
+        <field name="name">annuler.appointement.wizard.form</field>
+        <field name="model">annuler.appointement.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Annuler le rendez-vous">
+                <group>
+                    <field name="motif" required="1"/>
+                </group>
+                <footer>
+                    <button name="valider_annulation" string="valider" type="object" data-hotkey="z"
+                            class="btn-primary"/>
+                    <button string="Annuler" class="btn-secondary" special="cancel" data-hotkey="z"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_annuler_rdv" model="ir.actions.act_window">
+        <field name="name">Annuler rdv</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">annuler.appointement.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="annuler_rdv_view_form"/>
+        <field name="target">new</field>
+    </record>
+</odoo>

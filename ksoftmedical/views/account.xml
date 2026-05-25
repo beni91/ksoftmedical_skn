@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Add "Asset Category" to supplier invoices -->
+    <!-- VIEW FORM -->
+    <record model="ir.ui.view" id="view_invoice_add_refitem">
+        <field name="name">account.invoice.refitem.form</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='account_id']" position="before">
+                <field name="ref_item" readonly="1"/>
+            </xpath>
+            <xpath expr="//field[@name='invoice_date']" position="after">
+                <field name="libelle" required="1"/>
+            </xpath>
+			<xpath expr="//field[@name='partner_id']" position="after">
+				<field name="client_name" attrs="{'invisible': [('libelle', 'not in', ['pharmacie','laboratoire'])]}"/>
+			</xpath>
+			
+			
+			
+        </field>
+    </record>
+
+
+    <record model="ir.ui.view" id="view_invoice_add_libelle">
+        <field name="name">account.invoice.libelle.form</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_invoice_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='invoice_date']" position="before">
+                <field name="libelle"/>
+            </xpath>
+			<xpath expr="//field[@name='libelle']" position="before">
+                <field name="client_name"/>
+            </xpath>
+        </field>
+    </record>
+	
+	
+
+
+</odoo>

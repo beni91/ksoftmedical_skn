@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<!-- FORM POUR CLOTURER LE DOSSIER HOSPI  -->
+	<record id="view_closing_hospi_wizard" model="ir.ui.view">
+		<field name="name">Cloturer Dossier</field>
+		<field name="model">hospitalisation.wizard.closed</field>
+		<field name="priority">1</field>
+		<field name="arch" type="xml">
+			<form string="Cloture du Dossier">
+				<group>
+					<group>
+						<field name="closing_type"/>
+						<field name="hospi_id" invisible="1"/>
+					</group>
+					<group>
+						<field name="date_sorti" attrs="{'invisible': [('closing_type', '!=', 'complete')]}"/>
+						<field name="date_start" attrs="{'invisible': [('closing_type', '!=', 'partiel')]}"/>
+						<field name="date_end" attrs="{'invisible': [('closing_type', '!=', 'partiel')]}"/>
+					</group>
+				</group>
+				<footer>
+					<button name="action_closing_hospifolder" string="Cloturer Dossier" type="object" class="oe_highlight"/>
+					or
+					<button string="Annuler" class="oe_link" special="cancel"/>
+				</footer>
+			</form>
+		</field>
+	</record>
+
+	<record id="action_closing_hospi_launchwizard" model="ir.actions.act_window">
+		<field name="name">Cloturer Dossier</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="res_model">hospitalisation.wizard.closed</field>
+		<field name="binding_view_types">form</field>
+		<field name="view_mode">form</field>
+		<field name="view_id" ref="view_closing_hospi_wizard"/>
+		<field name="target">new</field>
+		<field name="context">{'default_hospi_id':active_id}</field>
+	</record>
+
+	<!-- END -->
+
+	<act_window
+		name="Cloturer le dossier Hospitalisation"
+		id="action_closing_hospi_form"
+		res_model="hospitalisation.wizard.closed"
+		binding_model="module.hospitalisation"
+		binding_views="form"
+		view_mode="form"
+		target="new"
+		context="{'default_hospi_id':active_id}"
+		/>
+
+</odoo>

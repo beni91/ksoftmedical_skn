@@ -1,0 +1,14 @@
+<odoo>
+	<data>
+
+		<record id="apt_type_1" model="fertility.appointment.type">
+			<field name="name">Consultation normale</field>
+		</record>
+		<record id="apt_type_2" model="fertility.appointment.type">
+			<field name="name">Consultation PMA</field>
+		</record>
+
+	</data>
+
+
+</odoo>

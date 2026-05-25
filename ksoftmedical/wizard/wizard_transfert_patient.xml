@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="wizard_transfert_patient_view_form" model="ir.ui.view">
+        <field name="name">Transfert Patient Form</field>
+        <field name="model">module.transfert.patient.wizard</field>
+        <field name="arch" type="xml">
+            <form create="0">
+                <sheet>
+					<group>
+						<group>
+							<field name="date_transfert" readonly="1"/>
+							<field name="patient_id" invisible="1"/>
+						</group> 
+						<group>
+							<field name="pavillon_origin"/>
+							<field name="pavillon_dest"/>
+							<field name="consultation_id" invisible="0"/>
+							<field name="user_id"/>
+							<field name="status" widget="badge"/>
+						</group> 
+					</group> 
+                    
+                    <group string="Traitements">
+                        <field name="note_medecin"/>
+                    </group>
+
+                </sheet>
+
+                <footer>
+                    <button name="transferer_salle_attente" string="Transferer" type="object" data-hotkey="z"
+                            confirm="Voulez-vous vraiment transferer ce patient ?" 
+                            class="btn-primary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+	
+    <record id="action_wizard_transfert_patient"  model="ir.actions.act_window">
+        <field name="name">Transfert Patient</field>
+        <field name="res_model">module.transfert.patient.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="binding_view_types">form</field>
+        <field name="target">new</field>
+   </record>
+   
+   
+   
+</odoo>

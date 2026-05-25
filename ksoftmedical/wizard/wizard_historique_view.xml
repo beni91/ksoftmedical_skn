@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_dossier_patient" model="ir.ui.view">
+        <field name="name">Historique Patient</field>
+        <field name="model">patient.dossier.historique</field>
+        <field name="arch" type="xml">
+            <form string="Historique Dossier Patient">
+                <sheet>
+                    <group>
+                        <field name="patient_id" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="historique" readonly="1"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="labo_print_results" string="Impression Dossier" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="z" />
+                </footer>
+            </form>
+        </field>
+    </record>
+	
+	<record id="action_view_dossier_patientwizard" model="ir.actions.act_window">
+		<field name="name">Impression Dossier</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="res_model">patient.dossier.historique</field>
+		<field name="view_mode">form</field>
+		<field name="view_id" ref="view_dossier_patient"/>
+		<field name="target">new</field>
+		<field name="context">{'default_appointment_id':active_id}</field>
+	</record>
+
+	
+	<!-- Menu Resultat inscrit 
+	<menuitem id="menu_labo_impr" parent="fertility.menu_laboratoire"  groups="group_fertility_laboratoire"
+		sequence="1"
+		name="Impression"
+		/>
+			<menuitem id="menu_labo_impr1" parent="menu_labo_impr"  groups="group_fertility_laboratoire"
+			sequence="1"
+			action="action_resultat_laboratoirewizard"
+			name="Impression des résultats"
+			/>-->
+</odoo>

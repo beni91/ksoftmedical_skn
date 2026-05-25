@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="view_prescription_tree" model="ir.ui.view">
+		<field name="name">module.prescription.tree</field>
+		<field name="model">module.prescription</field>
+		<field eval="8" name="priority"/>
+		<field name="arch" type="xml">
+			<tree string="Prescirption" 
+				create="false" edit="false" delete="false" sample="1" multi_edit="1">
+				<field name="date_prescription" />
+				<field name="origine"/>
+				<field name="patient_id" />
+				<field name="nompatient" />
+				<field name="pnompatient" />
+				<field name="prnompatient" />
+				<field name="dob" />
+				<field name="age" />
+				<field name="medicament" />
+				<field name="description" />
+				<field name="medecin"/>
+				<field name="internal_status"/>
+			</tree>
+		</field>
+	</record>
+
+
+	<record id="view_prescription_form" model="ir.ui.view">
+		<field name="name">module.prescription.form</field>
+		<field name="model">module.prescription</field>
+		<field name="arch" type="xml">
+			<form create="false" edit="false" delete="false">
+                <header>
+					<field name="internal_status" widget="statusbar"/>
+				</header>
+				<sheet>
+					<group>
+						<group id="header_left_group">
+							<field id="patient_id" class="o_text_overflow" name="patient_id"/>
+							<field name="nompatient" />
+							<field name="pnompatient" />
+							<field name="prnompatient" />
+							<field name="dob" />
+							<field name="age" />
+						</group>
+						<group id="header_right_group">
+							<field name="date_prescription" />
+							<field name="medecin"/>
+						</group>
+					</group>
+					<group string="Produits">
+						<field name="medicament" />
+						<field name="description" />
+					</group>
+				</sheet>
+			</form>
+		</field>
+	</record>
+
+	<record id="action_prescription_medicale" model="ir.actions.act_window">
+		<field name="name">Prescriptions Médicales</field>
+		<field name="res_model">module.prescription</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain">[]</field>
+		<field name="context">{}</field>
+	</record>
+
+	<!--record id="action_hospitalisation_atts" model="ir.actions.act_window">
+		<field name="name">Patients Sortables</field>
+		<field name="res_model">module.hospitalisation</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain">[('state','=','atts')]</field>
+		<field name="context">{}</field>
+	</record>
+
+	<record id="action_hospitalisation_out" model="ir.actions.act_window">
+		<field name="name">Patients Sorties</field>
+		<field name="res_model">module.hospitalisation</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain">[('state','=','out')]</field>
+		<field name="context">{}</field>
+	</record-->
+
+	<menuitem id="menu_statisques" parent="ksoftmedical.menu_config" groups="base.group_user" sequence="1"
+			name="Statistiques" />
+
+			<menuitem id="menu_prescription_cfg" parent="menu_statisques" groups="base.group_user" 
+				action="action_prescription_medicale"
+				sequence="1"
+				name="Prescriptions Médicales" />
+
+			<!--menuitem id="menu_traitement_cfg" parent="menu_statisques" groups="base.group_user" 
+				action="action_launchTraitemnt"
+				sequence="5"
+				name="Traitement donnée" />
+
+			<menuitem id="menu_traitement2_cfg" parent="menu_statisques" groups="base.group_user" 
+				action="action_traitement_done"
+				sequence="10"
+				name="Traitement donnée" /-->
+
+</odoo>

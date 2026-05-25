@@ -1,0 +1,1373 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+
+    <record id="view_feuille_signesvitaux_tree" model="ir.ui.view">
+        <field name="name">module.feuille.surveillance.tree</field>
+        <field name="model">module.feuille.surveillance</field>
+        <field name="arch" type="xml">
+            <tree create="false" edit="false"  decoration-danger='is_alert==True'>
+                <field name="patient_id" invisible="1"/>
+                                        <field name="date_surveillance" required="1"/>
+                                        <field name="temperature"/>
+                                        <field name="tension"/>
+                                        <field name="pulsation"/>
+                                        <field name="respiration"/>
+                                        <field name="glycemie" string="Glyc.(mg/dl)"/>
+                                        <field name="saturation" string="Oxy.(%)"/>
+                                        <field name="taille"/>
+                                        <field name="poids"/>
+                                        <field name="imc"/>
+                                        <field name="is_alert"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Voir tous les resultats--> 
+    <record id="action_feuille_signesvitaux_all" model="ir.actions.act_window">
+        <field name="name">Tableau synthètique des signes vitaux</field>
+        <field name="res_model">module.feuille.surveillance</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_id" ref="ksoftmedical.view_feuille_signesvitaux_tree"/>
+        <field name="view_mode">tree</field>
+        <field name="domain">[]</field>
+    </record>
+
+    <record id="view_appointment_wizard" model="ir.ui.view">
+        <field name="name">Nouvelle consultation</field>
+        <field name="model">fertility.wizard.appointment</field>
+        <field name="priority">1</field>
+        <field name="arch" type="xml">
+            <form string="Nouvelle consultation">
+                <group col="4">
+                    <field name="category_id" invisible="1"/>
+                    <field name="appointment_type" invisible="1"/>
+                    <field name="product_id" colspan="2" widget="Many2one" domain="[('categ_id','=',category_id)]"/>
+                    <field name="patient_id" colspan="2" edit="False" create="False" widget="Many2one"/>
+                    <field name="doctor_id" colspan="2" edit="False" create="False" widget="Many2one"/>
+                </group>
+                <footer>
+                    <button name="action_create" string="Créer une consultation" type="object" class="oe_highlight"/>
+                    or
+                    <button string="Annuler" class="oe_link" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_appointment_launchwizard" model="ir.actions.act_window">
+        <field name="name">Nouvelle consultation</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">fertility.wizard.appointment</field>
+        <field name="binding_view_types">form</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_appointment_wizard"/>
+        <field name="target">new</field>
+        <field name="context">{'default_appointment_type':active_id}</field>
+    </record>
+
+    <record id="view_labo_wizard" model="ir.ui.view">
+        <field name="name">Examen laboratoire</field>
+        <field name="model">fertility.wizard.labo</field>
+        <field name="priority">1</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="category_id" domain="[('parent_id.name','like','LABORATOIRE')]"
+                           options="{'no_create': True,'no_create_edit': True}"/>
+                    <field name="product_ids" widget="many2many_checkboxes" domain="[('categ_id','=',category_id)]"
+                           options="{'no_create': True,'no_create_edit': True}"/>
+                </group>
+                <footer>
+                    <button name="action_create" string="Faire une demande" type="object" class="oe_highlight"/>
+                    or
+                    <button string="Annuler" class="oe_link" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_imagerie_wizard" model="ir.ui.view">
+        <field name="name">Examen Imagerie</field>
+        <field name="model">fertility.wizard.imagerie</field>
+        <field name="priority">1</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="category_id" domain="['|',('parent_id.name','like','IMAGERIE'),('parent_id.name','like','LABORATOIRE')]"
+                           options="{'no_create': True,'no_create_edit': True}"/>
+                    <field name="product_ids" widget="many2many_checkboxes" domain="[('categ_id','=',category_id),('is_imagerie','=',True)]"
+                           options="{'no_create': True,'no_create_edit': True}"/>
+                    <field name="product_labo_ids" widget="many2many_checkboxes" domain="[('categ_id','=',category_id),('is_labo','=',True)]"
+                           options="{'no_create': True,'no_create_edit': True}"/>
+                </group>
+                <footer>
+                    <button name="action_create" string="Faire une demande" type="object" class="oe_highlight"/>
+                    <button string="Annuler" class="oe_link" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_labo_launchwizard" model="ir.actions.act_window">
+        <field name="name">Nouvelle examen</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">fertility.wizard.labo</field>
+        <field name="binding_view_types">form</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_labo_wizard"/>
+        <field name="target">new</field>
+        <field name="context">{'default_appointment_id':active_id}</field>
+    </record>
+
+    <record id="action_imagerie_launchwizard" model="ir.actions.act_window">
+        <field name="name">Nouvelle examen</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">fertility.wizard.imagerie</field>
+        <field name="binding_view_types">form</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_imagerie_wizard"/>
+        <field name="target">new</field>
+        <field name="context">{'default_appointment_id':active_id}</field>
+    </record>
+
+    <record id="view_appointment_form" model="ir.ui.view">
+        <field name="name">fertility.appointment.form</field>
+        <field name="model">fertility.appointment</field>
+        <field name="arch" type="xml">
+            <form create="1" disable_autofocus="0">
+                <header>
+                    <field name="internal_status" widget="statusbar"/>
+                    <button name="action_validate_gyneco" class="oe_highlight" type="object"
+                            attrs="{'invisible': [('internal_status', '!=', 'home')]}"
+                            string="Valider"/>
+                    <button name="action_validate_triage" class="oe_highlight" type="object"
+                            attrs="{'invisible': [('internal_status', '!=', 'triage')]}"
+                            string="Valider"/>
+                    <button name="action_validate_social" class="oe_highlight" type="object"
+                            attrs="{'invisible': [('internal_status', '!=', 'consult_social')]}"
+                            string="Valider"/>
+
+                    <button name="action_launch_consultation" class="oe_highlight" type="object"
+                            attrs="{'invisible': [('internal_status', '!=', 'attente')]}"
+                            string="Lancer la consultation"/>
+
+
+                    <button name="action_validate_gyneco" class="oe_highlight" type="object"
+                            attrs="{'invisible': [('internal_status', '!=', 'consult_gyneco')]}"
+                            string="Mettre en attente"/>
+
+                    <button name="action_close" type="object" string="Clore"
+                            attrs="{'invisible': [('internal_status', '!=', 'consult_gyneco')]}"/>
+
+                    <button name="action_return" type="object" string="Retour"
+                            attrs="{'invisible': [('internal_status', '!=', 'open')]}"/>
+
+                    <button name="action_open_again" type="object" string="Re-ouvrir"
+                            groups="ksoftmedical.group_ksoft_admin"
+                            attrs="{'invisible': [('internal_status', '!=', 'closed')]}"/>
+                    <button string="Prochain RDV" type="action" name='%(action_prochain_rdv)d'
+                            attrs="{'invisible': [('internal_status', '!=', 'consult_gyneco')]}"/>
+                </header>
+                <sheet>
+                    <center>
+                        <div attrs="{'invisible': [('internal_status', '!=', 'attente')]}">
+                            <p style=" color: #FF4F33;
+                                text-align: center; font-size:15px;">
+                                Cliquez sur le button "Lancer la consultation" pour commencer la consultation
+                            </p>
+                        </div>
+                    </center>
+                    <div class="oe_button_box" name="button_box">
+						<button string="Dossier Archivé" type="action"
+                                name="%(action_view_archive_patient_tree)d"
+                                class="oe_stat_button" icon="fa-archive"/>
+                        <button string="Impression dossier" type="action"
+                                name="%(action_wizard_reporting_appointment)d"
+                                class="oe_stat_button" icon="fa-print"/>
+                        <!--button string="Historique consultation" type="action"
+                                name="%(action_wizard_dossier_patient)d"
+                                class="oe_stat_button" icon="fa-address-card"/-->
+						<button string="Consultations" type="object"
+                                name="historique_appointment" context="{'default_patient_id': patient_id}"
+                                class="oe_stat_button" icon="fa-user-md"/>
+						
+						<button string="S.Vitaux" type="object"
+                                name="open_list_surveillance" context="{'default_patient_id': patient_id}"
+                                class="oe_stat_button" icon="fa-heartbeat"/>
+								
+						<button string="Diagnostics" type="object"
+                                name="historique_diagnostic" context="{'default_patient_id': patient_id}"
+                                class="oe_stat_button" icon="fa-warning"/>
+								
+						<button name="action_open_sommaire_laboresult" type="object"
+                            class="oe_stat_button" icon="fa-flask">
+							<div class="o_form_field o_stat_info">
+                                <span class="o_stat_value">
+                                </span>
+                                <span class="o_stat_text">Labo</span>
+                            </div>
+						</button>
+						<button name="action_open_sommaire_imagerieresult" type="object"
+                            class="oe_stat_button" icon="fa-x-ray">
+							<div class="o_form_field o_stat_info">
+                                <span class="o_stat_value">
+                                </span>
+                                <span class="o_stat_text">Imagerie</span>
+                            </div>
+						</button>
+						<button name="action_open_list_medicament"  context="{'default_patient_id': patient_id}"
+                                class="oe_stat_button" icon="fa-plus">
+							<div class="o_form_field o_stat_info">
+                                <span class="o_stat_value">
+                                </span>
+                                <span class="o_stat_text">Prescriptions</span>
+                            </div>
+						</button>
+						<button string="Hospitalisation" type="action"
+                                name="%(action_wizard_dossier_patient)d"
+                                class="oe_stat_button" icon="fa-bed"/>
+						<button string="One Day" type="action"
+                                name="%(action_wizard_dossier_patient)d"
+                                class="oe_stat_button" icon="fa-h-square"/>
+						<button string="Bloc Opératoire" type="action"
+                                name="%(action_wizard_dossier_patient)d"
+                                class="oe_stat_button" icon="fa-address-card"/>
+                        
+                    </div>
+                    <div>
+                        <h3 class="mt0">
+                            <field name="patient_id" readonly="1" string="Patient"/>
+                        </h3>
+                    </div>
+                    <group>
+                        <field name="afficher_patient" colspan="4" string="Voir toutes les info patients"/>
+                    </group>
+                    <group attrs="{'invisible': [('afficher_patient', '=', False)]}">
+                        <group id="header_left_group" string="Identification Patient">
+                            <field name="prenom" readonly="1"/>
+                            <field name="postnom" readonly="1"/>
+                            <field name="birth" readonly="1"/>
+                            <field name="age" readonly="1"/>
+                            <field name="gender" readonly="1"/>
+                            <separator string="Informations Professionnelles"/>
+                            <field name="categorie" readonly="1"/>
+                            <field name="parent_id" readonly="1"/>
+                            <field name="function" readonly="1"/>
+                            <field name="classe" readonly="1" invisible="1"/>
+                            <field name="function" readonly="1" invisible="1"/>
+                            <field name="numero_billet" readonly="1" invisible="1"/>
+                        </group>
+                        <group id="header_right_group" string="Informations sur la Consultation">
+                            
+                            <field name="date"/>
+                            <field name="date_cons_1" readonly="0"/>
+                            <field name="date_cons_2" readonly="0"/>
+                            <field name="doctor_id" readonly="1"/>
+                            <field name="speciality" readonly="1"/>
+                            <field name="product_id" options="{'no_create': True,'no_create_edit': True}"/>
+                            <field name="user_id" readonly="1" invisible="1"/>
+                            <field name="motif_rdv" readonly="1"/>
+                            <field name="infirmiere_id" readonly="1" invisible="1" />
+                            <field name="re_ouver_par" attrs="{'invisible': [('is_re_ouvert', '=',False)]}"
+                                   groups="ksoftmedical.group_ksoft_admin"/>
+                            <field name="is_re_ouvert" groups="ksoftmedical.group_ksoft_admin" widget="boolean_toggle"
+                                   readonly="1"/>
+                            <field name="type_cas" readonly="True"/>
+                        </group>
+                    </group>
+                    
+                            <div name="button_box" class="oe_button_box">
+                               <button string="Ajouter un antécédent" type="object"
+                                    name="action_patient"
+                                    class="oe_stat_button" icon="fa-info-circle"/> 
+                            </div>
+                     
+                        <group string="ANTECEDENTS ET ALLERGIES">
+						
+                                <field name="resume_atcd" readonly="1" nolabel="1"/>
+                          
+                            <!--group string="Allergies" id="header_left_group">
+                                <field name="allergie" nolabel="1" readonly="1">
+                                    <tree editable="bottom">
+                                        <field name="date_detection"/>
+                                        <field name="allergie_details" required="1"/>
+                                        <field name="comment"/>
+                                        <field name="etat" widget="boolean_toggle"/>
+                                    </tree>
+                                </field>
+                            </group>
+                            <group string="ATCD" id="header_right_group">
+                                <field name="atcd_medical" nolabel="1" readonly="1">
+                                    <tree editable="bottom">
+                                        <field name="date_detection"/>
+                                        <field name="type_atcd"/>
+                                        <field name="allergie" required="1"/>
+                                        
+                                        <field name="etat" widget="boolean_toggle"/>
+                                    </tree>
+                                </field>
+                            </group-->
+                        </group>
+                    
+                    <notebook>
+                        <page string="Signes vitaux">
+                            <group>
+                                <div name="button_box" class="oe_button_box">
+                                    <button string="Voir tous les signes vitaux" type="object"
+                                            name="action_open_sommaire_feuillesurveillance"
+                                            class="oe_stat_button" icon="fa-address-card"/>
+                                </div>
+                                
+                            </group>
+                            <group string="Signes vitaux">
+                            
+                                <field name="done_feuille_signes_vitaux" readonly="0"
+                                       context="{'default_patient_id': patient_id}" nolabel="1">
+                                    <tree editable="bottom" decoration-danger='is_alert==True'>
+                                        <field name="patient_id" invisible="1"/>
+                                        <field name="date_surveillance" required="1"/>
+                                        <field name="temperature"/>
+                                        <field name="tension"/>
+                                        <field name="pulsation"/>
+                                        <field name="respiration"/>
+                                        <field name="glycemie" string="Glyc.(mg/dl)"/>
+                                        <field name="saturation" string="Oxy.(%)"/>
+                                        <field name="taille"/>
+                                        <field name="poids"/>
+                                        <field name="imc"/>
+                                        <field name="is_alert"/>
+                                    </tree>
+                                </field>
+                            </group>
+                            <group string="Notes Infirmières">
+                                <field name="note_infirmier" readonly="1"/>
+                            </group>
+                        </page>
+                       
+                        <page id="gyneco_ids" string="Consultations"
+                              attrs="{'invisible': [('internal_status', '=', 'attente')]}">
+                            <group>
+								
+                                <div name="button_box" class="oe_button_box">
+                                    <button string="Consulter le patient" type="object"
+                                            name="action_consultation"
+                                            class="oe_stat_button" icon="fa-stethoscope"/>
+                                </div>
+                                
+                            </group>
+							<group string="Zone de consultation">
+                                <field name="resume_consult" nolabel="1" readonly="1" force_save="1"
+								placeholder="Résumé de la consultation"/>
+                            </group>
+                            
+                            <group>
+                                <field name="is_diagnostic"/>
+                            </group>
+                            <group string="Diagnostics">
+                                
+                                    <field name="diagnostics_ids"
+                                        context="{'default_patient_id': patient_id}"
+                                        attrs="{'readonly': [('internal_status', 'in', ['open','closed'])],
+                                                'invisible': [('is_diagnostic', '=', True)]}" nolabel="1">
+                                        <tree editable="bottom">
+                                            <field name="date_diagnostic"/>
+                                            <field name="pathologie" required="True" string="Diagnostics"/>
+
+
+                                            <field name="explication" string="Observation"/>
+                                            <field name="medecin_diag"/>
+                                        </tree>
+                                    </field>
+                                
+                            </group>
+                        </page>
+
+                        <page id="imagerie_ids" string="Demandes"
+                             attrs="{'invisible': [('internal_status', '=', 'attente')]}">
+                            <button name="ksoftmedical.action_imagerie_launchwizard" class="oe_highlight" type="action"
+                                    string="Faire une demande"/>
+                            <button name="action_send_examimagerie" type="object" string="Envoyer à la caisse"/>
+							<button name="action_send_sanspayer_examimagerie" type="object"
+								groups="ksoftmedical.group_fertility_autorisation_paiement" string="Labo sans payer"/>	
+                            <br/><br/><br/>
+                            <button name="action_open_sommaire_imagerieresult" type="object"
+                                    string="Voir tous les resultats imagerie" />
+                            <group string="Examens d'imagerie">
+                                <field name="imagerie_ids" nolabel="1">
+                                    <tree editable="bottom" create="0">
+                                        <field name="is_print"/>
+                                        <field name="date_request" readonly="0"/>
+                                        <field name="status" readonly="1"/>
+                                        <field name="imagerie_name" invisible="1"/>
+                                        <field name="analyse" domain="[('is_imagerie','=',True)]" readonly="1"
+                                               required="True"/>
+                                        <field name="clinique" placeholder="Clinique et But"/>
+                                        <field name="demandeur"/>
+                                        <button name="get_imagerie_resultat" class="fa fa-file-text-o" 
+                                            attrs="{'invisible': [('status', '=', 'done')]}"
+                                            type="object" string="Voir les resultats" />
+                                    </tree>
+                                </field>
+                            </group>
+                            <button name="action_open_sommaire_laboresult" type="object"
+                                    string="Voir tous les resultats laboratoire" />
+                            <group string="Examens de laboratoire">
+                               
+                                <field name="labo_ids" nolabel="1">
+                                    <tree editable="bottom" create="0" decoration-danger="is_pathologique==True">
+                                        <field name="is_print"/>
+                                        <field name="date_request" readonly="0"/>
+                                        
+                                        <field name="status" readonly="1" invisible="0"/>
+                                        <field name="labo_name" readonly="0" invisible="1"/>
+                                        
+                                        <field name="analyse" invisible="0" required="False"/>
+                                        <field name="description" readonly="0" widget="html"/>
+                                        <field name="valeur_normale" invisible="0" readonly="0" widget="html"/>
+                                        <field name="is_pathologique" readonly="0"/>
+                                        <field name="analyse_autres" invisible="1"/>
+                                        <field name="examen_text" string="Clinique"/>
+                                        <field name="demandeur"/>
+                                    </tree>
+                                </field>
+                            </group>
+                        </page>
+
+                        <page id="done_prescription" string="Prescriptions"
+                              attrs="{'invisible': [('internal_status', '=', 'attente')]}">
+                            <div class="oe_button_box" name="button_box">
+                                <button string="Prescrire" type="object"
+                                        name="action_prescription"
+                                        class="oe_stat_button" icon="fa-address-card"/>
+                            </div>
+                            <group string="PRESCRIPTIONS MEDICALES">
+                                <div>
+                                    <button name="action_creer_ordonnance" type="object"
+                                            string="Envoyer à la pharmacie" invisible="1"/>
+                                    <field name="done_ordonnance"
+                                           context="{'default_patient_id': patient_id}"
+                                           attrs="{'readonly': [('internal_status', 'in', ['closed'])]}" nolabel="1"
+                                           readonly="1">
+                                        <tree editable="bottom">
+                                            <field name="is_print" string="#"/>
+                                            <field name="date_ordonnance" readonly="1"/>
+                                            <field name="product"
+                                                   widget="Many2one" required="1"
+                                                   domain="[('is_medicaments','=',True)]"/>
+                                            <field name="product_name"/>
+                                            <field name="unit_product"/>
+                                            <field name="posologie"/>
+                                            <field name="quantity" required="1"/>
+                                            <field name="quantity2" invisible="1"/>
+                                            <field name="medecin_id"/>
+
+                                            <field name="price_unit" invisible="1"/>
+                                            <field name="is_modify" invisible="1"/>
+                                            <field name="note" invisible="1"/>
+                                        </tree>
+                                    </field>
+                                </div>
+                            </group>
+                            <group>
+                                <field name="cord_commentaire_pharma" placeholder="Commentaire" readonly="0"/>
+                            </group>
+
+                        </page>
+
+                        <page id="autres_orientation" string="Soins Ambulatoires"
+                              attrs="{'invisible': [('internal_status', '=', 'attente')]}">
+                            <div class="oe_button_box" name="button_box">
+                                <button string="Soins Ambulatoires" type="object"
+                                        name="action_chirurgie"
+                                        class="oe_stat_button" icon="fa-address-card"/>
+                            </div>
+                            <group string="Salle de soins">
+                            
+                                <field name="done_orientation"
+                                       context="{'default_patient_id': patient_id}"
+                                       nolabel="1"
+                                       readonly="0">
+                                    <tree editable="bottom">
+                                        <field name="date_orientation" style="width: 100px !important;"/>
+                                        <field name="product" domain="[('is_actes_medicaux','=',True)]" />
+                                        <field name="medicament" domain="[('is_medicaments','=',True)]"/>
+                                        <field name="description" string="Posologie"/>
+                                        <field name="materiels" domain="[('is_materiels','=',True)]" widget="many2many_tags"/>
+                                        <field name="protocole" string="Observations" style="width: 200px !important;"/>
+
+                                        <field name="medecin_"/>
+                                        <field name="service"/>
+                                        <field name="internal_status"/>
+                                    </tree>
+                                </field>
+                            </group>
+                            <group string="Soins de plaie">
+                            </group>
+                            <group string="Kiné">
+                                <field name="kinesitheurapie"
+                                    context="{'default_patient_id': patient_id}"
+                                    attrs="{'readonly': [('internal_status', 'in', ['open','closed'])]}"
+                                    nolabel="1">
+                                    <tree editable="bottom">
+                                        <field name="date_recorded" string="D. demande"/>
+                                        <field name="date_done" string="D. Real"/>
+                                        <field name="product" domain="['|',('is_actes_medicaux','=',True),('is_actes_inf','=',True)]" />
+                                        <field name="is_physical_medecine" string="M. Phys"/>
+                                        <field name="orientation"  style="width: 100px !important;"/>
+                                        <field name="medecin_"/>
+                                        <field name="internal_status"/>
+                                    </tree>
+                                </field>
+                            </group>
+                            <group string="Vaccination">
+                            </group>
+                        </page>
+                        <page string="Sejour" attrs="{'invisible': [('internal_status', '=', 'attente')]}">
+                            <div class="oe_button_box" name="button_box">
+                                <button name="ksoftmedical.action_constransfert_patient" class="oe_highlight" type="action"
+                                    icon="fa-bed" string="Interner un patient"
+									attrs="{'invisible': [('internal_status', '=', 'transfered')]}"/>
+                                    
+                            </div>
+                            <group>
+                                <field name="transfer_ids"
+                                        
+                                        nolabel="1" readonly="1">
+                                        <tree editable="bottom">
+                                            <field name="date_transfert" string="D-H de transfert"/>
+                                            <field name="patient_id" invisible="0"/>
+                                            <field name="pavillon_origin"/>
+                                            <field name="pavillon_dest"/>
+                                            <field name="consultation_id" invisible="0"/>
+                                            <field name="user_id"/>
+                                            <field name="status" widget="badge"/>
+                                        </tree>
+                                </field>
+                            </group>
+                        </page>
+                        <page string="Documents">
+                            <div class="oe_button_box" name="button_box">
+                                <button name="ksoftmedical.action_constransfert_patient" class="oe_highlight" type="action"
+                                     icon="fa-file-text-o" string="Ajouter un document"/>
+                                    
+                            </div>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_appointment_tree" model="ir.ui.view">
+        <field name="name">fertility.appointment.tree</field>
+        <field name="model">fertility.appointment</field>
+        <field name="arch" type="xml">
+            <tree decoration-success="internal_status=='consult_gyneco'"
+                  decoration-info="internal_status=='open'"
+                  decoration-muted="internal_status=='closed'" create="1">
+
+                <field name="datetime"/>
+                <field name="name" optional="0"/>
+                <field name="patient_id"/>
+                <field name="gender"/>
+                <field name="age"/>
+                <field name="categorie" readonly="1"/>
+                <field name="parent_id" string="Convention"/>
+                <field name="doctor_id"/>
+                <field name="consult_examen_id"/>
+                <field name="internal_status" decoration-success="internal_status == 'consult_gyneco'"
+                       decoration-info="internal_status == 'open'" widget="badge"/>
+                <field name="attente_time" invisible="1"/>
+                <field name="waiting_time" widget="badge" decoration-warning="attente_time >= 900"
+                       decoration-danger="attente_time >= 1800"/>
+            </tree>
+        </field>
+    </record>
+	
+	<record id="view_appointment_tree_2" model="ir.ui.view">
+        <field name="name">fertility.appointment.tree2</field>
+        <field name="model">fertility.appointment</field>
+        <field name="arch" type="xml">
+            <tree create="false" edit="false">
+
+                <!-- <field name="date"/>
+               <field name="name" optional="0"/>
+                 <field name="patient_id"/> -->
+                <!-- <field name="gender"/> -->
+                <!-- <field name="age"/> -->
+                <!-- <field name="categorie" readonly="1"/> -->
+                <!-- <field name="parent_id" string="Convention"/> 
+				<field name="doctor_id"/>-->
+				<!--field name="speciality" readonly="1"/>
+                <field name="product_id"/>
+				<field name="motif_rdv" readonly="1"/-->
+				<field name="resume_consult"/>
+                <!-- <field name="internal_status" decoration-success="internal_status == 'consult_gyneco'" -->
+                       <!-- decoration-info="internal_status == 'open'" widget="badge"/> -->
+                <!-- <field name="attente_time" invisible="1"/> -->
+                <!-- <field name="waiting_time" widget="badge" decoration-warning="attente_time >= 900" -->
+                       <!-- decoration-danger="attente_time >= 1800"/> -->
+            </tree>
+        </field>
+    </record>
+	
+	<record id="view_consultation_form" model="ir.ui.view">
+        <field name="name">fertility.consultation.form</field>
+        <field name="model">fertility.appointment</field>
+		<field name="priority" eval="25"/>
+        <field name="arch" type="xml">
+            <form create="0">
+                <sheet>
+                    <field name="patient_id" readonly="1"/>
+                    <field name="internal_status" invisible="1"/>
+					
+					<group>
+						<field name="type_consultation" placeholder="Saisir la spécialité"/>
+					</group>
+					<group string="Zone de consultation" >
+						<group id="header_left_group">
+							
+							<separator string="Plaintes"/>
+							<field name="anamnese" widget="html" colspan="4" nolabel="1"  placeholder="Saisir la plainte"/>
+							<separator string="Histoire de l'affection"/>
+							<field name="hstr_affection" widget="html" colspan="4" nolabel="1"  placeholder="Histoire de l'affection"/>
+							<separator string="Traitement"/>
+							<field name="traitement" widget="html" colspan="4" nolabel="1"  placeholder="Traitement"/>  
+						</group>
+						<group id="header_right_group">
+							<separator string="Examen physique"/>
+							<field name="examen_physique" widget="html" colspan="4" nolabel="1" placeholder="Saisir l'examen physique"/>
+							
+							<separator string="Compléments d’anamnèse"/>
+							<field name="cpm_anamnese" widget="html" colspan="4" nolabel="1"  placeholder="Compléments d’anamnèse"/>
+							
+						</group>
+						
+					</group>
+					<group attrs="{'invisible': [('type_consultation', '!=', 'ophta')]}" string="Acuite Visuelle">
+							<group col="2">
+								<field name="ac_odbrute" placeholder="..."/>
+								<field name="ac_ogbrute" placeholder="..."/>
+								<field name="ac_addbrute" placeholder="..."/>
+							</group>
+							<group col="2">
+								<field name="ac_odcorrige" placeholder="..."/>
+								<field name="ac_ogcorrige" placeholder="..."/>
+							</group>
+							<group col="2">
+								<field name="ac_odcorrection" placeholder="..."/>
+								<field name="ac_ogcorrection" placeholder="..."/>
+								<field name="ac_addcorrection" placeholder="..."/>
+							</group>
+					</group>
+					
+					<group attrs="{'invisible': [('type_consultation', '!=', 'ophta')]}" >
+						<group id="header_left_group" string="Inspection et palpation">
+							<field name="insp_palpation" widget="html" placeholder="Inspection et palpation"/>
+						</group>
+						<group id="header_right_group" string="Biomicroscopie">
+							<field name="od_biomi" placeholder="..."/>
+							<field name="og_biomi" placeholder="..."/>
+						</group>
+					</group>
+					
+					<group attrs="{'invisible': [('type_consultation', '!=', 'ophta')]}" >
+						<group id="header_left_group" string="Refraction automatique">
+							<field name="ref_od" placeholder="..."/>
+							<field name="ref_ag" placeholder="..."/>
+							<field name="ref_dp" placeholder="..."/>
+						</group>
+						<group id="header_right_group" string="Tonomètrie">
+							<field name="insp_palpation" widget="html" placeholder="Tonomètrie"/>
+						</group>
+					</group>
+					
+					<group attrs="{'invisible': [('type_consultation', '!=', 'ophta')]}" >
+						<group id="header_left_group" string="Fond d'oeil">
+							<field name="fond_oeil" widget="html" placeholder="..."/>
+						</group>
+						<group id="header_right_group" string="Tonomètrie">
+							<field name="autres_examen" widget="html" placeholder="..."/>
+						</group>
+					</group>
+					
+					
+					<!--group>
+						<field name="is_diagnostic"/>
+					</group>
+					<group string="Diagnostics">
+						
+							<field name="diagnostics_ids"
+								context="{'default_patient_id': patient_id}"
+								attrs="{'readonly': [('internal_status', 'in', ['open','closed'])],
+										'invisible': [('is_diagnostic', '=', True)]}" nolabel="1">
+								<tree editable="bottom">
+									<field name="date_diagnostic"/>
+									<field name="pathologie" required="True" string="Diagnostics"/>
+
+
+									<field name="explication" string="Observation"/>
+									<field name="medecin_diag"/>
+								</tree>
+							</field>
+						
+					</group-->
+                </sheet>
+                <footer>
+                    <button name="action_save_consultation" string="Enregistrer la consultation" type="object" data-hotkey="z"
+                            class="btn-primary"/>
+                    <button string="Annuler" class="btn-secondary" special="cancel" data-hotkey="z"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+	
+	<record id="action_consultation_launchwizard" model="ir.actions.act_window">
+        <field name="name">Consultations Patients</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">fertility.appointment</field>
+        <field name="binding_view_types">form</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_consultation_form"/>
+        <field name="target">new</field>
+    </record>
+
+    <record id="view_prescription_form" model="ir.ui.view">
+        <field name="name">fertility.prescription.form</field>
+        <field name="model">fertility.appointment</field>
+        <field name="arch" type="xml">
+            <form create="0">
+                <sheet>
+                    <field name="patient_id" readonly="1"/>
+                    <field name="internal_status" invisible="1"/>
+                    <group string="PRESCRIPTIONS MEDICALES">
+                        <div>
+                            <button name="action_creer_ordonnance" type="object"
+                                    string="Envoyer à la pharmacie" invisible="1"/>
+                            <field name="done_ordonnance"
+                                   context="{'default_patient_id': patient_id}"
+                                   attrs="{'readonly': [('internal_status', 'in', ['closed'])]}" nolabel="1">
+                                <tree editable="bottom">
+                                    <field name="is_print" string="#"/>
+                                    <field name="date_ordonnance" readonly="1"/>
+                                    <field name="product"
+                                           widget="Many2one" required="0"
+                                           domain="[('is_medicaments','=',True)]"/>
+                                    <field name="product_name"/>
+                                    <field name="unit_product" required="1"/>
+                                    <field name="posologie"  required="1"/>
+                                    <field name="quantity" required="1"/>
+                                    <field name="quantity2" invisible="1"/>
+                                    <!-- <field name="qtity_stock"/> -->
+                                    <field name="medecin_id"/>
+
+                                    <field name="price_unit" invisible="1"/>
+                                    <field name="is_modify" invisible="1"/>
+                                    <field name="note" invisible="1"/>
+                                    <!--field name="internal_status" invisible="0"/>
+                                    <field name="status"/-->
+                                </tree>
+                            </field>
+                        </div>
+                    </group>
+                    <group>
+                        <field name="cord_commentaire_pharma" placeholder="Commentaire"/>
+                    </group>
+                    <!--group string="PRESCRIPTIONS DES LUNETTES">
+                        <button name="action_creer_dmde_shop" type="object" string="Envoyer au shop" invisible="1"/>
+                        <field name="done_lunettes"
+                               context="{'default_patient_id': patient_id}"
+                               attrs="{'readonly': [('internal_status', 'in', ['closed'])]}" nolabel="1"
+                               colspan="2">
+                            <tree editable="bottom">
+                                <field name="is_print" string="#"/>
+                                <field name="date_prescription" readonly="1"/>
+                                <field name="px" required="1"/>
+                                <field name="sphere"/>
+                                <field name="cylindre"/>
+                                <field name="axe"/>
+                                <field name="av1"/>
+                                <field name="addition"/>
+                                <field name="av2"/>
+                                <field name="medecin_id"/>
+                            </tree>
+                        </field>
+                        <field name="type_lunette"/>
+                        <field name="cord_commentaire" colspan="2" placeholder="Commentaire"/>
+                        <field name="od_dist" readonly="1"/>
+                        <field name="og_dist" readonly="1"/>
+                        <field name="dist_pp" readonly="1"/>
+                    </group-->
+                </sheet>
+                <!--footer-->
+                <!--button name="action_prescription_send" string="Sauver et envoyer" type="object" data-hotkey="z"
+                        class="btn-primary"/-->
+                <!--button string="Annuler" class="btn-secondary" special="cancel" data-hotkey="z"/-->
+                <!--/footer-->
+                <footer>
+                    <button name="action_prescription_send" string="Sauver et envoyer" type="object" data-hotkey="z"
+                            class="btn-primary"/>
+                    <button string="Annuler" class="btn-secondary" special="cancel" data-hotkey="z"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_traitement_form" model="ir.ui.view">
+        <field name="name">fertility.prescription.form</field>
+        <field name="model">fertility.appointment</field>
+        <field name="arch" type="xml">
+            <form create="0">
+                <sheet>
+                    <field name="patient_id" readonly="1"/>
+                    <field name="internal_status" invisible="1"/>
+                    <group string="Instruction medicale">
+                        <group>
+                            <field name="salle_soins" string="Choisir le Service"
+                                attrs="{'readonly': [('internal_status', 'in', ['open','closed', 'transfered'])]}"
+                                domain="[('type_rdv','=','soins')]"/>
+                        </group>
+                        <group>
+                            <field name="doctor_id" readonly="1"/>
+                            <field name="instruction_soins" string="Instruction Médicale"
+                                attrs="{'readonly': [('internal_status', 'in', ['open','closed', 'transfered'])]}"/>
+                        </group>
+                        
+                        
+                    </group>
+                    
+                    <group string="Traitements">
+                        <field name="done_orientation"
+                               context="{'default_patient_id': patient_id}"
+                               attrs="{'readonly': [('internal_status', 'in', ['open','closed','transfered'])]}"
+                               nolabel="1">
+                            <tree editable="bottom">
+                                <field name="date_orientation" style="width: 100px !important;"/>
+                                <field name="product" domain="['|',('is_actes_medicaux','=',True),('is_actes_inf','=',True)]" />
+                                <field name="medicament" domain="[('is_medicaments','=',True)]"/>
+                                <field name="description" string="Posologie"/>
+                                <field name="materiels" domain="[('is_materiels','=',True)]" widget="many2many_tags"/>
+                                <field name="protocole" string="Observations" style="width: 200px !important;"/>
+                                
+                                <field name="medecin_"/>
+                                <field name="service"/>
+                                <field name="internal_status"/>
+                            </tree>
+                        </field>
+                    </group>
+
+                    <group string="Kiné">
+                        <field name="request_kine"
+                               context="{'default_patient_id': patient_id}"
+                               attrs="{'readonly': [('internal_status', 'in', ['open','closed', 'transfered'])]}"
+                               nolabel="1">
+                            <tree editable="bottom">
+                                <field name="date_recorded" style="width: 100px !important;"/>
+                                <field name="product" domain="['|',('is_actes_medicaux','=',True),('is_actes_inf','=',True)]" />
+                                <field name="nbre_seance"/>
+                                <field name="is_physical_medecine"/>
+                                
+                                <field name="medecin_"/>
+                                <field name="internal_status"/>
+                            </tree>
+                        </field>
+                    </group>
+
+                    <group string="Vaccination">
+                        <field name="done_orientation"
+                               context="{'default_patient_id': patient_id}"
+                               attrs="{'readonly': [('internal_status', 'in', ['open','closed', 'transfered'])]}"
+                               nolabel="1">
+                            <tree editable="bottom">
+                                <field name="date_orientation" style="width: 100px !important;"/>
+                                <field name="product" domain="['|',('is_actes_medicaux','=',True),('is_actes_inf','=',True)]" />
+                                <field name="medicament" domain="[('is_medicaments','=',True)]"/>
+                                <field name="description" string="Posologie"/>
+                                <field name="materiels" domain="[('is_materiels','=',True)]" widget="many2many_tags"/>
+                                <field name="protocole" string="Observations" style="width: 200px !important;"/>
+                                
+                                <field name="medecin_"/>
+                                <field name="service"/>
+                                <field name="internal_status"/>
+                            </tree>
+                        </field>
+                    </group>
+                </sheet>
+                <!--footer-->
+                <!--button name="action_prescription_send" string="Sauver et envoyer" type="object" data-hotkey="z"
+                        class="btn-primary"/-->
+                <!--button string="Annuler" class="btn-secondary" special="cancel" data-hotkey="z"/-->
+                <!--/footer-->
+                <footer>
+                    <!--button name="action_facturer_chirurgie" string="Envoyer à la caisse" type="object" data-hotkey="z"
+                            confirm="Envoyer le patient à la caisse pour effectuer le paiement des actes prescris ?" 
+                            class="btn-primary"/-->
+                    <button name="appointment_to_soinsambulatoire" string="Envoyer à la salle soins" type="object" data-hotkey="z"
+                            confirm="Ce patient sera envoyé et pris en charge par l'équipe infirmière dans la salle des soins indiquée" 
+                            class="btn-primary"/>
+                    <button string="Annuler" class="btn-secondary" special="cancel" data-hotkey="z"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    
+    <record id="view_fertility_appointment_search" model="ir.ui.view">
+        <field name="name">fertility.appointment.search</field>
+        <field name="model">fertility.appointment</field>
+        <field name="arch" type="xml">
+            <search string="Consultations">
+                <field name="date"/>
+                <field name="internal_status"/>
+                <field name="patient_id"/>
+                <field name="doctor_id"/>
+                <field name="speciality"/>
+                <field name="product_id"/>
+                <field name="nom"/>
+                <field name="postnom"/>
+                <field name="prenom"/>
+                <field name="age"/>
+                <field name="function"/>
+                <field name="gender"/>
+                <field name="parent_id"/>
+                <field name="categorie"/>
+                <field name="type_cas"/>
+                
+                <filter name="filter_categorie" string="Privés" domain="[('categorie','=','prive')]"/> <!--Ici on a crée un filtre-->
+                <filter name="filter_categorie2" string="Ayant Droit" domain="[('categorie','=','prive2')]"/>
+                <filter name="filter_categorie3" string="Conventionné" domain="[('categorie','=','convention')]"/>
+                <filter name="filter_hoe" string="Homme" domain="[('gender','=','M')]"/>
+                <filter name="filter_femme" string="Femme" domain="[('gender','=','F')]"/>
+                <!--group string="Group By"-->
+                    <!--filter string="Genre" name="group_by_gender" context="{'group_by':'gender'}"/--> <!--Ici on a crée un group by-->
+                <!--/group-->
+                <group string="Group By">
+                    <filter string="Date de RDV" name="group_by_DateRDV" context="{'group_by':'date'}"/>
+                </group>
+                <group string="Group By">
+                    <filter string="Etat du RDV" name="group_by_EtatRDV" context="{'group_by':'internal_status'}"/>
+                    <filter string="Patient" name="group_by_Patient" context="{'group_by':'patient_id'}"/>
+                    <filter string="Médecin" name="group_by_eMeecin" context="{'group_by':'doctor_id'}"/>
+                    <filter string="Convention" name="group_by_Convention" context="{'group_by':'parent_id'}"/>
+                    <filter string="Type de cas" name="group_by_Cas" context="{'group_by':'type_cas'}"/>
+                    <filter string="Type de consultation" name="group_by_tcons" context="{'group_by':'product_id'}"/>
+                    <filter string="Zone" name="group_by_zone" context="{'group_by':'zone'}"/>
+                    <filter string="Type transfert" name="group_by_transfert" context="{'group_by':'type_transfert'}"/>
+                    <filter string="Origine patient" name="group_by_origine" context="{'group_by':'origine_patient'}"/>
+        
+                </group>
+                <!--group string="Group By">
+                    <filter string="Par mois" name="group_by_month" context="{'group_by':'date_rdv:month'}"/>
+                </group-->
+            </search>
+        </field>
+    </record>
+
+    <record id="action_appointment_all" model="ir.actions.act_window">
+        <field name="name">Toutes les consultations</field>
+        <field name="res_model">fertility.appointment</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('appointment_type','=',active_id)]</field>
+    </record>
+    <record id="action_appointment_today" model="ir.actions.act_window">
+        <field name="name">Prévu aujourd'hui</field>
+        <field name="res_model">fertility.appointment</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('appointment_type','=',active_id),('date','=',context_today())]</field>
+    </record>
+
+    <record id="view_appointment_type_kanban" model="ir.ui.view">
+        <field name="name">fertility.appointment.type.kanban</field>
+        <field name="model">fertility.appointment.type</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_dashboard o_appointment_kanban" sample="1">
+                <field name="name"/>
+                <field name="count_appointment"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click">
+                            <div class="o_kanban_card_header">
+                                <div class="o_kanban_card_header_title">
+                                    <div class="o_primary col-12 p-0 w-75">
+                                        <field name="name"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="container o_kanban_card_content mt-3">
+                                <div class="row">
+                                    <div class="col-6 o_kanban_primary_left">
+                                        <button class="btn btn-primary mr-2"
+                                                name="ksoftmedical.action_appointment_launchwizard" type="action">
+                                            <span>Nouveau RDV</span>
+                                        </button>
+                                    </div>
+                                    <div class="col-6 o_kanban_primary_right">
+                                        <div class="row">
+                                            <a name="ksoftmedical.action_appointment_today" type="action">
+                                                <span>
+                                                    <t t-esc="record.count_appointment.value"/>
+                                                    Prévu aujourd'hui
+                                                </span>
+                                            </a>
+                                        </div>
+                                        <div class="row">
+                                            <a name="ksoftmedical.action_appointment_all" type="action">
+                                                <span>Voir toutes les consultations</span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+
+    <!-- CONSULTATION -->
+
+    <menuitem id="menu_consult" sequence="12"
+              groups="group_fertility_medecin,group_fertility_chefinfirmier"
+              name="Consultations" web_icon="ksoftmedical,static/description/consultation/icon.png"
+    />
+
+
+    <!-- CONSULTATION SOCIALE -->
+
+    <record id="action_appointment_social_all" model="ir.actions.act_window">
+        <field name="name">Toutes les consultations</field>
+        <field name="res_model">fertility.appointment</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('internal_status','=','consult_social')]</field>
+    </record>
+    <record id="action_appointment_social_today" model="ir.actions.act_window">
+        <field name="name">Prévu aujourd'hui</field>
+        <field name="res_model">fertility.appointment</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('internal_status','=','consult_social'),('date','=',context_today())]</field>
+    </record>
+
+
+    <!-- CONSULTATION GYNECO -->
+
+    <record id="action_appointment_gyneco_all" model="ir.actions.act_window">
+        <field name="name">Toutes les consultations</field>
+        <field name="res_model">fertility.appointment</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree,form</field>
+        <!-- <field name="domain">[('internal_status','in',['attente','consult_gyneco','open','closed']),('doctor_id.user_id','=',uid)]</field> -->
+		<field name="domain">[('internal_status','in',['attente','consult_gyneco','open','closed','transfered'])]</field>
+        <field name="search_view_id" ref="view_fertility_appointment_search"/>
+    </record>
+
+    <record id="action_appointment_inwait_today" model="ir.actions.act_window">
+        <field name="name">Patients en attente du médecin</field>
+        <field name="res_model">fertility.appointment</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">
+            [('internal_status','=','attente'),('date','=',context_today()),('doctor_id.user_id','=',uid)]
+        </field>
+        <field name="search_view_id" ref="view_fertility_appointment_search"/>
+    </record>
+
+    <record id="action_appointment_encours_today" model="ir.actions.act_window">
+        <field name="name">Patients en consultation</field>
+        <field name="res_model">fertility.appointment</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">
+            [('internal_status','in',['open', 'consult_gyneco']),('date','=',context_today()),('doctor_id.user_id','=',uid)]
+        </field>
+        
+        <field name="search_view_id" ref="view_fertility_appointment_search"/>
+    </record>
+
+    <record id="action_appointment_test_today" model="ir.actions.act_window">
+        <field name="name">Patients en test</field>
+        <field name="res_model">fertility.appointment</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">
+            [('internal_status','=','open'),('date','=',context_today())]
+        </field>
+        <field name="search_view_id" ref="view_fertility_appointment_search"/>
+    </record>
+	
+	<record id="action_list_appointment" model="ir.actions.act_window">
+        <field name="name">Historique des consultation</field>
+        <field name="res_model">fertility.appointment</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree</field>
+		<field name="view_id" ref="view_appointment_tree_2"/>
+        <field name="search_view_id" ref="view_fertility_appointment_search"/>
+    </record>
+
+    <menuitem id="menu_consultation_gyneco" parent="menu_consult" groups="group_fertility_medecin"
+              sequence="2"
+              name="Consultations"
+    />
+
+    <!--menuitem id="menu_consultation_gyneco1" parent="menu_consultation_gyneco" groups="group_fertility_medecin_gyneco"
+              action="action_appointment_gyneco_today"
+              sequence="1"
+              name="Prévu aujourd'hui"
+    /-->
+
+    <menuitem id="menu_consultation_attente" parent="menu_consultation_gyneco" groups="group_fertility_medecin"
+              action="action_appointment_inwait_today"
+              sequence="1"
+              name="Patient en attente du médecin"
+    />
+
+    <menuitem id="menu_consultation_consult" parent="menu_consultation_gyneco" groups="group_fertility_medecin"
+              action="action_appointment_encours_today"
+              sequence="2"
+              name="Patient en consultation"
+    />
+
+    <!--menuitem id="menu_consultation_test" parent="menu_consultation_gyneco" groups="group_fertility_medecin_gyneco"
+              action="action_appointment_test_today"
+              sequence="3"
+              name="Patient en test"
+    /-->
+
+    <menuitem id="menu_consultation_gyneco2" parent="menu_consultation_gyneco" groups="group_fertility_medecin"
+              action="action_appointment_gyneco_all"
+              sequence="5"
+              name="Toutes les consultations"
+    />
+
+
+    <record id="product_template_form_view" model="ir.ui.view">
+        <field name="name">product.template.form.inherit2</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <field name="company_id" position="after">
+                <field name="valeur_normale"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- LES RENDEZ-VOUS -->
+    <!--record id="view_appointment_patient_tree_inherited" model="ir.ui.view">
+        <field name="name">ksoft.appointment.tree.inherit</field>
+        <field name="model">ksoft.appointment</field>
+        <field name="inherit_id" ref="ksoftmedical.view_appointment_patient_tree"/>
+        <field name="arch" type="xml">
+            <field name="ref_moved" position="attributes">
+                <attribute name="optional">1</attribute>
+            </field>
+        </field>
+    </record-->
+    <record id="view_appointment_consultation_tree" model="ir.ui.view">
+        <field name="name">ksoft.appointment.tree2</field>
+        <field name="model">ksoft.appointment</field>
+        <field name="arch" type="xml">
+            <tree decoration-success="internal_status=='invoicing'"
+                  decoration-info="internal_status=='home'"
+                  decoration-muted="internal_status=='closed'"
+                  decoration-danger="etat=='annul'">
+
+                <field name="date_rdv"/>
+                <field name="patient_id"/>
+                <field name="gender" optional="hide"/>
+                <field name="age" optional="hide"/>
+                <field name="convention_id" string="Convention" optional="hide"/>
+                <field name="medecin"/>
+                <field name="etat" invisible="1"/>
+                <field name="internal_status" string="Etat Rdv"/>
+                <field name="status_moved" string="Etat Facture"/>
+                <field name="status_consultation" string="Etat Consult."/>
+            </tree>
+        </field>
+    </record>
+    <!--record id="view_appointment_consultation_form" model="ir.ui.view">
+        <field name="name">ksoft.appointment.form2</field>
+        <field name="model">ksoft.appointment</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="internal_status" widget="statusbar" statusbar_visible="home,valid"/>
+                    <button name="action_create" class="oe_highlight" type="object"
+                            attrs="{'invisible': ['|',('internal_status', '!=', 'home'),('is_followUp','=',True)]}"
+                            string="Confirmer"/>
+
+                    <button name="action_return" class="oe_highlight" type="object"
+                            attrs="{'invisible':['|',('internal_status',  'not in', ['home','invoicing']),('etat','=','annul'),('is_followUp','=',True)]}"
+                            string="Annuler"/>
+
+                    <button name="%(action_annuler_rdv)d" class="oe_highlight" type="action"
+                            string="Supprimer RDV"
+                            attrs="{'invisible':['|',('etat','=','annul'),('is_followUp','=',True)]}"/>
+
+                    <button name="add_to_appoint" class="oe_highlight" type="object"
+                            attrs="{'invisible':[('is_followUp','=',False)]}"
+                            string="Ajouter aux RDV"/>
+
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Annulé" bg_color="bg-danger"
+                            attrs="{'invisible':[('etat','!=','annul')]}"/>
+                    <div>
+                        <h3 class="mt0">
+                            <div>
+                                <label string="Patient" for="patient_id"/>
+                                <field name="patient_id" required="1"
+                                       attrs="{'readonly':[('internal_status','!=','home')]}"/>
+                            </div>
+                            <div>
+                                <label string="Visiteur" for="visitor"/>
+                                <field name="visitor" attrs="{'readonly':[('internal_status','!=','home')]}"/>
+                            </div>
+                        </h3>
+                    </div>
+                    <group>
+                        <group id="header_left_group" string="IDENTIFICATION DU PATIENT">
+                            <field name="patient_id" attrs="{'readonly':[('internal_status','!=','home')]}"/>
+                            <field name="age" readonly="1"/>
+                            <field name="gender" readonly="1"/>
+                            <field name="phone" readonly="1"/>
+                            <field name="email" readonly="1"/>
+                            <field name="function" readonly="1"/>
+
+                            <field name="categorie" readonly="1"
+                                   attrs="{'readonly':[('internal_status','!=','home')]}"/>
+                            <field name="convention_id" string="Convention"
+                                   attrs="{'readonly':[('internal_status','!=','home')], 'invisible':[('categorie','!=','convention')]}"/>
+                            <field name="classe" readonly="1" attrs="{'invisible':[('categorie','!=','convention')]}"/>
+                            <field name="matricule" readonly="1"
+                                   attrs="{'invisible':[('categorie','!=','convention')]}"/>
+                            <field name="numero_billet"/>
+                            <field name="etat" invisible="1"/>
+                        </group>
+                        <group id="header_right_group" string="INFO SUR LE RDV">
+                            <field name="title" invisible="1" attrs="{'readonly':[('internal_status','!=','home')]}"/>
+                            <field name="date_rdv" required="1" attrs="{'readonly':[('internal_status','!=','home')]}"/>
+                            <field name="heure_rdv"/
+                            <field name="service" attrs="{'readonly':[('internal_status','!=','home')]}"/>
+                            <field name="type_rdv" invisible="1"/>
+                            <field name="product_id"
+                                   attrs="{'required':[('type_rdv','=','cons')],
+                                        'readonly':[('internal_status','!=','home')],
+                                        'invisible':[('service','!=',1)]}"
+                                   domain="[('is_consultation','=',True)]" string="Type de consultation"/>
+                            <field name="product_id2"
+                                   attrs="{'required':[('type_rdv','=','chi')],
+                                        'readonly':[('internal_status','!=','home')],
+                                        'invisible':[('service','!=',4)]}"
+                                   domain="[('is_chirurgie','=',True)]"/>
+                            <field name="medecin" attrs="{'required':[('type_rdv','in',['cons', 'chi'])],
+                                                          'readonly':[('internal_status','!=','home')],
+                                                          'invisible':[('service','not in', [1,4])]}"/>
+                            <field name="motif" attrs="{'readonly':[('internal_status','!=','home')]}"/>
+                            <field name="user_id" widget="many2one_avatar_user"/>
+
+                            <field name="motannul" attrs="{'invisible':[('etat','!=','annul')]}"/>
+                            <field name="date_conf" attrs="{'invisible':[('internal_status','=','home')]}"
+                                   readonly="1"/>
+                            <field name="time_since_conf" attrs="{'invisible':[('internal_status','=','home')]}"/>
+                            <field name="date_now" attrs="{'invisible':[('service','!=',1)]}"/>
+                            <field name="is_followUp" invisible="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record-->
+
+    <!--record id="ksoftmedical.action_appointment_patient" model="ir.actions.act_window">
+        <field name="name">Rendez-vous</field>
+        <field name="res_model">ksoft.appointment</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">form</field>
+    </record-->
+
+    <!--record id="view_doctor_form" model="ir.ui.view">
+        <field name="name">ksoft.appointment.form3</field>
+        <field name="model">ksoft.appointment</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <field name="patient_id"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="view_appointment_patient_form_inherited" model="ir.ui.view">
+        <field name="name">ksoft.appointment.form.inherit</field>
+        <field name="model">ksoft.appointment</field>
+        <field name="inherit_id" ref="ksoftmedical.view_appointment_patient_form"/>
+        <field name="arch" type="xml">
+            <field name="function" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+        </field>
+    </record-->
+
+    <record id="action_rdv_consultation_all" model="ir.actions.act_window">
+        <field name="name">Tous les rendez-vous</field>
+        <field name="res_model">ksoft.appointment</field>
+        <field name="type">ir.actions.act_window</field>
+        <!--field name="view_id" ref="view_appointment_consultation_tree"/-->
+        <field name="view_mode">tree, form</field>
+    </record>
+
+    <record id="action_rdv_consultation_du_jour" model="ir.actions.act_window">
+        <field name="name">Rendez-vous du jour</field>
+        <field name="res_model">ksoft.appointment</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree, form</field>
+        <!--field name="view_id" ref="view_appointment_consultation_tree"/-->
+        <field name="domain">[('date_rdv','=',context_today())]</field>
+    </record>
+
+    <!--menuitem id="menu_rdv_consult_all" parent="menu_rdv_consult"
+              action="action_rdv_consultation_all"
+              sequence="2"
+              name="Tous les rendez-vous"
+    /-->
+    
+    <!-- Voir les factures de laboratoire -->
+        <record id="action_reception_invoice_today" model="ir.actions.act_window">
+            <field name="name">Factures du Jour</field>
+            <field name="res_model">account.move</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="account.view_out_invoice_tree"/>
+            <field name="search_view_id" ref="account.view_account_invoice_filter"/>
+            <field name="domain">[('invoice_date_due','=',context_today())]</field>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Créer une facture
+              </p><p>
+                Factures
+              </p>
+            </field>
+        </record>
+        
+        <record id="action_reception_invoice_all" model="ir.actions.act_window">
+            <field name="name">Toutes les factures</field>
+            <field name="res_model">account.move</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="account.view_out_invoice_tree"/>
+            <field name="search_view_id" ref="account.view_account_invoice_filter"/>
+            <field name="domain">[]</field>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Créer une facture
+              </p><p>
+                Factures des examens laboratoires
+              </p>
+            </field>
+        </record>
+
+</odoo>

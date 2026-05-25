@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data noupdate="1">
+		<record id="sequence_patient_name" model="ir.sequence">
+			<field name="name">fertility.patient.name</field>
+			<field name="code">fertility.patient.name</field>
+			<field name="active">TRUE</field>
+			<field name="prefix">PT/%(year)s/%(month)s/</field>
+			<field name="padding">5</field>
+			<field name="number_next">1</field>
+			<field name="number_increment">1</field>
+		</record>
+		<record id="sequence_appointment_name" model="ir.sequence">
+			<field name="name">fertility.appointment.name</field>
+			<field name="code">fertility.appointment.name</field>
+			<field name="active">TRUE</field>
+			<field name="prefix">CONS/%(year)s/%(month)s/</field>
+			<field name="padding">5</field>
+			<field name="number_next">1</field>
+			<field name="number_increment">1</field>
+		</record>
+		<record id="sequence_social_name" model="ir.sequence">
+			<field name="name">fertility.social.name</field>
+			<field name="code">fertility.social.name</field>
+			<field name="active">TRUE</field>
+			<field name="prefix">CS/%(year)s/%(month)s/</field>
+			<field name="padding">5</field>
+			<field name="number_next">1</field>
+			<field name="number_increment">1</field>
+		</record>
+		<record id="sequence_gyneco_name" model="ir.sequence">
+			<field name="name">fertility.gyneco.name</field>
+			<field name="code">fertility.gyneco.name</field>
+			<field name="active">TRUE</field>
+			<field name="prefix">CG/%(year)s/%(month)s/</field>
+			<field name="padding">5</field>
+			<field name="number_next">1</field>
+			<field name="number_increment">1</field>
+		</record>
+		<record id="sequence_triage_name" model="ir.sequence">
+			<field name="name">fertility.triage.name</field>
+			<field name="code">fertility.triage.name</field>
+			<field name="active">TRUE</field>
+			<field name="prefix">TR/%(year)s/%(month)s/</field>
+			<field name="padding">5</field>
+			<field name="number_next">1</field>
+			<field name="number_increment">1</field>
+		</record>
+		<record id="sequence_labo_name" model="ir.sequence">
+			<field name="name">fertility.labo.name</field>
+			<field name="code">fertility.labo.name</field>
+			<field name="active">TRUE</field>
+			<field name="prefix">LABO/%(year)s/%(month)s/</field>
+			<field name="padding">5</field>
+			<field name="number_next">1</field>
+			<field name="number_increment">1</field>
+		</record>
+		<record id="sequence_imagerie_name" model="ir.sequence">
+			<field name="name">fertility.imagerie.name</field>
+			<field name="code">fertility.imagerie.name</field>
+			<field name="active">TRUE</field>
+			<field name="prefix">IMG/%(year)s/%(month)s/</field>
+			<field name="padding">5</field>
+			<field name="number_next">1</field>
+			<field name="number_increment">1</field>
+		</record>
+		<record id="sequence_pma_name" model="ir.sequence">
+			<field name="name">fertility.pma.name</field>
+			<field name="code">fertility.pma.name</field>
+			<field name="active">TRUE</field>
+			<field name="prefix">PMA/%(year)s/%(month)s/</field>
+			<field name="padding">5</field>
+			<field name="number_next">1</field>
+			<field name="number_increment">1</field>
+		</record>
+		<record id="sequence_ordonnance_name" model="ir.sequence">
+			<field name="name">module.ordonnance.name</field>
+			<field name="code">module.ordonnance.name</field>
+			<field name="active">TRUE</field>
+			<field name="prefix">ORD/%(year)s/%(month)s/</field>
+			<field name="padding">5</field>
+			<field name="number_next">1</field>
+			<field name="number_increment">1</field>
+		</record>
+
+
+		<!-- -->
+		<record id="sequence_ksoft_appointment" model="ir.sequence">
+			<field name="name">ksoft.appointment.name</field>
+			<field name="code">ksoft.appointment.name</field>
+			<field name="active">TRUE</field>
+			<field name="prefix">RDV/%(year)s/%(month)s/</field>
+			<field name="padding">5</field>
+			<field name="number_next">1</field>
+			<field name="number_increment">1</field>
+		</record>
+		
+		<record id="sequence_codejour_name2" model="ir.sequence">
+			<field name="name">account.journal.code.name</field>
+			<field name="code">account.journal.code.name</field>
+			<field name="active">TRUE</field>
+			<field name="prefix">CJ/</field>
+			<field name="padding">5</field>
+			<field name="number_next">1</field>
+			<field name="number_increment">1</field>
+		</record>
+		
+	</data>
+</odoo>

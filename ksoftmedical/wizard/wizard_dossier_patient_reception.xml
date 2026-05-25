@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="fertility_wizard_dossier_medical_patient_reception_view_form" model="ir.ui.view">
+        <field name="name">fertility_wizard_dossier_medical_patient_reception_name.view.form</field>
+        <field name="model">fertility.wizard.dossier.medical.patient.reception</field>
+        <field name="arch" type="xml">
+            <form string="">
+                <sheet>
+                    <group string="Critères de recherche">
+						<group>
+							<field name="patient_id" invisible="1"/>
+							<field name="nbre_ligne"/>
+							<field name="see_resume"/>
+							
+						</group>
+						<group>
+							<field name="service" widget="selection"/>
+							<field name="medecin" widget="selection"/>
+							<field name="speciality" widget="selection" invisible="1"/>
+						</group>
+					</group>
+					<group string="Résumé dossier patient">
+						<field name="content" widget="html" nolabel="1" readonly="1"/>
+					</group>
+                </sheet>
+				<footer>
+					<button name="get_dossier_content" type="object" string="Actualiser"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="z" />
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="action_wizard_dossier_patient_reception"  model="ir.actions.act_window">
+        <field name="name">Dossier Medical</field>
+        <field name="res_model">fertility.wizard.dossier.medical.patient.reception</field>
+        <field name="view_mode">form</field>
+        <field name="binding_view_types">form</field>
+        <field name="target">new</field>
+   </record>
+</odoo>

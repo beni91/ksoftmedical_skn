@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+			
+		<!--record id="view_picking_custom_form" model="ir.ui.view">
+            <field name="name">stock.picking.form</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+				<field name="partner_id" position="replace">
+					<field name="partner_id" nolabel="1" 
+					domain="[('srvice_stock','=',True)]" 
+					attrs="{'invisible': [('picking_type_code', '!=', 'outgoing')]}"/>
+					<field name="partner_id" nolabel="1"  
+					attrs="{'invisible': [('picking_type_code', '!=', 'incoming')]}"/>
+					<field name="partner_id" nolabel="1"  
+					attrs="{'invisible': [('picking_type_code', 'in', ['incoming', 'outgoing'])]}"/>
+				</field>
+
+            </field>
+        </record-->
+
+        <!-- Partner -->
+        <record id="view_partner_service_tree" model="ir.ui.view">
+            <field name="name">res.partner.tree</field>
+            <field name="model">res.partner</field>
+            <field eval="8" name="priority"/>
+            <field name="arch" type="xml">
+                <tree string="Service stock" sample="1" multi_edit="1">
+                    <field name="display_name" string="Name"/>
+                    <field name="property_stock_customer"/>
+                    <field name="property_stock_supplier"/>
+                    <field name="active" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+
+
+        <record id="view_partner_service_form" model="ir.ui.view">
+            <field name="name">res.partner.form</field>
+            <field name="model">res.partner</field>
+            <field name="priority" eval="1"/>
+            <field name="arch" type="xml">
+                <form string="Partners">
+                <!-- <div class="alert alert-warning oe_edit_only" role="alert" attrs="{'invisible': [('same_vat_partner_id', '=', False)]}">
+                  A partner with the same <span><span class="o_vat_label">Tax ID</span></span> already exists (<field name="same_vat_partner_id"/>), are you sure to create a new one?
+                </div> -->
+                <sheet>
+                    
+                    <div class="oe_title mb24">
+                        <field name="is_company" invisible="1"/>
+                        <field name="commercial_partner_id" invisible="1"/>
+                        <field name="active" invisible="1"/>
+                        <field name="country_code" invisible="1"/>
+                        <field name="company_type" widget="radio" options="{'horizontal': true}" invisible="1"/>
+						
+                        <h1>
+                            
+                            <field id="individual" class="o_text_overflow" name="name" default_focus="1" 
+							placeholder="e.g. Brandom Freeman" 
+							required = "1"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group sting="Information sur le depot stock">
+							<field name="srvice_stock" required = "1" />
+                            <field name="property_stock_customer"/>
+							<field name="property_stock_supplier"/>
+                        </group>
+                        <group></group>
+                    </group>
+
+                   
+                </sheet>
+                </form>
+            </field>
+        </record> 
+       
+    <record id="action_service_custom" model="ir.actions.act_window">
+        <field name="name">Stock Service</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="base.view_res_partner_filter"/>
+        <!--field name="context">{'default_is_company': True}</field-->
+        <field name="domain">[('srvice_stock','=',True)]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créer un service de destination stock  
+            </p>
+            <p>
+           
+            </p>
+        </field>
+    </record>
+
+        <record id="action_service_partner_form_view" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_partner_service_form"/>
+            <field name="act_window_id" ref="action_service_custom"/>
+        </record>
+        <record id="action_service_partner_tree_view" model="ir.actions.act_window.view">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_partner_service_tree"/>
+            <field name="act_window_id" ref="action_service_custom"/>
+        </record>
+		
+		<menuitem id="menu_service_stock" name="Service de destination" parent="stock.menu_stock_config_settings"
+			groups="stock.group_stock_manager" sequence="5">
+		
+            <menuitem id="menu_service_stock1" name="Service de destination" action="action_service_custom"
+			sequence="1"
+				/>
+		
+        </menuitem>
+
+
+
+    </data>
+</odoo>

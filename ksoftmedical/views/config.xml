@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<record id="view_consultation_type_tree" model="ir.ui.view">
+		<field name="name">fertility.consultation.type.tree</field>
+		<field name="model">fertility.consultation.type</field>
+		<field name="arch" type="xml">
+			<tree>
+				<field name="name" />
+			</tree>
+		</field>
+	</record>
+
+	<record id="view_consultation_type_form" model="ir.ui.view">
+		<field name="name">fertility.consultation.type.form</field>
+		<field name="model">fertility.consultation.type</field>
+		<field name="arch" type="xml">
+			<form>
+				<sheet>
+					<div class="oe_title">
+						<h1><field name="name" /></h1>
+					</div>
+					<group>
+						<field name="product_id" />
+						<field name="journal_id" />
+					</group>
+				</sheet>
+			</form>
+		</field>
+	</record>
+
+	<record id="action_consultation_type_dashboard" model="ir.actions.act_window">
+		<field name="name">Type de consultation</field>
+		<field name="res_model">fertility.consultation.type</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain"></field> 
+		<field name="context">{}</field>
+	</record>
+
+
+	<record id="view_appointment_type_tree" model="ir.ui.view">
+		<field name="name">fertility.appointment.type.tree</field>
+		<field name="model">fertility.appointment.type</field>
+		<field name="arch" type="xml">
+			<tree editable='bottom'>
+				<field name="name" />
+				<field name="category_id" />
+				<field name="journal_id" />
+				<field name="stimulation_product_id" />
+				<field name="transfer_product_id" />
+			</tree>
+		</field>
+	</record>
+
+	<record id="action_appointment_type_tree" model="ir.actions.act_window">
+		<field name="name">Type de rendez-vous</field>
+		<field name="res_model">fertility.appointment.type</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree</field>
+		<field name="domain"></field> 
+		<field name="context">{}</field>
+	</record>
+	
+	<record id="view_ksoftrubrique_tree" model="ir.ui.view">
+		<field name="name">rubrique.tree</field>
+		<field name="model">ksoft.rubrique</field>
+		<field name="arch" type="xml">
+			<tree>
+				<field name="code" />
+				<field name="name" />
+				<field name="service_id" />
+			</tree>
+		</field>
+	</record>
+
+	<record id="view_ksoftrubrique_form" model="ir.ui.view">
+		<field name="name">rubrique.form</field>
+		<field name="model">ksoft.rubrique</field>
+		<field name="arch" type="xml">
+			<form>
+				<sheet>
+					<div class="oe_title">
+						<h1><field name="name" /></h1>
+					</div>
+					<group>
+						<field name="code" />
+						<field name="service_id" />
+					</group>
+				</sheet>
+			</form>
+		</field>
+	</record>
+	
+	<record id="action_ksoftrubriques" model="ir.actions.act_window">
+		<field name="name">Rubrique</field>
+		<field name="res_model">ksoft.rubrique</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain"></field> 
+		<field name="context">{}</field>
+	</record>
+
+	<!-- Menu Services -->
+	<record id="view_services_form" model="ir.ui.view">
+		<field name="name">view.services.form</field>
+		<field name="model">ksoft.services</field>
+		<field name="arch" type="xml">
+			<form>
+				<sheet>
+					<div class="oe_title">
+						
+						<h1><field name="service" required="1" /></h1>
+					</div>
+					<group>
+						<group>
+							<field name="service_name" required="1"/>
+							<field name="type_rdv" />
+							<field name="entrepot" string="Depot"/>
+						</group>
+						<group>
+							<field name="responsable" />
+							<field name="type_unite" />
+							<!--field name="unit_soins" widget="many2many_tags"/-->
+						</group>
+					</group>
+					<group>
+						<group string="Médecin">
+							<field name="medecin" nolabel="1"  readonly="1">
+								<tree editable="bottom">
+                                     <field name="cnom"/>
+									 <field name="name"/>
+								</tree>
+							</field>
+						</group>
+						<group string="Rubriques">
+							<field name="rubrique" nolabel="1" readonly="0">
+								<tree editable="bottom">
+                                     <field name="code"/>
+									 <field name="name"/>
+								</tree>
+							</field>
+						</group>
+					</group>
+					<group>
+						<group string="Pavillon">
+							<field name="unit_soins" nolabel="1"  readonly="1">
+								<tree editable="bottom">
+                                     <field name="service_name"/>
+								</tree>
+							</field>
+						</group>
+						<group>
+						</group>
+
+					</group>
+				</sheet>
+			</form>
+		</field>
+	</record>
+
+	<!-- Menu Chambre -->
+	
+	<record id="view_chambre_kanban" model="ir.ui.view">
+		<field name="name">chambre.kanban</field>
+		<field name="model">ksoft.chambre</field>
+		<field name="arch" type="xml">
+			<kanban sample="1" default_group_by="pavillon_id" group_edit="false" 
+				group_delete="false" group_create="false" quick_create_view=" ksoft.view_chambre_form"
+				js_class="project_task_kanban" >
+				<field name="chambre_id" />
+				<field name="pavillon_id"/>
+				<templates>
+					<t t-name="kanban-box"  >
+						<progressbar field="state" colors='{"free": "success", "reserved": "warning", "overdue": "occup", "muted": "closed"}' 
+						help="This bar allows to filter the opportunities based on scheduled activities."/>
+						<div class="oe_kanban_global_click">
+							<div class="o_kanban_card_header">
+								<field name="type_chambre" widget="badge" decoration-success="type_chambre=='vip'"
+																				  decoration-info="type_chambre=='standard'"/>
+							</div>
+							<div class="o_kanban_card_header">
+								<label for="chambre_id" />
+								<field name="chambre_id" />
+							</div>
+							<div class="o_kanban_card_header">
+								<label for="pavillon_id"/>
+								<field name="pavillon_id"/>
+							</div>
+							<div class="o_kanban_card_header">
+								<label for="description"/>
+								<field name="description"/>
+							</div>
+							<div class="o_kanban_card_header">
+								<field name="state" widget="badge"/>
+							</div>
+						</div>
+					</t>
+				</templates>
+			</kanban>
+		</field>
+	</record>
+	
+	<record id="view_chambre_form" model="ir.ui.view">
+		<field name="name">chambre.form</field>
+		<field name="model">ksoft.chambre</field>
+		<field name="arch" type="xml">
+			<form>
+				<header>
+					<field name="state" widget="statusbar"/>
+				</header>
+				<sheet>
+					<group>
+						<field name="type_chambre"/>
+						<field name="chambre_id" required="1"/>
+						<field name="pavillon_id" required="1"/>
+						<field name="description"/>
+					</group>
+				</sheet>
+			</form>
+		</field>
+	</record>
+
+
+	<record id="view_chambre_tree" model="ir.ui.view">
+		<field name="name">chambre.tree</field>
+		<field name="model">ksoft.chambre</field>
+		<field name="arch" type="xml">
+			<tree decoration-success="state=='free'"
+											decoration-danger="state=='occup'"
+											decoration-info="state=='reserved'"
+											decoration-muted="state=='closed'">
+				<field name="type_chambre" widget="badge" decoration-success="type_chambre=='vip'"
+																				  decoration-info="type_chambre=='standard'"/>
+				<field name="chambre_id" />
+				<field name="pavillon_id"/>
+				<field name="description"/>
+				<field name="state" widget="badge"/>
+			</tree>
+		</field>
+	</record>
+
+	<record id="action_chambre" model="ir.actions.act_window">
+		<field name="name">Hotellerie</field>
+		<field name="res_model">ksoft.chambre</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">kanban,tree,form</field>
+		<field name="domain"></field> 
+		<field name="context">{}</field>
+	</record>
+
+	<record id="view_services_tree" model="ir.ui.view">
+		<field name="name">view.services.tree</field>
+		<field name="model">ksoft.services</field>
+		<field name="arch" type="xml">
+			<tree>
+				<field name="service_name" />
+				<field name="service" />
+				<field name="type_rdv" />
+				<field name="entrepot" />
+				<field name="type_unite" />
+				<field name="responsable" />
+			</tree>
+		</field>
+	</record>
+
+	<record id="action_services" model="ir.actions.act_window">
+		<field name="name">Services</field>
+		<field name="res_model">ksoft.services</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain"></field> 
+		<field name="context">{}</field>
+	</record>
+
+
+	<!-- Menu Unité de soins -->
+	<record id="view_unite_form" model="ir.ui.view">
+		<field name="name">view.unite.form</field>
+		<field name="model">ksoft.unite.soins</field>
+		<field name="arch" type="xml">
+			<form>
+				<sheet>
+					<div class="oe_title">
+						<h1><field name="service_name" /></h1>
+					</div>
+				</sheet>
+			</form>
+		</field>
+	</record>
+
+
+	<record id="view_unite_tree" model="ir.ui.view">
+		<field name="name">view.unite.tree</field>
+		<field name="model">ksoft.unite.soins</field>
+		<field name="arch" type="xml">
+			<tree editable='bottom'>
+				<field name="service_id" />
+				<field name="service_name" />
+				<field name="type_unite" />
+			</tree>
+		</field>
+	</record>
+
+	<record id="action_unite" model="ir.actions.act_window">
+		<field name="name">Unité de Soins</field>
+		<field name="res_model">ksoft.unite.soins</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain"></field> 
+		<field name="context">{}</field>
+	</record>
+
+
+	<!-- Menu Speciality de soins -->
+	<record id="view_speciality_form" model="ir.ui.view">
+		<field name="name">doctor.speciality.form</field>
+		<field name="model">fertility.doctor.speciality</field>
+		<field name="arch" type="xml">
+			<form>
+				<sheet>
+					<div class="oe_title">
+						<field name="code" />
+						<field name="name"/>
+					</div>
+				</sheet>
+			</form>
+		</field>
+	</record>
+
+
+	<record id="view_speciality_tree" model="ir.ui.view">
+		<field name="name">doctor.speciality.tree</field>
+		<field name="model">fertility.doctor.speciality</field>
+		<field name="arch" type="xml">
+			<tree editable='bottom'>
+				<field name="code" />
+				<field name="name"/>
+			</tree>
+		</field>
+	</record>
+
+	<record id="action_speciality" model="ir.actions.act_window">
+		<field name="name">Spécialité Médicale de Soins</field>
+		<field name="res_model">fertility.doctor.speciality</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain"></field> 
+		<field name="context">{}</field>
+	</record>
+
+
+	<menuitem id="menu_config" sequence="500" groups="ksoftmedical.group_ksoft_admin"
+		name="Configuration"  web_icon="ksoftmedical,static/description/config_icon.png"/>
+
+		<menuitem id="menu_cfg_hr" parent="menu_config" groups="ksoftmedical.group_ksoft_admin" sequence="1"
+			name="Resources humaines" />
+
+			<menuitem id="menu_speciality_cfg" parent="menu_cfg_hr" groups="ksoftmedical.group_ksoft_admin" 
+				action="action_speciality"
+				sequence="1"
+				name="Spécialité médicale" />
+
+			<menuitem id="menu_doctor_cfg" parent="menu_cfg_hr" groups="ksoftmedical.group_ksoft_admin" action="action_doctor_dashboard"
+				sequence="2"
+				name="Médecins" />
+
+
+		<menuitem id="menu_cfg_services" parent="menu_config" groups="ksoftmedical.group_ksoft_admin" sequence="2"
+			name="Services" />
+
+			<menuitem id="menu_services_cfg" parent="menu_cfg_services" groups="ksoftmedical.group_ksoft_admin" 
+				action="action_services"
+				sequence="1"
+				name="Services" />
+				
+			<menuitem id="menu_krubriques_cfg" parent="menu_cfg_services" groups="ksoftmedical.group_ksoft_admin" 
+				action="action_ksoftrubriques"
+				sequence="1"
+				name="Rubriques" />
+
+			
+
+		<menuitem id="menu_cfg_unitesoins" parent="menu_config" groups="ksoftmedical.group_ksoft_admin" sequence="2"
+			name="Unité de soins" />
+
+			<menuitem id="menu_unite_cfg" parent="menu_cfg_unitesoins" groups="ksoftmedical.group_ksoft_admin" 
+				action="action_unite"
+				sequence="1"
+				name="Unité de soins" />
+				
+		<menuitem id="menu_cfg_chambre" parent="menu_config" groups="ksoftmedical.group_ksoft_admin" sequence="5"
+			name="Hotéllerie" />
+
+			<menuitem id="menu_unite_chambre" parent="menu_cfg_chambre" groups="ksoftmedical.group_ksoft_admin" 
+				action="action_chambre"
+				sequence="1"
+				name="Hotellerie" />
+
+			
+
+
+
+</odoo>

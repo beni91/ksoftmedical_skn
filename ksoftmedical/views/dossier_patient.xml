@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<!-- Pharmacie -->
+	<record id="view_medicament_tree_view" model="ir.ui.view">
+        <field name="name">module.medicament.tree</field>
+        <field name="model">module.ordonnance.line</field>
+        <field name="arch" type="xml">
+            <tree create="false" edit="false">
+				<field name="patient_id" readonly="1" invisible="1"/>
+				<field name="medecin_id" invisible="0"/>
+				<field name="date_ordonnance" readonly="1"/>
+				<field name="product"
+					   widget="Many2one" required="1"
+					   domain="[('is_medicaments','=',True)]"/>
+				<field name="product_uom" invisible="1"/>
+				<field name="posologie" readonly="0"/>
+				
+				<field name="quantity" readonly="1" string="Q. Dem."/>
+                <field name="quantity2" required="1" string="Q. Livrée."/>
+            </tree>
+        </field>
+    </record>
+	
+	<!--Historique Pharmacie -->
+	<record id="view_historique_medicament_tree_view" model="ir.ui.view">
+        <field name="name">module.medicament.tree</field>
+        <field name="model">module.ordonnance.line</field>
+        <field name="arch" type="xml">
+            <tree create="false" edit="false">
+				
+				<field name="date_ordonnance" readonly="1"/>
+				<field name="medecin_id" invisible="0" />
+				<field name="product"
+					   widget="Many2one" required="1"
+					   domain="[('is_medicaments','=',True)]"/>
+				<field name="product_uom" invisible="1"/>
+				<field name="posologie" readonly="0"/>
+				<field name="quantity" readonly="1" string="Q. Dem."/>
+                <field name="quantity2" required="1" string="Q. Livrée."/>
+            </tree>
+        </field>
+    </record>
+	
+	<!-- Ordonnances non autorisées -->
+    <record id="action_medicament_prescris" model="ir.actions.act_window">
+        <field name="name">Prescriptions faites</field>
+        <field name="res_model">module.ordonnance.line</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree</field>
+        <!-- <field name="domain"></field> -->
+    </record>
+	
+	<record id="action_hsitorique_medicament_prescris" model="ir.actions.act_window">
+        <field name="name">Historique des Prescriptions faites</field>
+        <field name="res_model">module.ordonnance.line</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="view_historique_medicament_tree_view"></field>
+    </record>
+	
+	<!-- END PHARMACIE -->
+	
+	
+	<!-- DEBUT LABORATOIRE -->
+	<record id="view_labo_tree_resultat_view" model="ir.ui.view">
+		<field name="name">fertility.labo.resultat.tree</field>
+		<field name="model">fertility.examen.labo</field>
+		<field name="arch" type="xml">
+			<tree create="false" edit="false" decoration-danger="is_pathologique=='True'">
+				<field name="date_request"  string="D. demande"/>
+				<field name="date_analyse" string="D. Resultat"/>
+				<field name="medecin_demander" string="Médecin"/>
+				<field name="analyse"/>
+				<field name="description"/>
+				<field name="valeur_normale"/>
+				<field name="is_pathologique" invisible="1"/> 
+			</tree>
+		</field>
+	</record>
+	
+	<record id="action_resultat_all_view" model="ir.actions.act_window">
+		<field name="name">Résultats Laboratoires Validés</field>
+		<field name="res_model">fertility.examen.labo</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree</field>
+		<field name="domain">[('internal_status','=','done')]</field> 
+	</record>
+	
+	<record id="action_resultat_tree_view5" model="ir.actions.act_window.view">
+		<field name="sequence" eval="1"/>
+		<field name="view_mode">tree</field>
+		<field name="view_id" ref="view_labo_tree_resultat_view"/>
+		<field name="act_window_id" ref="action_resultat_all_view"/>
+	</record>
+	
+	<!-- END LABORATOIRE -->
+	
+	
+	<!-- DEBUT APPOINTMENT -->
+
+    <record id="view_appointment_dossierpatient_tree" model="ir.ui.view">
+        <field name="name">ksoft.dossierappointment.form</field>
+        <field name="model">ksoft.appointment</field>
+        <field name="arch" type="xml">
+            <tree decoration-success="internal_status=='invoicing'"
+                  decoration-info="internal_status=='home'"
+                  decoration-muted="internal_status=='closed'"
+                  decoration-danger="etat=='annul'" create="false" edit="false">
+                <field name="date_rdv"/>
+                <field name="time_rdv"/>
+                <field name="type_rdv" invisible="0"/>
+                <field name="medecin"/>
+                <field name="product_id" invisible="0"/>
+                
+				<field name="motif" invisible="0"/>
+                <field name="etat" invisible="1"/>
+                
+                <field name="internal_status" string="Etat Rdv"/>
+                <field name="status_consultation" string="Etat Consult."/>
+            </tree>
+        </field>
+    </record>
+	
+	<record id="action_dossierappointment_patient" model="ir.actions.act_window">
+        <field name="name">Tous les Rdv</field>
+        <field name="res_model">ksoft.appointment</field>
+        <field name="view_mode">tree</field>
+        <field name="domain">[('is_followUp','=',False)]</field>
+        <!--field name="view_id" ref="view_appointment_patient_calendar"/-->
+        <field name="search_view_id" ref="view_appointment_patient_search"/>
+    </record>
+	
+	<!--record id="action_resultat_tree_view4" model="ir.actions.act_window.view">
+		<field name="sequence" eval="1"/>
+		<field name="view_mode">tree</field>
+		<field name="view_id" ref="view_appointment_dossierpatient_form"/>
+		<field name="act_window_id" ref="action_dossierappointment_patient"/>
+	</record-->
+	
+	<record id="action_resultat_tree_view4" model="ir.actions.act_window.view">
+		<field name="sequence" eval="1"/>
+		<field name="view_mode">tree</field>
+		<field name="view_id" ref="view_appointment_dossierpatient_tree"/>
+		<field name="act_window_id" ref="action_dossierappointment_patient"/>
+	</record>
+	<!-- END APPOINTEMENT -->
+	
+	<!-- DEBUT IMAGERIE -->
+	<record id="view_dossierimagerie_tree" model="ir.ui.view">
+		<field name="name">fertility.dossier.imagerie.tree</field>
+		<field name="model">fertility.examen.imagerie</field>
+		<field name="arch" type="xml">
+			<tree create="false" edit="false">
+				<field name="date_request"/>
+				<field name="date_analyse"  string="D. Resultat"/>
+				<field name="demandeur" />
+				<field name="analyse"/>
+				<field name="technicien" string="Protocolé par:"/>
+				<field name="move_id" invisible="0" string="N° Fact"/>
+				<field name="move_line_id"  invisible="1"/>
+				<field name="etat_facturation" invisible="1"/>
+				<button name="get_imagerie_resultat" class="fa fa-file-text-o" 
+					type="object" string="Voir les resultats" />
+			</tree>
+		</field>
+	</record>
+	
+	
+	<record id="view_examenresultat_form" model="ir.ui.view">
+        <field name="name">fertility.resultatexamen.form</field>
+        <field name="model">fertility.examen.resultat.imagerie</field>
+        <field name="arch" type="xml">
+			<form string="Résultat Imagerie" create="false" edit="false">
+				<sheet>
+					<group>
+						<field name="url_clicher" string="Voir le cliché" readonly="1" widget ="url"/>
+					</group>
+					<group>
+						<field name="protocol" readonly="1" widget ="html"/>
+					</group>
+				</sheet>
+			</form>
+		</field>
+	</record>
+	
+	<record id="action_dossierimagerie_patient" model="ir.actions.act_window">
+        <field name="name">Résultats Imageries Validés</field>
+        <field name="res_model">fertility.examen.imagerie</field>
+        <field name="view_mode">tree</field>
+        <field name="domain">[('internal_status','=','done')]</field>
+    </record>
+	
+	<record id="action_resultatimagerie_tree_view4" model="ir.actions.act_window.view">
+		<field name="sequence" eval="10"/>
+		<field name="view_mode">tree</field>
+		<field name="view_id" ref="view_dossierimagerie_tree"/>
+		<field name="act_window_id" ref="action_dossierimagerie_patient"/>
+	</record>
+	<!-- END IMAGERIE -->
+	
+	
+	<!-- DEBUT DIAGNOSTIC -->
+	<record id="view_diagnostic_tree" model="ir.ui.view">
+        <field name="name">fertility.diagnostic.tree</field>
+        <field name="model">module.diagnostics</field>
+        <field name="arch" type="xml">
+			<tree create="false" edit="false">
+				<field name="date_diagnostic"/>
+                <field name="pathologie" string="Diagnostics"/>
+                <field name="explication" string="Observation"/>
+                <field name="medecin_diag"/>
+				<field name="internal_status"/>
+				<field name="internal_status"/>
+			</tree>
+		</field>
+	</record>
+	
+	<record id="action_diagnostic_view" model="ir.actions.act_window">
+        <field name="name">Diagnostics</field>
+        <field name="res_model">module.diagnostics</field>
+        <field name="view_mode">tree</field>
+        <!--field name="domain">[('internal_status','=','done')]</field-->
+    </record>
+	
+	<record id="action_resultatimagerie_tree_view4" model="ir.actions.act_window.view">
+		<field name="sequence" eval="10"/>
+		<field name="view_mode">tree</field>
+		<field name="view_id" ref="view_dossierimagerie_tree"/>
+		<field name="act_window_id" ref="action_dossierimagerie_patient"/>
+	</record>
+	<!-- END DIAGNOSTIC  -->
+	
+
+	
+
+
+</odoo>

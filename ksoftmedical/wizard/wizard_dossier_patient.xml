@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="fertility_wizard_dossier_medical_patient_view_form" model="ir.ui.view">
+        <field name="name">fertility_wizard_dossier_medical_patient_name.view.form</field>
+        <field name="model">fertility.wizard.dossier.medical.patient</field>
+        <field name="arch" type="xml">
+            <form string="">
+                <!--button name="get_dossier_content" type="object" string="Afficher"/-->
+                <sheet>
+                    <group>
+						<group>
+							<field name="nbre_ligne"/>
+							<field name="service" widget="selection"/>
+							
+						</group>
+						<group>
+							<field name="medecin" widget="selection"/>
+							<field name="speciality" widget="selection"/>
+						</group>
+					</group>
+                </sheet>
+				<footer>
+					<button name="get_dossier_content" type="object" string="Actualiser"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="z" />
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="action_wizard_dossier_patient"  model="ir.actions.act_window">
+        <field name="name">Dossier Medical</field>
+        <field name="res_model">fertility.wizard.dossier.medical.patient</field>
+        <field name="view_mode">form</field>
+        <field name="binding_view_types">form</field>
+        <field name="target">new</field>
+   </record>
+   
+   
+   <!-- Voir la liste de rdv de ce jour dans le follow up -->
+   <record id="fertility_wizard_day_reservation_view_form" model="ir.ui.view">
+        <field name="name">Reservation du jour</field>
+        <field name="model">fertility.wizard.appointment.reservation.day</field>
+        <field name="arch" type="xml">
+            <form string="">
+                <!--button name="get_dossier_content" type="object" string="Afficher"/-->
+                <sheet>
+                    <field name="content" widget="html"/>
+                </sheet>
+				<footer>
+                    <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="z" />
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="action_wizard_day_reservation"  model="ir.actions.act_window">
+        <field name="name">Reservation du jour</field>
+        <field name="res_model">fertility.wizard.appointment.reservation.day</field>
+        <field name="view_mode">form</field>
+        <field name="binding_view_types">form</field>
+        <field name="target">new</field>
+   </record>
+   
+   
+</odoo>

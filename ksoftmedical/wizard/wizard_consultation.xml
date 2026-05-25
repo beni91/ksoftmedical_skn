@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="consultation_view_form" model="ir.ui.view">
+        <field name="name">wizard.report.consultation.view.form</field>
+        <field name="model">wizard.report.consultation</field>
+        <field name="arch" type="xml">
+            <form string="">
+                <sheet>
+                    <field name="start_date" required="1"/>
+                    <field name="end_date" required="1"/>
+                </sheet>
+				<footer>
+                    <button string="Imprimer Rapport Financier consultation" name="get_report_values" type="object" class="btn-primary" />
+                    <button string="Imprimer Rapport Financier Laboratoire" name="get_report_labo_values" type="object" class="btn-primary" />
+                    <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="z" />
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="action_financier_consultation"  model="ir.actions.act_window">
+        <field name="name">Rapport Financier Consultation</field>
+        <field name="res_model">wizard.report.consultation</field>
+        <field name="view_mode">form</field>
+        <field name="binding_view_types">form</field>
+        <field name="target">new</field>
+   </record>
+
+   <menuitem id="menu_finacier_cons" parent="menu_appointment_rapport"  action="action_financier_consultation"
+		sequence="1"
+		name="Rapport Financier Consultation"
+		/>
+   
+   
+   
+</odoo>

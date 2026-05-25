@@ -1,0 +1,53 @@
+<odoo>
+
+	<record id="view_triage_tree" model="ir.ui.view">
+		<field name="name">fertility.triage.tree</field>
+		<field name="model">fertility.triage</field>
+		<field name="arch" type="xml">
+			<tree>
+				<field name="triage_name"/>
+			</tree>
+		</field>
+	</record>
+
+	<record id="view_triage_form" model="ir.ui.view">
+		<field name="name">fertility.triage.form</field>
+		<field name="model">fertility.triage</field>
+		<field name="arch" type="xml">
+			<form string="Voyage">
+				<sheet>
+					<div>
+						<h1 class="mt0">
+							<field name="triage_name" />
+						</h1>
+					</div>				
+				</sheet>
+			</form>
+		</field>
+	</record>
+
+
+
+
+	<record id="action_triage_dashboard" model="ir.actions.act_window">
+		<field name="name">Triage</field>
+		<field name="res_model">fertility.triage</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain"></field> 
+		<field name="context">{}</field>
+	</record>
+
+	
+	<menuitem id="menu_triage" sequence="10" groups="base.group_user"
+		name="Triage"
+		/>
+
+		<menuitem id="menu_triage_dashboard" parent="menu_triage" groups="base.group_user" action="action_triage_dashboard"
+			sequence="1"
+			name="Triage"
+			/>
+
+
+
+</odoo>

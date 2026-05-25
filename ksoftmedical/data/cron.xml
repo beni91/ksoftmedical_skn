@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="temps_attente_conf_cron" model="ir.cron">
+            <field name="name">Calculer temps attente</field>
+            <field name="model_id" ref="model_ksoft_appointment"/>
+            <field name="type">ir.actions.server</field>
+            <field name="state">code</field>
+            <field name="code">model.get_time_since_conf()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">minutes</field>
+            <field name="numbercall">-1</field>
+        </record>
+	
+        <record id="temps_attente_val_cron" model="ir.cron">
+            <field name="name">Calculer temps en attente du medecin</field>
+            <field name="model_id" ref="model_fertility_appointment"/>
+            <field name="type">ir.actions.server</field>
+            <field name="state">code</field>
+            <field name="code">model.get_waiting_time()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">minutes</field>
+            <field name="numbercall">240</field>
+        </record>
+    </data>
+
+</odoo>

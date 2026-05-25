@@ -1,0 +1,579 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<!--record id="view_traitement_done" model="ir.ui.view">
+		<field name="name">Traitement realisé</field>
+		<field name="model">module.feuille.traitement.donne</field>
+		<field name="priority">1</field>
+		<field name="arch" type="xml">
+			<form string="Traitement Réalisé">
+				<header>
+					<field name="internal_status" widget="statusbar"/>
+				</header>
+				<sheet>
+					<group>
+						<group id="header_left_group">
+							<field name="patient_id" readonly="1" context="{'default_patient_id': patient_id}"  force_save="1"/>
+							<field name="dob" force_save="1"/>
+							<field name="age" force_save="1"/>
+							<field name="sex" force_save="1"/>
+						</group>
+						<group id="header_right_group">
+							<field name="date_realisation" invisible="1"/>
+							<field name="infirmier" invisible="0"/>
+							<field name="produit" readonly="1" force_save="1"/>
+							<field name="heure" invisible="0"/>
+							<field name="traitement_done_hospi" invisible="0"/>
+							<field name="traitement_done" invisible="0" />
+							<field name="nbre_occurence"/>
+							<field name="nbre_occurence_reste"/>
+							<field name="is_done"/>
+						</group>
+					</group>
+					<group>
+						<field name="done_traitement_details" 
+							nolabel="1" 
+							context="{'default_traitement': active_id}">
+							<tree editable="bottom">
+								<field name="date_realisation" />
+								<field name="heure"/>
+								<field name="infirmier"/>
+								<field name="heure_rea"/>
+								<field name="infirmier_rea"/>
+								<field name="internal_status" readonly="1" force_save="1"/>
+								<field name="is_done"/>
+								<field name="active"/>
+								<field name="traitement"/>
+							</tree>
+						</field>
+					</group>
+
+
+					
+				</sheet>
+			</form>
+		</field>
+	</record>
+
+	<record id="action_launchTraitemnt" model="ir.actions.act_window">
+		<field name="name">Traitement realisé</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="res_model">module.feuille.traitement.donne</field>
+		<field name="binding_view_types">form</field>
+		<field name="view_mode">form</field>
+		<field name="view_id" ref="view_traitement_done"/>
+		<field name="target">new</field>
+		<field name="context">{'default_traitement_done':active_id}</field>
+	</record-->
+
+	<record id="view_listesoins_ambulatoire_tree" model="ir.ui.view">
+		<field name="name">module.sois.tree</field>
+		<field name="model">module.hospitalisation</field>
+		<field eval="8" name="priority"/>
+		<field name="arch" type="xml">
+			<tree string="Patients Hospitalisés" sample="1" multi_edit="1">
+				<field name="hospi_name" />
+				<field name="patient_id"/>
+				<field name="dob" />
+				<field name="sex"/>
+				<field name="sex"/>
+				<field name="date_sortie"/>
+				<field name="sex"/>
+				<field name="sex"/>
+                <field name="state" />
+			</tree>
+		</field>
+	</record>
+
+
+	<record id="view_listehospitalisation_form" model="ir.ui.view">
+		<field name="name">module.hospitalisation.form</field>
+		<field name="model">module.hospitalisation</field>
+		<field name="arch" type="xml">
+			<form>
+                <header>
+					<field name="state" widget="statusbar"/>
+					<button name="action_autoriser_sortie" class="oe_highlight" type="object" attrs="{'invisible': [('state', '!=', 'in')]}"
+						string="Autoriser la sortie" />
+					<button name="%(action_closing_hospi_form)d" type="action"	
+						class="oe_highlight" attrs="{'invisible': [('state', '!=', 'atts')]}"
+						string="Cloturer le dossier" />
+					<button name="action_autoriser_sortie" class="oe_highlight" type="object" attrs="{'invisible': [('state', '!=', 'in')]}"
+						string="Transferer le patient" />
+					<button name="action_sortir" class="oe_highlight" type="object" attrs="{'invisible': [('state', '!=', 'atts')]}"
+						string="Sortie patient"/>
+					<button name="action_return" type="object"
+						string="Annuler" />
+				</header>
+				<sheet>
+
+					<div class="oe_title mb24" string="Identité Patient">
+						<div>
+							<h3>
+								<field id="patient_id" class="o_text_overflow" name="patient_id"/>
+								<!--field id="hospi_name" class="o_text_overflow" name="hospi_name" readoly="1" force_save="1"/-->
+							</h3>
+						</div>
+					</div>
+					<group>
+						<group id="header_left_group">
+							<field name="dob" force_save="1"/>
+							<field name="age" force_save="1"/>
+							<field name="sex" force_save="1"/>
+							<field name="telephone" force_save="1"/>
+							<field name="numerodossier" force_save="1"/>
+							<field name="street" force_save="1"/>
+						</group>
+						<group id="header_right_group">
+							<field name="type_hospitalisation" readonly="1"/>
+							<field name="date_entree"/>
+							<field name="date_sortie"/>
+							<field name="medecin_tut"/>
+							<field name="service_a"/>
+							<field name="unite_a"/>
+							<field name="lit"/>
+						</group>
+					</group>
+					<group string="Raison d'admission">
+						<field name="raison_admin"/>
+						<field name="active"/>
+					</group>
+
+					<notebook colspan="4">
+						<page string="Dossier Médical" autofocus="autofocus">
+							<notebook>
+								<page string="Prescriptions Médicales">
+									<group>
+										<field name="hospi_prescription" 
+											context="{'default_patient_id': patient_id}" nolabel="1">
+											<tree editable="bottom">
+												<field name="date_prescription" />
+												<field name="medicament" 
+													widget="Many2one"  domain="[('is_medicaments','=',True)]"/>
+												<field name="description" />
+												<field name="medecin"/>
+												<field name="internal_status"/>
+											</tree>
+										</field>
+									</group>
+								</page>
+								<page id="lab_ids" string="Demandes" 
+									attrs="{'invisible': [('state', 'not in', ['in', 'out','cancel', 'atts'])]}">
+									<field name="labo_ids" string="Demandes laboratoires">
+										<tree editable="bottom">
+											<field name="date_request" readonly="1"/>
+											<field name="status" readonly="1"/>
+											<field name="labo_name" readonly="1"/>
+											<field name="analyse"/>
+											<field name="description" readonly="1"/>
+											<field name="valeur_normale"/>
+										</tree>
+									</field>
+
+									<field name="imagerie_ids" string="Demandes Imageries">
+										<tree editable="bottom">
+											<field name="date_request" readonly="1"/>
+											<field name="status" readonly="1"/>
+											<field name="imagerie_name" readonly="1" />
+											<field name="analyse"/>
+											<field name="description" readonly="1"/>
+											<field name="valeur_normale"/>
+										</tree>
+									</field>
+								</page>
+								<!--page id="imagerie_ids" string="Examen Imagerie" 
+									attrs="{'invisible': [('state', 'not in', ['in', 'out','cancel', 'atts'])]}">
+									
+								</page-->
+								
+								<page string="Autres Services">
+								</page>
+								<page string="Evolutions Médicales">
+									<group>
+										<field name="hospi_evolution" 
+											context="{'default_patient_id': patient_id}" 
+											nolabel="1">
+											<tree editable="bottom" 
+												attrs="{'invisible': [('internal_status', '=', 'deleted')]}">
+												<field name="date_evolution" />
+												<field name="evolution" />
+												<field name="medecin" />
+												<field name="internal_status" invisible="1"/>
+											</tree>
+										</field>
+									</group>
+								</page>
+								<!--page string="Bloc Opératoire">
+									<group>
+										<field name="hospi_bloc" nolabel="1"
+										 context="{'default_patient_id': patient_id}">
+											<tree>
+												<field name="bloc_name"/>
+												<field name="date_intervention" required="1"/>
+												<field name="heure_intervention" required="1"/>
+												<field name="actes" required="1"
+													widget="Many2one"  domain="[('is_actes_medicaux','=',True)]"/>
+												<field name="doctor"/>
+												<field name="state"/>
+											</tree>
+											<form>
+												<sheet>
+													<group>
+														<group id="header_left_group">
+															<field name="patient_id" 
+																readonly="1" force_save="1"/>
+															<field name="dob" force_save="1"/>
+															<field name="age" force_save="1"/>
+															<field name="sex" force_save="1"/>
+														</group>
+														<group id="header_right_group">
+															<field name="doctor"/>
+														</group>
+													</group>
+													<group string="Info sur Intervention">
+														<group id="header_left_group">
+															<field name="actes" required="1"/>
+														</group>
+														<group id="header_right_group">
+															<field name="date_intervention" required="1"/>
+															<field name="heure_intervention" required="1"/>
+														</group>
+													</group>
+												</sheet>
+											</form>
+										</field>
+									</group>
+									
+								</page-->
+								<page string="Diagnostics">
+									<group>
+										<field name="hospi_diagnostic" 
+											context="{'default_patient_id': patient_id}" nolabel="1">
+											<tree editable="bottom">
+												<field name="date_diagnostic" />
+												<field name="pathologie" />
+												<field name="description" />
+												<field name="explication" />
+												<field name="medecin"/>
+												<field name="origine"/>
+												<field name="internal_status"/>
+											</tree>
+										</field>
+									</group>
+								</page>
+								<page string="Plan de suivi">
+								</page>
+							</notebook>
+						</page>
+						<page string="Dossier Infirmier" autofocus="autofocus">
+							<notebook>
+								<page string="Plan de Surveillance">
+									<group>
+										<field name="hospi_surveillance" 
+											context="{'default_patient_id': patient_id}" 
+											 nolabel="1">
+											<tree decoration-danger="is_alert==True">
+												<field name="date_surveillance" />
+												<field name="heure" />
+												<field name="tension" />
+												<field name="respiration" />
+												<field name="pulsation"/>
+												<field name="glycemie"/>
+												<field name="saturation"/>
+												<field name="is_alert"/>
+												<field name="infirmier"/>
+											</tree>
+											<form>
+												<sheet>
+													<group>
+														<group id="header_left_group">
+															<field name="date_surveillance" />
+															<field name="heure" />
+														</group>
+														<group id="header_right_group">
+															<field name="is_alert"/>
+															<field name="infirmier" readonly="1"/>
+														</group>
+													</group>
+													<group string="Parametres Vitaux">
+														<group id="header_left_group">
+															<field name="tension" />
+															<field name="respiration" />
+															<field name="pulsation"/>
+															<field name="glascow"/>
+														</group>
+														<group id="header_right_group">
+															<field name="glycemie"/>
+															<field name="saturation"/>
+															<field name="pad"/>
+															<field name="pas"/>
+														</group>
+													</group>
+													<group>
+														<group id="header_left_group">
+															<field name="conscience" />
+															<field name="vomissement" />
+															<field name="qtity_vomi"/>
+															<field name="duirese"/>
+															<field name="qtity_duirese"/>
+														</group>
+														<group id="header_right_group">
+															<field name="mvts"/>
+															<field name="diarhee"/>
+															<field name="qtity_diarhe"/>
+															<field name="pansement"/>
+															<field name="aspect_pansement"/>
+														</group>
+													</group>
+												</sheet>
+											</form>
+										</field>
+									</group>
+								</page>
+								<page string="Plan de traitement">
+									<field name="hospi_traitement_inf" 
+											context="{'default_patient_id': patient_id}" 
+											nolabel="1">
+										<tree attrs="{'readonly': [('internal_status', '=', 'done')]}">
+											<field name="date_traitement" />
+											<field name="produit"/>
+											<field name="actes_medicaux"/>
+											<field name="materiels" widget="many2many_tags"
+												/>
+											<field name="posologie" />
+											<field name="voie" />
+											<field name="plan_traitement"  widget="html"/>
+											<field name="plan_realisation"  widget="html"/>
+											<field name="internal_status" />
+											<button name="confirm_traitement" class="fa fa-handshake-o" 
+													type="object"
+													string="Valider"/>
+										</tree>
+										<form>
+											 <header>
+											 	<field name="internal_status" widget="statusbar"/>
+												<!--button name="confirm_traitement" class="oe_highlight" 
+													type="object"
+													string="Valider"/-->
+											</header>
+												<sheet>
+													<group>
+														<group id="header_left_group" string="Médicaments">
+															<field name="patient_id" invisible="1"/> 
+															<field name="date_traitement"/>
+															<field name="produit" domain="[('is_medicaments','=',True)]"
+															options="{'no_create_edit': True}"/>
+															<field name="posologie" />
+															<field name="voie" />
+														</group>
+														<group id="header_left_group" string="Actes Médicaux/Infirmiers">
+															<field name="actes_medicaux" 
+																domain="['|',('is_actes_medicaux','=',True),
+																('is_actes_inf','=',True)]"
+																options="{'no_create_edit': True}"/>
+															<field name="medecin"  options="{'no_create_edit': True}"/>
+															<field name="materiels" 
+																widget="many2many_tags" domain="[('is_materiels','=',True)]" 
+																options="{'no_create_edit': True}"/>
+
+														</group>
+													</group>
+													<group>
+														<group id="header_left_group">
+															<field name="plan_traitement"  widget="html" />
+														</group>
+														<group id="header_left_group">
+															<field name="nbre_occurence_rea" readonly="1" force_save="1"/>
+															<field name="plan_realisation"  widget="html"/>
+														</group>
+													</group>
+													<group string="Details plan de Soins">
+														<field name="done_traitement" 
+															context="{'default_patient_id': patient_id}" 
+															attrs="{'readonly': [('internal_status', '=', 'done')]}"
+															nolabel="1">
+															<tree editable="bottom">
+																<field name="heure"/>
+																<field name="infirmier"/>
+																<field name="heure_rea" force_save="1"/>
+																<field name="infirmier_rea" force_save="1"/>
+																<field name="is_done"/>
+																<field name="nbre_occurence" force_save="1"/>	
+																<field name="internal_status"/>
+															</tree>
+														</field>
+													</group>
+												</sheet>
+											</form>
+									</field>
+								</page>
+								<page string="Actes Médicaux">
+									<group>
+										<field name="hospi_actes" 
+											context="{'default_patient_id': patient_id}" nolabel="1">
+											<tree editable="bottom">
+												<field name="date_actes" />
+												<field name="actes_medicaux" 
+													widget="Many2one"  domain="['|',('is_actes_medicaux','=',True),
+																('is_actes_inf','=',True)]"/>
+												<field name="description" />
+												<field name="medecin"/>
+												<field name="internal_status"/>
+												<field name="price_unit" invisible="1"/>
+
+											</tree>
+										</field>
+									</group>
+								</page>
+								<page string="Bilan Hydrique">
+								</page>
+								<page string="Evolutions Infirmières">
+									<field name="hospi_evolution_inf" 
+											context="{'default_patient_id': patient_id}" 
+											nolabel="1">
+										<tree editable="bottom"
+											attrs="{'invisible': [('internal_status', '=', 'deleted')]}">
+											<field name="date_evolution" />
+											<field name="evolution" />
+											<field name="infirmier" />
+											<field name="internal_status" invisible="1"/>
+										</tree>
+									</field>
+								</page>
+								<page string="Fiche de stock">
+									<field name="hospi_stock_inf" 
+											context="{'default_patient_id': patient_id}" 
+											nolabel="1">
+										<tree editable="bottom"
+											attrs="{'readonly': [('internal_status', '=', 'done')]}">
+											<field name="date_consommation" />
+											<field name="produit" />
+											<field name="qtity" />
+											<!--field name="patient_id" />
+											<field name="prnompatient" /-->
+											<field name="categorie"/>
+											<field name="infirmier"/>
+											<field name="internal_status" />
+
+										</tree>
+									</field>
+								</page>
+								<page string="Feuille de Facturation">
+									<group string="Actes réalisés">
+										<field name="hospi_actes_fact" 
+												context="{'default_patient_id': patient_id}" 
+												nolabel="1">
+											<tree editable="bottom"
+												attrs="{'readonly': [('internal_status', '=', 'done')]}">
+												<field name="patient_id" />
+												<field name="sex" />
+												<field name="pnompatient" />
+												<field name="date_realisation" />
+												<field name="actes" domain="['|',('is_actes_medicaux','=',True),
+																('is_actes_inf','=',True)]"/>
+												<field name="qtity" />
+												<field name="categorie"/>
+												<field name="infirmier"/>
+												<field name="invoice_ref" />
+												<field name="internal_status" />
+											</tree>
+										</field>
+									</group>
+									<group string="Médicaments donnés">
+										<field name="hospi_medic_fact" 
+												context="{'default_patient_id': patient_id}" 
+												nolabel="1">
+											<tree editable="bottom"
+												attrs="{'readonly': [('internal_status', '=', 'done')]}">
+												<field name="patient_id" />
+												<field name="sex" />
+												<field name="pnompatient" />
+												<field name="date_realisation" />
+												<field name="produit" domain="[('is_medicaments','=',True)]"/>
+												<field name="qtity" />
+												<field name="categorie"/>
+												<field name="infirmier"/>
+												<field name="invoice_ref" />
+												<field name="internal_status" />
+											</tree>
+										</field>
+									</group>
+									<group string="Materiels utilisés">
+										<field name="hospi_materiel_fact" 
+												context="{'default_patient_id': patient_id}" 
+												nolabel="1">
+											<tree editable="bottom"
+												attrs="{'readonly': [('internal_status', '=', 'done')]}">
+												<field name="patient_id" />
+												<field name="sex" />
+												<field name="pnompatient" />
+												<field name="date_realisation" />
+												<field name="produit" domain="[('is_materiels','=',True)]"/>
+												<field name="qtity" />
+												<field name="categorie"/>
+												<field name="infirmier"/>
+												<field name="invoice_ref" />
+												<field name="internal_status" />
+											</tree>
+										</field>
+									</group>
+								</page>
+							</notebook>
+						</page>
+
+					</notebook>
+				</sheet>
+			</form>
+		</field>
+	</record>
+
+	<record id="action_hospitalisation" model="ir.actions.act_window">
+		<field name="name">Patients Hospitalisés</field>
+		<field name="res_model">module.hospitalisation</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain">[('state','=','in')]</field>
+		<field name="context">{}</field>
+	</record>
+
+	<record id="action_hospitalisation_atts" model="ir.actions.act_window">
+		<field name="name">Patients Sortables</field>
+		<field name="res_model">module.hospitalisation</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain">[('state','=','atts')]</field>
+		<field name="context">{}</field>
+	</record>
+
+	<record id="action_hospitalisation_out" model="ir.actions.act_window">
+		<field name="name">Patients Sorties</field>
+		<field name="res_model">module.hospitalisation</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain">[('state','=','out')]</field>
+		<field name="context">{}</field>
+	</record>
+
+	<menuitem id="menu_module_hospitalisation" sequence="80" 
+		name="Hospitalisation" />
+
+		<menuitem id="menu_hospitalisation_dashboard" parent="menu_module_hospitalisation" 
+				  action="action_hospitalisation" sequence="1"
+				  name="Dashboard" />
+
+		<menuitem id="menu_listehospitalisation_in" parent="menu_module_hospitalisation" 
+				  action="action_hospitalisation" sequence="5"
+				  name="Patients Hospitalisés" />
+
+		<menuitem id="menu_listehospitalisation_atts" parent="menu_module_hospitalisation" 
+				  action="action_hospitalisation_atts" sequence="10"
+				  name="Patients Sortables" />
+
+		<menuitem id="menu_listehospitalisation_out" parent="menu_module_hospitalisation" 
+				  action="action_hospitalisation_out" sequence="15"
+				  name="Patients Sorties" />
+
+		<!--menuitem id="menu_doctor_cfg" parent="menu_cfg_hr" groups="base.group_user" action="action_doctor_dashboard"
+				  sequence="1" name="Médecins" /-->
+
+</odoo>

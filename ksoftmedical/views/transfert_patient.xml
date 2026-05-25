@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<!--record id="view_transfert_patient_tree" model="ir.ui.view">
+        <field name="name">view.transfert.patient.tree</field>
+        <field name="model">module.transfert.patient</field>
+        <field name="arch" type="xml">
+            <tree decoration-success="status=='conf'"
+                  decoration-danger="status=='cancel'"
+                  decoration-primary="status=='draft'" create="1">
+
+                <field name="date_transfert" string="D-H de transfert"/>
+				<field name="patient_id" invisible="0"/>
+				<field name="pavillon_origin"/>
+				<field name="pavillon_dest"/>
+				<field name="consultation_id" invisible="1"/>
+				<field name="user_id"/>
+				<field name="status" widget="badge"/>
+            </tree>
+        </field>
+    </record-->
+	<!--record id="view_confirmation_transfert_patient_form" model="ir.ui.view">
+        <field name="name">view.confirm.transfert.patient.form2</field>
+        <field name="model">module.transfert.patient.wizard</field>
+        <field name="arch" type="xml">
+            <form create="0">
+                <sheet>
+					
+						<div>
+							<h3><label for="pavillon_confirmation">Services de destination:</label></h3>
+							<field name="pavillon_confirmation" required="True"/>
+						</div> 
+
+                </sheet>
+
+                <footer>
+                    <button name="transferer_salle_attente" string="Transferer" type="object" data-hotkey="z"
+                            confirm="Voulez-vous vraiment transferer ce patient ?" 
+                            class="btn-primary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+	
+	<record id="action_confirm_transfert_patient2" model="ir.actions.act_window">
+        <field name="name">Etape 2 : Confirmation destination patient</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">module.transfert.patient.wizard</field>
+        <field name="binding_view_types">form</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_confirmation_transfert_patient_form"/>
+        <field name="target">new</field>
+        <field name="context">{'default_consultation_id':active_id}</field>
+    </record-->
+	
+
+	
+	<record id="view_constransfert_patient_form2" model="ir.ui.view">
+        <field name="name">view.transfert.patient.form2</field>
+        <field name="model">module.transfert.patient.wizard</field>
+        <field name="arch" type="xml">
+            <form create="0">
+                <sheet>
+					<group>
+						<group>
+							<field name="date_transfert" readonly="1"/>
+							<!--field name="patient_id" readonly="0"/-->
+							<field name="service_id" required="1" domain="[('type_unite','=','interne'),('type_rdv','in',('hospi','urg','rea'))]"/>
+							<!--field name="service_id" domain="[('type_rdv','in',('hospi','urg','rea'))]"
+							domain="[('type_unite','=',type_transfert),('type_rdv','in',('hospi','rea'))]"/-->
+							<field name="pavillon_origin" invisible="1" />
+							<field name="pavillon_dest" required="1" domain="[('service_id','=',service_id)]"/>
+						</group> 
+						<group>
+							
+							<field name="consultation_id" readonly="1"/>
+							<field name="user_id"/>
+							<field name="status" widget="badge" readonly="1"/>
+						</group> 
+					</group> 
+                    
+                    <group string="Traitements">
+                        <field name="note_medecin" widget="html"/>
+                    </group>
+
+                </sheet>
+
+                <footer>
+				
+					<!--button name="ksoftmedical.action_confirm_transfert_patient2" class="oe_highlight" type="action" data-hotkey="z"
+                                    string="Suivant"/-->
+                    <button name="transferer_salle_attente" string="Transferer" type="object" 
+                            confirm="Voulez-vous vraiment transferer ce patient ?" 
+                            class="btn-primary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+	
+	<record id="action_constransfert_patient" model="ir.actions.act_window">
+        <field name="name">Etape 1 : Transfert patient</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">module.transfert.patient.wizard</field>
+        <field name="binding_view_types">form</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_constransfert_patient_form2"/>
+        <field name="target">new</field>
+        <field name="context">{'default_consultation_id':active_id}</field>
+    </record>
+	
+	
+	
+	
+    <!--record id="action_constransfert_patient" model="ir.actions.act_window">
+        <field name="name">Transfert patient</field>
+        <field name="res_model">module.transfert.patient.wizard</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[()]
+        </field>
+    </record-->
+
+</odoo>
