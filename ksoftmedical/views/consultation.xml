@@ -879,8 +879,8 @@
                 </div>
 
                 <notebook>
-                    <tab string="Examen Clinique">
-                        <group string="Zone de consultation" class="mt-2">
+                    <tab string="Zone de consultation">
+                        <group class="mt-2">
                             <group id="header_left_group">
                                 <separator string="Plaintes" style="color: #00A09D; font-weight: bold;"/>
                                 <field name="anamnese" widget="html" colspan="4" nolabel="1" placeholder="Saisir la plainte"/>
@@ -912,8 +912,14 @@
                                 <field name="type_atcd"/>
                                 <field name="allergie" required="1"/>
                                 <field name="comment"/>
-                                <field name="etat"/>
+                                <field name="etat" widget="boolean_button" class="btn btn-success" 
+                                    options="{'terminology': {'string_true': 'Validé', 'hover_true': 'Annuler', 'string_false': 'À valider', 'hover_false': 'Valider'}}"
+                                    icon="fa-check-circle"/>
                                 <field name="etat_atcd" attrs="{'readonly':[('etat','=','conf')]}" invisible="1"/>
+                                <field name="cancel" widget="boolean_button" class="btn btn-danger" 
+                                    options="{'terminology': {'string_true': 'Annulé', 'hover_true': 'Confirmer', 'string_false': 'A Annuler', 'hover_false': 'Annuler'}}"
+                                    icon="fa-times-circle"/>
+
                             </tree>
                         </field>
                     </tab>
@@ -938,7 +944,10 @@
                                 <field name="internal_status" required="1"/>
                                 <field name="saving_pathologie" required="1" string="Confirmer"
                                     widget="boolean_button"
-                                 confirm="Voulez-vous enregistrer ce diagnostic ?"/>
+                                    confirm="Voulez-vous enregistrer ce diagnostic ?"/>
+                                <field name="cancel_pathologie" widget="boolean_button" string="Annuler"
+                                    confirm="Voulez-vous annuler ce diagnostic ?"/>
+                                <field name="active" invisible="1"/>
                             </tree>
                         </field>
                     </tab>

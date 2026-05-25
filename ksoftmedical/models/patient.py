@@ -58,6 +58,7 @@ class AtcdMedicauxPatient(models.Model):
     #name = fields.Char(string="ATCD")
     code = fields.Char(string="Code")
     etat = fields.Boolean(string="Confirmé", default=False)
+    cancel = fields.Boolean(string="Annulé", default=False)
     date_detection = fields.Date(string="Date", required=True)
     type_atcd = fields.Selection([('alim','Alimentaire'),('chir','Chirurgical'),('med','Médical'),('gyneco','Gynéco-Obstetrique'),
                                  ('fam','Familial'),('autres','Autres')], string="Type", required=True)
@@ -68,6 +69,11 @@ class AtcdMedicauxPatient(models.Model):
     atcd = fields.Many2one('fertility.patient', string="ATCD")
     user_id = fields.Many2one('res.users', string='Par')
     etat_atcd = fields.Selection([('draft','Brouillon'),('conf','Confirmer')], default='draft',string="Etat")
+    active = fields.Boolean(default=True)
+
+    cancel_by = fields.Many2one('res.users', readonly=True, string="Cancel par")
+    date_cancel = fields.Datetime(string='Date')
+
 
     def name_get(self):
         result = []
@@ -83,8 +89,8 @@ class AtcdMedicauxPatient(models.Model):
                 'allergie': self.allergie.id,
                 'user_id':  self.env.user.id,
                 'comment': self.comment,
+                'etat': True,
                 'etat_atcd':'conf',
-                'etat':True,
                 'date_detection': fields.Datetime.now(),
             })
 
@@ -93,6 +99,16 @@ class AtcdMedicauxPatient(models.Model):
                 self.atcd.action_save_atcd()
 
                 logging.info(" #### Texte %s",self.atcd)
+
+    @api.onchange('cancel')
+    def cancel_atcd_medical(self):
+        if self.cancel:
+            patho = self.write({
+                'cancel_by': self.env.user.id,
+                'etat':False,
+                'date_cancel': fields.Datetime.now(),
+                'active': False,
+            })
 
     @api.model
     def default_get(self, fields):

@@ -1421,6 +1421,7 @@ class PathologieAppointment(models.Model):
                                       default='draft', string='Etat')
     cancel_by = fields.Many2one('res.users', readonly=True, string="Cancel par")
     date_cancel = fields.Datetime(string='Date')
+    active = fields.Boolean(default=True)
     
     @api.depends('appointment_id')
     def appointment_patient(self):
@@ -1446,6 +1447,7 @@ class PathologieAppointment(models.Model):
                 'confirm_status':'cancel',
                 'cancel_pathologie':True,
                 'date_cancel': fields.Datetime.now(),
+                'active': False,
             })
 
     def unlink(self):
@@ -1898,6 +1900,16 @@ class Appointment(models.Model):
     resume_diagnost = fields.Html(compute='_get_last_diagnostics',string="Résumé Diagnostics")
     
     
+
+    def confirmer_atcd(self):
+        for atcd in self.atcd_medical:
+            atcd.get_patient_atcd_medical()
+    
+    def cancel_atcd(self):
+        for atcd in self.atcd_medical:
+            atcd.cancel_atcd_medical()
+
+
     @api.onchange('type_consultation')
     def set_examen_physique(self):
         cont = ""
@@ -1954,7 +1966,16 @@ class Appointment(models.Model):
     def action_save_consultation(self):
         ## Examen medical générale
         content = ""
+        atcde_vide = False
+        diagn_vide = False
         for appointment_id in self:
+
+            atcde_vide = appointment_id.atcd_medical.filtered(lambda atcd: atcd.etat == False)
+            diagn_vide = appointment_id.diagnostics_ids.filtered(lambda diag: diag.saving_pathologie == False)
+
+            if atcde_vide or diagn_vide:
+                raise UserError("Veuillez confirmer tous les antécédents et diagnostics avant de sauvegarder la consultation")
+
             if appointment_id:
                 content += '<h5 style="border: 1px solid #333;box-shadow: 8px 8px 5px #444;padding: 8px 12px;background-color:#CCCCCC;text-color:#ffffff; text-align:center">Vue par le '+ str(appointment_id.date) +' <b>Dr '+ str(appointment_id.doctor_id.name) +'</b> pour '+ str(appointment_id.product_id.name) +'</h5>'
                 content += '<table width="100%" border=0>'
