@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Add "Asset Category" to supplier invoices -->
+    <record model="ir.ui.view" id="view_invoice_journal_custom">
+        <field name="name">account.invoice.journal.form</field>
+        <field name="model">account.journal</field>
+        <field name="inherit_id" ref="account.view_account_journal_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='currency_id']" position="after">
+                <field name="orientation_journal" required="1"/>
+                <!--field name="code_jour"/-->
+                <field name="is_private" />
+
+                <field name="is_abonne" />
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<template id="report_dailybook_pharmacomptant">
+	    <t t-call="web.external_layout">
+	        <div class="page">
+	        	<p>
+				<h2 class="mt16" style="text-align:center !important;">
+	                <span>RELEVE DE VENTE PHARMACIE </span>
+	            </h2>
+				</p>
+	            <br/>
+	            <div class="oe_structure"/>
+	            	<table class="table table-borderless" border="0">
+	            		<tr>
+							<td class="text-center">
+                            <p><span>PERIODE DU</span> <t t-esc="form_data['start_date']"/> <span>AU</span>   <t t-esc="form_data['end_date_pharma']"/></p>
+							<p><span>TYPE CLIENT</span>: <span>COMPTANT</span></p>
+							<p><span>NOM</span> : <span>PAYANT</span></p>
+                            </td>
+                        </tr>
+	            	</table>
+	            	<br/>
+				
+					<t t-if="reporting_data">
+                        <table class="table" syle="page-break-after:auto; page-break-inside:auto; break-inside:auto;">
+                        	<theader>
+                                <tr>
+                                	<th name="th_sequence" class="text-center">
+                                        <span style="color:#311B92;">N°.</span>
+                                    </th>
+									<th name="th_sequence" class="text-center">
+                                        <span style="color:#311B92;">DATE FACT.</span>
+                                    </th>
+									<th name="th_sequence" class="text-center">
+                                        <span style="color:#311B92;">N° FACTURE</span>
+                                    </th>
+                                    <th name="th_sequence" class="text-center">
+                                        <span style="color:#311B92;">NOM PATIENT</span>
+                                    </th>
+                                    <!--th name="th_date" class="text-center">
+                                        <span style="color:#311B92;">CATEGORIE</span>
+                                    </th-->
+                                    <th name="th_state" class="text-center">
+                                        <span style="color:#311B92;">M. FACT.</span>
+                                    </th>
+                                    <!--th name="th_state" class="text-center">
+                                        <span style="color:#311B92;">TYPE CLIENT</span>
+                                    </th-->
+									<th name="th_state" class="text-center">
+                                        <span style="color:#311B92;">OBSERVATION</span>
+                                    </th>
+                                    <!--th name="th_state" class="text-center">
+                                        <span style="color:#311B92;">JOURNAL</span>
+                                    </th-->
+                                </tr>
+                            </theader>
+							
+                            <t t-set="total" t-value="0"/>
+                            <t t-set="sequence" t-value="0"/>
+                            <tbody t-foreach="reporting_data" t-as="line">
+                            	<t t-set="total" t-value="total+line[3]" />
+                            	<t t-set="sequence" t-value="sequence+1" />
+                                <tr>
+                                	<td>
+                                        <span t-esc="sequence"/>
+                                    </td>
+									<td class="text-center">
+                                       <span t-esc="line[0]"/>
+                                    </td>
+									<td class="text-center">
+                                        <span t-esc="line[1]"/>
+                                    </td>
+                                    <td class="text-left">
+                                        <span t-esc="line[2]"/> / <t t-if="line[4]"><span t-esc="line[4]"/></t>
+                                    </td>
+                                    
+                                    <td class="text-right">
+                                       <span t-esc="line[3]" t-options='{"widget":"float", "precision":2}'/>
+                                    </td>
+                               
+									<td>
+                                       <span></span>
+                                    </td>
+                                    
+                                </tr>
+                            </tbody>
+                            <tbody>
+
+                                <tr>
+                                	<td colspan="4" class="text-right">
+                                        <h4><span style="color:#311B92;">TOTAL GENERAL.</span></h4>
+                                    </td>
+                                    <td class="text-right" colspan="2">
+                                        <h4><span t-esc="total" t-options='{"widget":"float", "precision":2}'/> Fc</h4>
+                                    </td>
+                                </tr>
+                            </tbody>
+
+                        </table>
+				</t>
+	        
+	            <br/>
+
+	            <div class="mt32 ml64 mr4" name="signature">
+	                <div class="offset-8">
+	                    <strong>Signature</strong>
+	                </div>
+	                <br/>
+	                <div class="offset-8 text-center"></div>
+	                <div class="offset-8">
+	                    <!--span t-field="doc.doctor_id"/-->
+	                </div>
+	                <br/><br/><br/>
+	                <div class="offset-8">
+	                <p>Fait à Kinshasa, le <span t-esc="time.strftime('%Y-%m-%d %H:%M:%S')"/></p>
+	                </div>
+	            </div>
+
+	            <div class="oe_structure"/>
+	        </div>
+	    </t>
+	</template>
+
+
+	<template id="releve_vente_pharmacie_comptant">
+	    <t t-call="web.html_container">
+	        <!--t t-foreach="docs" t-as="doc"-->
+	            <t t-call="base_accounting_kit.report_dailybook_pharmacomptant"/>
+	        <!--/t-->
+	    </t>
+	</template>
+	
+	
+	<template id="report_dailybook_pharmaconvention">
+	    <t t-call="web.external_layout">
+	        <div class="page">
+	        	<p>
+				<h2 class="mt16" style="text-align:center !important;">
+	                <span>RELEVE DE VENTE PHARMACIE </span>
+	            </h2>
+				</p>
+	            <br/>
+	            <div class="oe_structure"/>
+	            	<table class="table table-borderless" border="0">
+	            		<tr>
+							<td class="text-center">
+                            <p><span>PERIODE DU</span> <t t-esc="form_data['start_date']"/> <span>AU</span>   <t t-esc="form_data['end_date_pharma']"/></p>
+							<p><span>TYPE CLIENT</span>: <span>CONVENTIONEE</span></p>
+							<p><span>NOM</span> : <t t-esc="form_data['convention'][1]"/> </p>
+                            </td>
+                        </tr>
+	            	</table>
+	            	<br/>
+				
+					<t t-if="reporting_data">
+                        <table class="table" syle="page-break-after:auto; page-break-inside:auto; break-inside:auto;">
+                        	<theader>
+                                <tr>
+                                	<th name="th_sequence" class="text-center">
+                                        <span style="color:#311B92;">N°.</span>
+                                    </th>
+									<th name="th_sequence" class="text-center">
+                                        <span style="color:#311B92;">DATE FACT.</span>
+                                    </th>
+									<th name="th_sequence" class="text-center">
+                                        <span style="color:#311B92;">N° FACTURE</span>
+                                    </th>
+                                    <th name="th_sequence" class="text-center">
+                                        <span style="color:#311B92;">NOM PATIENT</span>
+                                    </th>
+                                    <!--th name="th_date" class="text-center">
+                                        <span style="color:#311B92;">CATEGORIE</span>
+                                    </th-->
+                                    <th name="th_state" class="text-center">
+                                        <span style="color:#311B92;">M. FACT.</span>
+                                    </th>
+                                    <!--th name="th_state" class="text-center">
+                                        <span style="color:#311B92;">TYPE CLIENT</span>
+                                    </th-->
+									<th name="th_state" class="text-center">
+                                        <span style="color:#311B92;">OBSERVATION</span>
+                                    </th>
+                                    <!--th name="th_state" class="text-center">
+                                        <span style="color:#311B92;">JOURNAL</span>
+                                    </th-->
+                                </tr>
+                            </theader>
+							
+                            <t t-set="total" t-value="0"/>
+                            <t t-set="sequence" t-value="0"/>
+                            <tbody t-foreach="reporting_data" t-as="line">
+                            	<t t-set="total" t-value="total+line[3]" />
+                            	<t t-set="sequence" t-value="sequence+1" />
+                                <tr>
+                                	<td>
+                                        <span t-esc="sequence"/>
+                                    </td>
+									<td class="text-center">
+                                       <span t-esc="line[0]"/>
+                                    </td>
+									<td class="text-center">
+                                        <span t-esc="line[1]"/>
+                                    </td>
+                                    <td class="text-left">
+                                        <span t-esc="line[2]"/> / <t t-if="line[4]"><span t-esc="line[4]"/></t>
+                                    </td>
+                                    
+                                    <td class="text-right">
+                                       <span t-esc="line[3]" t-options='{"widget":"float", "precision":2}'/>
+                                    </td>
+                               
+									<td>
+                                       <span></span>
+                                    </td>
+                                    
+                                </tr>
+                            </tbody>
+                            <tbody>
+
+                                <tr>
+                                	<td colspan="4" class="text-right">
+                                        <h4><span style="color:#311B92;">TOTAL GENERAL.</span></h4>
+                                    </td>
+                                    <td class="text-right" colspan="2">
+                                        <h4><span t-esc="total" t-options='{"widget":"float", "precision":2}'/> Fc</h4>
+                                    </td>
+                                </tr>
+                            </tbody>
+
+                        </table>
+				</t>
+	        
+	            <br/>
+
+	            <div class="mt32 ml64 mr4" name="signature">
+	                <div class="offset-8">
+	                    <strong>Signature</strong>
+	                </div>
+	                <br/>
+	                <div class="offset-8 text-center"></div>
+	                <div class="offset-8">
+	                    <!--span t-field="doc.doctor_id"/-->
+	                </div>
+	                <br/><br/><br/>
+	                <div class="offset-8">
+	                <p>Fait à Kinshasa, le <span t-esc="time.strftime('%Y-%m-%d %H:%M:%S')"/></p>
+	                </div>
+	            </div>
+
+	            <div class="oe_structure"/>
+	        </div>
+	    </t>
+	</template>
+
+
+	<template id="releve_vente_pharmacie_convention">
+	    <t t-call="web.html_container">
+	        <!--t t-foreach="docs" t-as="doc"-->
+	            <t t-call="base_accounting_kit.report_dailybook_pharmaconvention"/>
+	        <!--/t-->
+	    </t>
+	</template>
+
+
+</odoo>

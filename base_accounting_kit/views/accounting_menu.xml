@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <!--    Change invoicing menu to Accounting     -->
+        <record model="ir.ui.menu" id="account.menu_finance">
+            <field name="name">Accounting</field>
+        </record>
+        <!--    Change settings invoicing menu to Accounting     -->
+        <record id="res_config_settings_view_accounting_kit" model="ir.ui.view">
+            <field name="name">res.config.settings.view.form.inherit.kit</field>
+            <field name="model">res.config.settings</field>
+            <field name="inherit_id" ref="account.res_config_settings_view_form"/>
+            <field name="arch" type="xml">
+                <div data-key="account" position="attributes">
+                    <attribute name="data-string">Accounting</attribute>
+                    <attribute name="string">Accounting</attribute>
+                </div>
+            </field>
+        </record>
+		
+		<!-- Action  Rapport Consultation -->
+		<!--record id="filter_invoice_consult_reporting" model="ir.filters">
+			<field name="name">Rapport Consultations+</field>
+			<field name="model_id">account.invoice.report</field>
+			<field name="domain">[]</field>
+			<field name="user_id" eval="False"/>
+			<field name="context">{'group_by': ['invoice_date:month', 'invoice_date:day', 'service', 'product_id']}</field>
+		</record-->
+		
+		<record id="view_account_consult_reporting_pivot" model="ir.ui.view">
+			 <field name="name">Rapport Consultations</field>
+			 <field name="model">account.invoice.report</field>
+			 <field name="arch" type="xml">
+				 <pivot string="Rapport Consultations" sample="1">
+					 <!--field name="product_categ_id" type="col"/>
+					 <field name="invoice_date" type="row"/-->
+					 <field name="price_subtotal" type="measure"/>
+				 </pivot>
+			 </field>
+		</record>
+		
+		<record id="action_consult_reporting" model="ir.actions.act_window">
+			<field name="name">Rapport Consultations</field>
+			<field name="res_model">account.invoice.report</field>
+			<field name="view_mode">pivot</field>
+			<field name="view_id" ref="view_account_consult_reporting_pivot"/>
+			<field name="context">{'search_default_current':1, 'search_default_customer': 1, 'group_by':['invoice_date:month', 'invoice_date:day', 'service_id', 'product_id'], 'group_by_no_leaf':1}</field>
+			<field name="search_view_id" ref="account.view_account_invoice_report_search"/>
+			<field name="domain">[('service_id.name','in',['PEDIATRIE','GYNECO','MEDECINE INTERNE','CHIRURGIE','SPECIALITES','ANESTHESIO-REA','FICHE']),('invoice_date','=',context_today().strftime('%Y-%m-%d'))]</field>
+			<field name="help">Rapport des consultations </field>
+		</record>
+	
+		
+		<record id="action_labo_reporting" model="ir.actions.act_window">
+			<field name="name">Rapport Laboratoire</field>
+			<field name="res_model">account.invoice.report</field>
+			<field name="view_mode">pivot</field>
+			<field name="view_id" ref="view_account_consult_reporting_pivot"/>
+			<field name="context">{'search_default_current':1, 'search_default_customer': 1, 'group_by':['invoice_date:month', 'invoice_date:day', 'service_id', 'rubrique_id'], 'group_by_no_leaf':1}</field>
+			<field name="search_view_id" ref="account.view_account_invoice_report_search"/>
+			<field name="domain">[('service_id.name','in',['LABORATOIRE']),('invoice_date','=',context_today().strftime('%Y-%m-%d'))]</field>
+			<field name="help">Rapport Laboratoire </field>
+		</record>
+		
+		
+		
+		<!-- Rapport Caisse -->
+		<menuitem id="menu_cash_reporting" name="Rapport Journalier Caisse" parent="account.menu_finance" sequence="5">
+		
+            <menuitem id="menu_action_print_consultations" name="Rapport Consultations" action="action_consult_reporting" sequence="1"
+				groups="base_accounting_kit.group_ngaliema_cassier_consultprinter"/>
+				
+            <menuitem id="menu_action_print_labo" name="Rapport Laboratoire" action="action_labo_reporting" sequence="2"
+				groups="base_accounting_kit.group_ngaliema_cassier_laboprinter"/>
+				
+			<!--menuitem id="menu_action_print_maternite" name="Rapport Maternité" action="account.action_move_in_invoice_type" sequence="3"/>
+			<menuitem id="menu_action_print_imagerie" name="Rapport Imagerie" action="account.action_move_in_invoice_type" sequence="4"/>
+			<menuitem id="menu_action_print_garde" name="Rapport Garde" action="account.action_move_in_invoice_type" sequence="5"/-->
+        </menuitem>
+		
+		
+		
+        <menuitem id="account_reports_generic_statements" sequence="1"
+                  name="Generic Statements" parent="account.menu_finance_reports"/>
+        <menuitem id="account_reports_daily_reports" sequence="2"
+                  name="Daily Reports" parent="account.menu_finance_reports"/>
+        <menuitem id="account_reports_partner" sequence="3"
+                  name="Partner Reports" parent="account.menu_finance_reports"/>
+        <menuitem id="account_reports_audit" sequence="4"
+                  name="Audit Reports" parent="account.menu_finance_reports"/>
+    </data>
+</odoo>

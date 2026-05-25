@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <report 
+            id="report_stock_movement" 
+            model="rapport.move.stock" 
+            string="Rapport de Mouvement de Stock" 
+            report_type="qweb-pdf" 
+            name="stock_ngaliema.report_move_stock_template" 
+            file="stock_ngaliema.report_move_stock_template" />
+
+        <template id="report_move_stock_template">
+            <t t-call="web.html_container">
+                <t t-call="web.internal_layout">
+                     <style>
+                            .page{
+                                    font-family: Arial, Helvetica, sans-serif!important;
+                                    width: 100%!important;
+                                    }
+                            .table {
+                                    font-family: Arial, Helvetica, sans-serif!important;
+                                    
+                                    width: 100%!important;
+                                    }
+
+                            .td_int{
+                                text-align:left;
+                                padding: 5px!important;
+                                font-size:14px!important;
+                            }
+
+                            td,th {
+                                    border: 1px solid #ddd!important;
+                                    padding: 5px!important;
+                                    font-size:14px!important;
+                                    text-align:center;
+                                    }
+
+                            tr,td{
+                                        font-size:12px!important;
+                                    }
+
+                            tr:nth-child(even){background-color: #f2f2f2!important;}
+
+                            tr:hover {background-color: #ddd!important;}
+
+                            th {
+                                    font-size:14px!important;
+                                    text-align: center!important;
+                                    background-color: #ddd!important;
+                                    color: black!important;
+                                    }
+                            
+                            
+                        </style>
+                    <div class="page">
+
+                         <!-- <t t-foreach="report_infos" t-as="report"> -->
+                            <div>
+
+                                <h5 >
+                                    <center>
+                                        <h4>RAPPORT DE MOUVEMENT DE STOCK</h4>
+                                    </center>
+                                    <p></p>
+                                    <center>
+                                        DU <b><t t-esc="periode['date_debut']"/></b> AU <b><t t-esc="periode['date_fin']"/></b>
+                                        <br/>
+                                        <center>Entrepôt: <b><t t-esc="periode['entrepot']"/> </b></center>
+                                    </center>
+                                </h5>
+                                
+                                <br/>
+
+                                <table class="table table-sm" >
+                                    <thead>
+                                        <tr>
+                                            <th>Produit</th>
+                                            <th>Qte Entrée</th>
+                                            <th>Qte Sortie</th>
+                                            <th>Qte Restant</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        
+                                        <t t-foreach="records" t-as="rec">
+                                            <tr>
+                                                <td><t t-esc="rec['article']"/></td>
+                                                <td><t t-esc="rec['qte_in']"/></td>
+                                                <td><t t-esc="rec['qte_out']"/></td>
+                                                <td><t t-esc="rec['qte_restant']"/></td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table> 
+                            </div>
+                        <!-- </t> -->
+
+                    </div>
+                </t>
+            </t>
+        </template>
+		
+		
+		
+		
+		<report 
+            id="report_stock_movement_detaille" 
+            model="rapport.move.stock" 
+            string="Rapport de Mouvement de Stock detaille" 
+            report_type="qweb-pdf" 
+            name="stock_ngaliema.report_move_stock_detaille_template" 
+            file="stock_ngaliema.report_move_stock_detaille_template" />
+
+        <template id="report_move_stock_detaille_template">
+            <t t-call="web.html_container">
+                <t t-call="web.external_layout">
+                     <style>
+                            .page{
+                                    font-family: Arial, Helvetica, sans-serif!important;
+                                    width: 100%!important;
+                                    }
+                            .table {
+                                    font-family: Arial, Helvetica, sans-serif!important;
+                                    
+                                    width: 100%!important;
+                                    }
+
+                            .td_int{
+                                text-align:left;
+                                padding: 5px!important;
+                                font-size:14px!important;
+                            }
+
+                            td,th {
+                                    border: 1px solid #ddd!important;
+                                    padding: 5px!important;
+                                    font-size:14px!important;
+                                    text-align:center;
+                                    }
+
+                            tr,td{
+                                        font-size:12px!important;
+                                    }
+
+                            tr:nth-child(even){background-color: #f2f2f2!important;}
+
+                            tr:hover {background-color: #ddd!important;}
+
+                            th {
+                                    font-size:14px!important;
+                                    text-align: center!important;
+                                    background-color: #ddd!important;
+                                    color: black!important;
+                                    }
+                            
+                            
+                        </style>
+                    <div class="page">
+
+                         <!-- <t t-foreach="report_infos" t-as="report"> -->
+                            <div>
+
+                                <h5 >
+                                    <center>
+                                        <h4>RAPPORT DE MOUVEMENT DE STOCK DETAILLE</h4>
+                                    </center>
+                                    <p></p>
+                                    <center>
+                                        DU <b><t t-esc="periode['date_debut']"/></b> AU <b><t t-esc="periode['date_fin']"/></b>
+                                        <br/>
+                                        <center>Entrepôt: <b><t t-esc="periode['entrepot']"/> </b></center>
+                                    </center>
+                                </h5>
+                                
+                                <br/>
+
+                                <table style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th>Produit</th>
+                                            <th>Date</th>
+                                            <th>Entrepôt Source</th>
+											<th>Entrepôt Dest.</th>
+											<th>Qte entree</th>
+                                            <th>Qte sortie</th>
+                                            <th>Qte restant</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="records" t-as="entry">
+                                            <tr t-if="entry['article']">
+                                                <td colspan="6" style="text-align: left;">
+                                                    <strong > <t t-esc="entry['article']"/></strong>
+                                                </td>
+                                                <td><strong><t t-esc="entry['difference']"/></strong></td>
+                                            </tr>
+                                            
+                                            <tr t-else="">
+                                                <td></td>
+                                                <td><t t-esc="entry['date']"/></td>
+                                                <td><t t-esc="entry['source_location']"/></td>
+												<td><t t-esc="entry['dest_location']"/></td>
+												<td><t t-esc="entry['qte_in']"/></td>
+                                                <td><t t-esc="entry['qte_out']"/></td>
+                                                <td><!--t t-esc="entry['qte_restant']"/--></td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+
+                                
+                            </div>
+                        <!-- </t> -->
+
+                    </div>
+                </t>
+            </t>
+        </template>
+		
+		
+		<report 
+            id="report_stock_valorisation_stock" 
+            model="rapport.move.stock" 
+            string="Rapport de Valorisation Stock" 
+            report_type="qweb-pdf" 
+            name="stock_ngaliema.report_valorisation_stock_template" 
+            file="stock_ngaliema.report_valorisation_stock_template" />
+
+        <template id="report_valorisation_stock_template">
+            <t t-call="web.html_container">
+                <t t-call="web.internal_layout">
+                     <style>
+                            .page{
+                                    font-family: Arial, Helvetica, sans-serif!important;
+                                    width: 100%!important;
+                                    }
+                            .table {
+                                    font-family: Arial, Helvetica, sans-serif!important;
+                                    
+                                    width: 100%!important;
+                                    }
+
+                            .td_int{
+                                text-align:left;
+                                padding: 5px!important;
+                                font-size:14px!important;
+                            }
+
+                            td,th {
+                                    border: 1px solid #ddd!important;
+                                    padding: 5px!important;
+                                    font-size:14px!important;
+                                    text-align:center;
+                                    }
+
+                            tr,td{
+                                        font-size:12px!important;
+                                    }
+
+                            tr:nth-child(even){background-color: #f2f2f2!important;}
+
+                            tr:hover {background-color: #ddd!important;}
+
+                            th {
+                                    font-size:14px!important;
+                                    text-align: center!important;
+                                    background-color: #ddd!important;
+                                    color: black!important;
+                                    }
+                            
+                            
+                        </style>
+                    <div class="page">
+
+                         <!-- <t t-foreach="report_infos" t-as="report"> -->
+                            <div>
+
+                                <h5 >
+                                    <center>
+                                        <h4>RAPPORT DE VALORISATION DE STOCK</h4>
+                                    </center>
+                                    <p></p>
+                                    <center>
+                                        DU <b><t t-esc="periode['date_debut']"/></b> AU <b><t t-esc="periode['date_fin']"/></b>
+                                        <br/>
+                                        <center>Entrepôt: <b><t t-esc="periode['entrepot']"/> </b></center>
+                                    </center>
+                                </h5>
+                                
+                                <br/>
+
+                                <table class="table table-sm" >
+                                    <thead>
+                                        <tr>
+                                            <th>Produit</th>
+                                            <th>Qte Restant</th>
+											<th>Prix</th>
+											<th>Valeur</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        
+                                        <t t-foreach="records" t-as="rec">
+                                            <tr>
+                                                <td><t t-esc="rec['article']"/></td>
+												<td><t t-esc="rec['qte_restant']"/></td>
+                                                <td><t t-esc="rec['prix_achat']"/></td>
+                                                <td><t t-esc="rec['qte_restant'] * rec['prix_achat']"/></td>
+                                                
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table> 
+                            </div>
+                        <!-- </t> -->
+
+                    </div>
+                </t>
+            </t>
+        </template>
+
+
+    </data>
+</odoo>

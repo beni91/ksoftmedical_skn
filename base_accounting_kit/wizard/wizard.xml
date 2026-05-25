@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="wizar_rapp_convent_view" model="ir.ui.view">
+        <field name="name">rapport.convention.detail.Form</field>
+        <field name="model">rapport.convention.detail</field>
+        <field name="arch" type="xml">
+            <form create="0">
+                <sheet>
+					<group>
+                        <group>
+                            <field name="date_debut" />
+                            <field name="convention_id" />
+                        </group>
+                        <group>
+                            <field name="date_fin" />
+                        </group>
+                    </group>
+                </sheet>
+
+                <footer>
+                    <button name="print_report" string="Rapport Conventionné detaillé" type="object" data-hotkey="z"
+                            class="btn-primary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+	
+    <record id="action_rapport_convention"  model="ir.actions.act_window">
+        <field name="name">Rapport Convention</field>
+        <field name="res_model">rapport.convention.detail</field>
+        <field name="view_mode">form</field>
+        <field name="binding_view_types">form</field>
+        <field name="target">new</field>
+   </record>
+   
+   
+   
+   <menuitem id="menu_rapport_general"
+              name="Rapport Général"
+              sequence="20"
+              parent="account.menu_finance"/>
+
+   <menuitem id="menu_rap_conv_report1"
+              name="Rapport Convention"
+              sequence="1"
+              parent="menu_rapport_general"
+              action="action_rapport_convention"
+              groups="account.group_account_user,account.group_account_manager"/>
+   
+</odoo>
+

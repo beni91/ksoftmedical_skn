@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+
+
+
+access_rapport_move_stock,rapport_move_stock,model_rapport_move_stock,base.group_user,1,1,1,1

@@ -1,0 +1,161 @@
+.o_main_navbar>ul>li>a,
+.o_main_navbar>ul>li>label,
+.o_main_navbar .o_navbar_apps_menu.dropdown .o_dropdown_toggler a.full,
+.o_main_navbar .dropdown .dropdown-toggle, .o_main_navbar .o_menu_sections .dropdown .dropdown-toggle, .o_main_navbar .o_menu_systray .dropdown .dropdown-toggle, .o_main_navbar .o_nav_entry, .o_main_navbar .o_menu_sections .o_nav_entry, .o_main_navbar .o_menu_systray .o_nav_entry, .o_main_navbar > .o_menu_sections > div, .o_main_navbar > .o_menu_sections > div > a, .o_main_navbar .o_menu_systray > div, .o_main_navbar .o_menu_systray > div > a, .o_main_navbar .o_menu_toggle, .o_main_navbar .o_navbar_apps_menu, .o_main_navbar .o_menu_brand,
+.o_main_navbar .o_menu_systray .sh_bookmark .o_user_bookmark_menu a {
+    color: $header_font_color;
+}
+.o_main_navbar .sh_language_icon svg{fill: $header_font_color;}
+.o_main_navbar .o_navbar_apps_menu.dropdown .o_dropdown_toggler>span {
+    margin-top: 5px;
+}
+
+.o_main_navbar>ul>li>a:hover,
+.o_main_navbar>ul>li>label:hover {
+    color: #fff;
+    background-color: $header_hover_color;
+}
+.o_main_navbar .o_menu_systray .sh_calc_util .open_calc:hover{background-color: rgba(0, 0, 0, 0.08) ;}
+.o_main_navbar .dropdown .dropdown-toggle:hover, .o_main_navbar .o_nav_entry:hover, .o_main_navbar > .o_menu_sections > div:hover, .o_main_navbar > .o_menu_sections > div > a:hover, .o_main_navbar .o_menu_systray > div:hover, .o_main_navbar .o_menu_systray > div > a:hover, .o_main_navbar .o_menu_toggle:hover, .o_main_navbar .o_navbar_apps_menu:hover,.o_main_navbar .o_menu_systray .sh_bookmark:hover{color: $header_hover_color;}
+.o_main_navbar .sh_language_icon svg:hover{fill: $header_hover_color;}
+
+.o_main_navbar .o_menu_systray .o-dropdown--menu.dropdown-menu.d-block .dropdown-item:hover,
+.o_main_navbar .o_menu_systray .o-dropdown--menu.dropdown-menu.d-block .dropdown-item:focus,
+.o_main_navbar .o_menu_systray .o-dropdown--menu.dropdown-menu.d-block .dropdown-item .o_debug_profiling_item:hover,
+.o_main_navbar .o_menu_systray .o-dropdown--menu.dropdown-menu.d-block .dropdown-item .o_debug_profiling_item:focus,
+.o_main_navbar .o_menu_systray .o-dropdown--menu.dropdown-menu.d-block .dropdown-item .o_debug_profiling_item .o_profiling_switch:hover,
+.o_main_navbar .o_menu_systray .o-dropdown--menu.dropdown-menu.d-block .dropdown-item .o_debug_profiling_item .o_profiling_switch:focus,
+.o_main_navbar .o_menu_systray .o-dropdown--menu.dropdown-menu.d-block .dropdown-item .o_debug_profiling_item .o_profiling_switch .custom-control-label:hover{color: #212529 !important;}
+
+.o_main_navbar .o_menu_sections a:focus,.o_main_navbar .o_menu_sections a:active,
+.o_main_navbar .o_menu_sections .o-dropdown.dropdown:focus .dropdown-toggle,.o_main_navbar .o_menu_sections .o-dropdown.dropdown.show .dropdown-toggle,
+.o_main_navbar .o_menu_systray .o-dropdown.dropdown.show .dropdown-toggle,
+.o_main_navbar .o_menu_systray .o_MessagingMenu.dropdown.show > .o_MessagingMenu_toggler.dropdown-toggle,
+.o_main_navbar .o_menu_systray .o_mail_systray_item.dropdown.show > .dropdown-toggle{color: $header_active_color;}
+
+.o_main_navbar>a:not(.o_menu_brand):focus,
+.o_main_navbar>a:not(.o_menu_brand):active,
+.o_main_navbar>a:not(.o_menu_brand):focus:active,
+.o_main_navbar>button:focus,
+.o_main_navbar>button:active,
+.o_main_navbar>button:focus:active {
+    background-color: $header_active_color;
+}
+
+.o_main_navbar .show .dropdown-toggle {
+    background-color: $header_active_color;
+}
+.o_main_navbar .o_menu_systray .sh_calc_util.active{background-color: rgba(0, 0, 0, 0.08);}
+.o_main_navbar>a:not(.o_menu_brand):hover,
+.o_main_navbar>a:not(.o_menu_brand):focus,
+.o_main_navbar>button:hover,
+.o_main_navbar>button:focus {
+    background-color: $header_active_color;
+}
+
+.o_main_navbar .o_menu_brand {
+    padding-left: 16px;
+}
+
+.o_main_navbar .o_dropdown.o_navbar_apps_menu.sh_backmate_theme_appmenu_div button.o_dropdown_toggler {
+    padding: 0px 16px !important;
+}
+
+.o_main_navbar .o_dropdown.o_navbar_apps_menu.sh_backmate_theme_appmenu_div.show button.o_dropdown_toggler {
+    background: $header_active_color;
+}
+
+.o_main_navbar .o_menu_systray .sh_global_search .sh_search_container,
+.o_main_navbar .o_menu_systray .sh_global_search .sh_search_container .sh_search_input,
+.o_main_navbar .o_menu_systray .sh_global_search .sh_search_container .input-group,
+.o_main_navbar .o_menu_systray .o_dropdown.o_user_menu button.o_dropdown_toggler {
+    height: 48px;
+}
+
+.o_main_navbar .o_menu_systray .sh_global_search .sh_search_container .input-group input.usermenu_search_input.form-control {
+    margin-top: 4px;
+}
+
+.o_main_navbar .o_menu_systray .o_user_menu .o_user_avatar {
+    transform: translateY(1px);
+    margin-right: 5px;
+}
+
+.o_main_navbar .o_menu_systray .o_night_mode:hover,
+.o_main_navbar .o_menu_systray .sh_bookmark:hover,
+// .o_main_navbar .o_menu_systray .sh_bookmark.active,
+.o_main_navbar .o_menu_systray .sh_bookmark.show {
+    background: rgba(0, 0, 0, 0.08);
+    
+}
+
+.o_main_navbar .o_menu_systray .o_night_mode{
+    padding: 0 0.75rem;
+}
+
+
+@media only screen and (min-width: 993px){
+    .o_main_navbar .o_menu_systray .o_switch_company_menu.o-dropdown.dropdown .dropdown-toggle,
+    .o_main_navbar .o_menu_systray .o_user_menu.o-dropdown.dropdown .dropdown-toggle{padding: 0 0.75rem;}
+}
+
+
+
+@if $body_background_type=='bg_img' {
+    .o_main_navbar>ul.o_menu_systray>li.o_night_mode,
+    .o_main_navbar>ul.o_menu_systray>li,
+    .o_main_navbar>ul.o_menu_systray .o_switch_company_menu .o_dropdown_toggler,
+    .o_main_navbar .o_menu_brand,
+    .o_main_navbar .o_menu_sections .o_dropdown .o_dropdown_toggler,
+    .o_main_navbar .o_menu_sections .o_dropdown,
+    .o_main_navbar .o_menu_sections li.o_dropdown_item.o_nav_entry {
+        height: 52px;
+    }
+    .o_main_navbar>ul.o_menu_systray .o_switch_company_menu .o_dropdown_toggler:hover,
+    .o_main_navbar .o_menu_sections .o_dropdown .o_dropdown_toggler:hover {
+        background: $header_hover_color;
+    }
+    .o_main_navbar .o_dropdown.o_navbar_apps_menu.sh_backmate_theme_appmenu_div .o_dropdown_menu.o-popper-position {
+        top: 52px !important;
+    }
+    .o_main_navbar .o_dropdown.o_navbar_apps_menu.sh_backmate_theme_appmenu_div button.o_dropdown_toggler {
+        height: 53px;
+    }
+    @media only screen and (max-width: 767.98px) {
+        .o_main_navbar .o_dropdown.o_navbar_apps_menu.sh_backmate_theme_appmenu_div button.o_dropdown_toggler,
+        .o_main_navbar .o_menu_systray .sh_global_search {
+            height: 50px;
+        }
+        .o_web_client .o_form_view .oe_button_box .btn.oe_stat_button{background: #fff;}
+    }
+}
+
+@if $theme_style=='style_6' and $body_background_type=='bg_img' {
+    .o_main_navbar .o_menu_sections .dropdown.o-dropdown .dropdown-toggle,.o_main_navbar .o_menu_systray > div,
+    .o_main_navbar .dropdown.o_navbar_apps_menu.o-dropdown .dropdown-toggle,
+    .o_main_navbar .dropdown.o_navbar_apps_menu.sh_backmate_theme_appmenu_div{height: 50px;}
+    .o_main_navbar .o_menu_sections .dropdown.o-dropdown:hover,.o_main_navbar .o_menu_sections .dropdown:focus,
+    .o_main_navbar .o_menu_sections .dropdown.o-dropdown.show,
+    .o_main_navbar .o_menu_systray .o-dropdown.dropdown.show,
+    .o_main_navbar .o_menu_systray .o-dropdown.dropdown:hover,.o_main_navbar .o_menu_systray .o-dropdown.dropdown:focus,
+    .o_main_navbar .o_menu_systray .dropdown:hover,
+    .o_main_navbar .o_menu_systray .sh_calc_util:hover,.o_main_navbar .o_menu_systray .sh_calc_util:focus,
+    .o_main_navbar .o_menu_systray .sh_bookmark_menu_list:hover,.o_main_navbar .o_menu_systray .sh_bookmark_menu_list:focus,
+    .o_main_navbar .o_menu_systray .sh_bookmark_menu_list.show,
+    .o_main_navbar .o_menu_systray .o_user_bookmark_menu:hover,.o_main_navbar .o_menu_systray .o_user_bookmark_menu:focus,
+    .o_main_navbar .o_menu_systray .o_full_screen:hover,.o_main_navbar .o_menu_systray .o_full_screen:focus,
+    .o_main_navbar .o_menu_systray .o_night_mode:hover{background: $primaryColor;}
+    .o_main_navbar .o_menu_systray .sh_language_icon.show > a,
+    .o_main_navbar .o_menu_systray .sh_language_icon:hover > a{background-color: $primaryColor !important;}
+}
+
+/* ---- language selector menu -----*/ 
+.o_main_navbar .o_menu_systray .sh_language_icon svg{width: 15px;}
+.o_menu_systray .sh_language_icon .sh_user_language_list_cls .dropdown-item.active:not(.dropdown-item_active_noarrow):before, .o_menu_systray .sh_language_icon .sh_user_language_list_cls .dropdown-item.selected:not(.dropdown-item_active_noarrow):before{display: none;}
+.o_menu_systray .sh_language_icon .sh_user_language_list_cls .dropdown-item.active:focus, .o_menu_systray .sh_language_icon .sh_user_language_list_cls .dropdown-item.active:hover, .o_menu_systray .sh_language_icon .sh_user_language_list_cls .dropdown-item.selected:focus, .o_menu_systray .sh_language_icon .sh_user_language_list_cls .dropdown-item.selected:hover,.o_menu_systray .sh_language_icon .sh_user_language_list_cls .dropdown-item.active{background-color: rgba(0, 0, 0, 0.08);}
+.o_menu_systray .sh_language_icon .sh_user_language_list_cls img.sh_lang_flag{height: 25px;width: 25px;object-fit: cover;margin-right: 5px;}
+
+
+
+
+

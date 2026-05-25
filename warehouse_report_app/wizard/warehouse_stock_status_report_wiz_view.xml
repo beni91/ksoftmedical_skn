@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_stock_status_warehouse_report_form" model="ir.ui.view">
+        <field name="name">stock.status.warehouse.report.wizard.form</field>
+        <field name="model">stock.status.warehouse.report</field>
+        <field name="arch" type="xml">
+            <form string="Rapport d'inventaire et d'état des stocks">
+                <group attrs="{'invisible': [('file', '!=', False)]}">
+                    <group>
+                        <field name="company_id" required="1"/>
+                        <field name="filter_type"  widget="radio" options="{'horizontal': true}" required="1" string="Filtrer par:"/>
+                        <field name="product_ids" widget="many2many_tags" string="Produit" attrs="{'invisible': [('filter_type', '!=', 'product')], 'required': [('filter_type', '==', 'product')]}"/>
+                        <field name="product_categ_ids" widget="many2many_tags" string="Categorie" attrs="{'invisible': [('filter_type', '!=', 'category')], 'required': [('filter_type', '==', 'category')]}"/>
+                    </group>
+                    <group>
+                        <field name="date_from" string="Date debut" required="1"/>
+                        <field name="date_to" string="Date fin" required="1"/>
+                    </group>
+                </group>
+                <group attrs="{'invisible': [('file', '!=', False)]}">
+                    <field name="report_type"  widget="radio" options="{'horizontal': true}" string="Générer un rapport basé sur"/>
+                    <field name="warehouse_ids" widget="many2many_tags" string="Entrepot" attrs="{'invisible': [('report_type', '!=', 'warehouse')], 'required': [('report_type', '==', 'warehouse')]}"/>
+                    <field name="location_ids" widget="many2many_tags" string="Emplacement" attrs="{'invisible': [('report_type', '!=', 'location')], 'required': [('report_type', '==', 'location')]}"/>
+                </group>
+                <group>
+                    <field name="file" invisible="1"/>
+                    <separator string="Rapport généré" colspan="4" attrs="{'invisible': [('file', '==', False)]}"/>
+                    <p attrs="{'invisible': [('file', '==', False)]}">
+                        Voici le rapport Excel: 
+                        <field name="document" filename="file" attrs="{'invisible': [('file', '==', False)]}" readonly="1"/>
+                    </p>
+                </group>
+                <footer>
+                    <button name="print_pdf_report" string="Print PDF" type="object" icon="fa-print" class="btn-primary" attrs="{'invisible': [('file', '!=', False)]}"/>
+                    <t attrs="{'invisible': [('file', '!=', False)]}">OR</t>
+                    <button name="print_excel_report" string="Print Excel" type="object" icon="fa-print" class="btn-primary" attrs="{'invisible': [('file', '!=', False)]}"/>
+                    <t attrs="{'invisible': [('file', '!=', False)]}">OR</t>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_stock_status_warehouse_report" model="ir.actions.act_window">
+        <field name="name">Rapport d'inventaire et d'état des stocks</field>
+        <field name="res_model">stock.status.warehouse.report</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+
+    <menuitem id="wizard_stock_status_warehouse_report" 
+        name="Rapport d'inventaire et d'état des stocks" 
+        parent="menu_inventory_stock_movement"
+        action="action_stock_status_warehouse_report"
+        sequence='133' />
+
+
+</odoo>

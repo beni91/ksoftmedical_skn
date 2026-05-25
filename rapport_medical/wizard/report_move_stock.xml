@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="wizar_move_stock_view" model="ir.ui.view">
+        <field name="name">rapport.move.stock.Form</field>
+        <field name="model">rapport.move.stock</field>
+        <field name="arch" type="xml">
+            <form create="0">
+                <sheet>
+					<group>
+                        <group>
+                            <field name="date_debut" />
+                            <field name="warehouse_id" />
+                        </group>
+                        <group>
+                            <field name="date_fin" />
+                        </group>
+                    </group>
+                </sheet>
+
+                <footer>
+                    <button name="generate_report_mov_stock" string="Rapport Mouvement Stock" type="object" data-hotkey="z"
+                            class="btn-primary"/>
+					
+					<button name="generate_report_mov_stock_detail" string="Rapport Mouvement Stock Detaillé" type="object" data-hotkey="z"
+                            class="btn-primary"/>
+							
+					<button name="generate_report_valorisation_stock" string="Rapport Valorisation Stock" type="object" data-hotkey="z"
+                            class="btn-primary"/>
+							
+                </footer>
+            </form>
+        </field>
+    </record>
+	
+    <record id="action_move_stock"  model="ir.actions.act_window">
+        <field name="name">Rapport Mouvement Stock</field>
+        <field name="res_model">rapport.move.stock</field>
+        <field name="view_mode">form</field>
+        <field name="binding_view_types">form</field>
+        <field name="target">new</field>
+   </record>
+
+   <!--menuitem id="menu_mov_stock_report2"
+              name="Rapport Mouvement Stock"
+              sequence="1"
+              parent="rapport_stock_menu_root"
+              action="action_move_stock"
+              /-->
+   
+</odoo>
+

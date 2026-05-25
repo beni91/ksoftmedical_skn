@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Add "Asset Category" to supplier invoices -->
+    <record model="ir.ui.view" id="view_invoice_asset_category">
+        <field name="name">account.invoice.supplier.form</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='account_id']" position="before">
+                <field string="Asset Category" attrs="{'column_invisible': [('parent.move_type', '!=', 'in_invoice')]}"
+                       name="asset_category_id" domain="[('type','=','purchase')]" context="{'default_type':'purchase'}"/>
+            </xpath>
+            <xpath expr="//field[@name='line_ids']/tree/field[@name='account_id']" position="after">
+                <field string="Asset Category" name="asset_category_id" invisible="1"/>
+            </xpath>
+			
+			<xpath expr="//field[@name='line_ids']/tree/field[@name='name']" position="after">
+                <!-- name="service_id"/>
+				<field name="rubrique_id"/-->
+				<field name="date_realisation"/>
+				<field name="num_billet"/>
+            </xpath>
+			
+			 <!-- Cancel -->
+			<xpath expr="//button[@name='button_cancel']" position="replace">
+				<!--button name="button_cancel" string="Cancel Entry" type="object" groups="base_accounting_kit.group_ngaliema_responsable" data-hotkey="w"
+                    attrs="{'invisible' : ['|', '|', ('id', '=', False), ('state', '!=', 'draft'),('move_type', '!=', 'entry')]}"/-->
+					
+				<button name="button_cancel" string="Cancel Entry" type="object" groups="base_accounting_kit.group_ngaliema_responsable" data-hotkey="w"
+                    attrs="{'invisible' : [('state', '!=', 'posted')]}"/>
+            </xpath>
+			<xpath expr="//button[@name='button_draft']" position="replace">
+				<button name="button_draft" string="Reset to Draft" type="object" groups="base_accounting_kit.group_ngaliema_responsable"
+                    attrs="{'invisible' : [('show_reset_to_draft_button', '=', False)]}" data-hotkey="q" />
+            </xpath>
+			
+			<xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='name']" position="after">
+				<!-- name="service_id"/>
+				<field name="rubrique_id"/-->
+                <field name="date_realisation"/>
+				<field name="num_billet"/>
+            </xpath>
+			
+			<xpath expr="//field[@name='partner_id']" position="after">
+				<field name="patient_id" />
+				<field name="convention_id" readonly="1" force_save="1"/>
+                <field name="matricule" readonly="1" force_save="1"/>
+				<field name="categorie" readonly="1" force_save="1"/>
+				<field name="classe" readonly="1" force_save="1"/>
+				<field name="numero_billet"/>
+				<field name="service_id" invisible="1"/>
+				<field name="service_code" invisible="1"/>
+				<field name="rubrique_id"  domain="[('service_id','=',service_id)]" 
+						attrs="{'required': [('service_code', '=', 'LAB')]}" invisible="1"/>
+				<field name="medecin_id" domain="[('service_id','=',service_id)]" invisible="1"/>
+				<field name="autres_medecin" invisible="1"/>
+				
+				<field name="service_id2"/>
+				<field name="service_code2" invisible="1"/>
+				<field name="rubrique_id2"  domain="[('service_id','=',service_id2)]" 
+						attrs="{'required': [('service_code2', '=', 'LAB')]}"/>
+				<field name="medecin_id2" domain="[('service_id','=',service_id2)]"/>
+				<field name="autres_medecin2" />
+            </xpath>
+        </field>
+    </record>
+
+	
+	<record id="action_move_out_myinvoice" model="ir.actions.act_window">
+            <field name="name">Invoices</field>
+            <field name="res_model">account.move</field>
+            <field name="view_mode">tree,kanban,form</field>
+            <field name="view_id" ref="account.view_out_invoice_tree"/>
+            <field name="search_view_id" ref="account.view_account_invoice_filter"/>
+            <field name="domain">[('move_type', '=', 'out_invoice'), '|', ('invoice_user_id', '=',uid), ('invoice_user_id', '=', False)]</field>
+            <field name="context">{'default_move_type': 'out_invoice'}</field>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Create a customer invoice
+              </p><p>
+                Create invoices, register payments and keep track of the discussions with your customers.
+              </p>
+            </field>
+        </record>
+		
+		<menuitem id="menu_action_move_out_myinvoice_type" 
+				parent="account.menu_finance_receivables" action="action_move_out_myinvoice" name="Mes factures" sequence="1"/>
+
+
+</odoo>

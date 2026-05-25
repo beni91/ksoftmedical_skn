@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="customer_shop_stock_move_view" model="ir.ui.view">
+            <field name="name">Move Name</field>
+            <field name="model">module.prescription</field>
+            <field name="inherit_id" ref="ksoftmedical.view_shop_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//header" position="inside">
+                    <button name="action_stock_move" string="Transferer" type="object" class="oe_highlight"
+                            attrs="{'invisible':[('internal_status', '!=', 'pret')]}"/>
+                </xpath>
+                <xpath expr="//field[@name='numero_billet']" position="after">
+
+                    <field name="picking_type_id" readonly="1" string="Depot"/>
+                    <field name="invoice_picking_id" string="Bon de Livraison" readonly="0"
+                        attrs="{'invisible': [('internal_status', 'not in', ['delivered'])]}"/>
+                </xpath>
+                <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
+                    <button type="object"
+                            name="action_view_picking" internal_status="pret,partiel"
+                            class="oe_stat_button"
+                            attrs="{'invisible':['|',('internal_status','!=','pret'),('picking_count', '&lt;', 1)]}"
+                            icon="fa-truck">
+                        <field name="picking_count" string="Sortir le stock" widget="statinfo"/>
+                    </button>
+                </xpath>
+            </field>
+        </record>
+
+        <!--record id="view_pharmacie_form_custom" model="ir.ui.view">
+            <field name="name">Move Name</field>
+            <field name="model">module.ordonnance</field>
+            <field name="inherit_id" ref="ksoftmedical.view_pharmacie_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='move_id']" position="after">
+                    <field name="invoice_picking_id" string="Bon de Livraison" readonly="1"
+                        attrs="{'invisible': [('internal_status', 'not in', ['delivered'])]}"/>
+                </xpath>
+            </field>
+        </record-->
+    </data>
+</odoo>

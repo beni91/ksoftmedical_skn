@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data noupdate="1">
+		<record id="sequence_bloc_name" model="ir.sequence">
+			<field name="name">module.blocoperatoire.name</field>
+			<field name="code">module.blocoperatoire.name</field>
+			<field name="active">TRUE</field>
+			<field name="prefix">BLC/%(month)s/%(year)s/</field>
+			<field name="padding">5</field>
+			<field name="number_next">1</field>
+			<field name="number_increment">1</field>
+		</record>
+		
+	</data>
+</odoo>

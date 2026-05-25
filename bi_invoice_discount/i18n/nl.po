@@ -1,0 +1,186 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* bi_invoice_discount
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 13.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-14 13:08+0000\n"
+"PO-Revision-Date: 2021-10-14 13:08+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: bi_invoice_discount
+#: model_terms:ir.ui.view,arch_db:bi_invoice_discount.report_invoice_discount_inherit
+msgid "<strong>Amount After Discount</strong>"
+msgstr "<strong>Bedrag na korting</strong>"
+
+#. module: bi_invoice_discount
+#: model_terms:ir.ui.view,arch_db:bi_invoice_discount.report_invoice_discount_inherit
+msgid "<strong>Amount Before Discount</strong>"
+msgstr "<strong>Bedrag vóór korting</strong>"
+
+#. module: bi_invoice_discount
+#: model_terms:ir.ui.view,arch_db:bi_invoice_discount.report_invoice_discount_inherit
+msgid "<strong>Discount Type</strong>"
+msgstr "<strong>Kortingstype</strong>"
+
+#. module: bi_invoice_discount
+#: model_terms:ir.ui.view,arch_db:bi_invoice_discount.report_invoice_discount_inherit
+msgid "<strong>Invoice Discount</strong>"
+msgstr "<strong>Factuurkorting</strong>"
+
+#. module: bi_invoice_discount
+#: model_terms:ir.ui.view,arch_db:bi_invoice_discount.report_invoice_discount_inherit
+msgid "<strong>Subtotal</strong>"
+msgstr "<strong>Subtotaal</strong>"
+
+#. module: bi_invoice_discount
+#: model_terms:ir.ui.view,arch_db:bi_invoice_discount.report_invoice_discount_inherit
+msgid "<strong>Total</strong>"
+msgstr "<strong>Totaal</strong>"
+
+#. module: bi_invoice_discount
+#: model:ir.model,name:bi_invoice_discount.model_account_account
+msgid "Account"
+msgstr "Rekening"
+
+#. module: bi_invoice_discount
+#: model:ir.model.fields,field_description:bi_invoice_discount.field_account_move__amount_after_discount
+msgid "Amount After Discount"
+msgstr "Bedrag na korting"
+
+#. module: bi_invoice_discount
+#: model:ir.model.fields,field_description:bi_invoice_discount.field_account_move__apply_discount
+msgid "Apply Discount"
+msgstr "Korting toepassen"
+
+#. module: bi_invoice_discount
+#: model:ir.model.fields,field_description:bi_invoice_discount.field_discount_type__create_uid
+msgid "Created by"
+msgstr "Gemaakt door"
+
+#. module: bi_invoice_discount
+#: model:ir.model.fields,field_description:bi_invoice_discount.field_discount_type__create_date
+msgid "Created on"
+msgstr "Gemaakt op"
+
+#. module: bi_invoice_discount
+#: model:ir.ui.menu,name:bi_invoice_discount.menu_discount_type_parent
+msgid "Discount"
+msgstr "Korting"
+
+#. module: bi_invoice_discount
+#: model:ir.model.fields,field_description:bi_invoice_discount.field_account_account__discount_account
+#: model:ir.model.fields,field_description:bi_invoice_discount.field_account_move__in_discount_account
+#: model:ir.model.fields,field_description:bi_invoice_discount.field_account_move__out_discount_account
+msgid "Discount Account"
+msgstr "Kortingsrekening"
+
+#. module: bi_invoice_discount
+#: model:ir.model.fields,field_description:bi_invoice_discount.field_account_move__discount_amount
+msgid "Discount Amount"
+msgstr "Korting hoeveelheid"
+
+#. module: bi_invoice_discount
+#: model:ir.model.fields,field_description:bi_invoice_discount.field_account_move__discount_move_line_id
+msgid "Discount Line"
+msgstr "Kortingslijn"
+
+#. module: bi_invoice_discount
+#: model:ir.model.fields,field_description:bi_invoice_discount.field_discount_type__name
+msgid "Discount Name"
+msgstr "Kortingsnaam:"
+
+#. module: bi_invoice_discount
+#: model:ir.model.fields,field_description:bi_invoice_discount.field_account_move__discount_type_id
+#: model:ir.ui.menu,name:bi_invoice_discount.menu_discount_type
+#: model_terms:ir.ui.view,arch_db:bi_invoice_discount.form_discount_type_view
+#: model_terms:ir.ui.view,arch_db:bi_invoice_discount.tree_discount_type_view
+#: model_terms:ir.ui.view,arch_db:bi_invoice_discount.view_discount_type_search
+msgid "Discount Type"
+msgstr "Kortingstype"
+
+#. module: bi_invoice_discount
+#: model:ir.actions.act_window,name:bi_invoice_discount.act_open_discount_type_view
+msgid "Discount Types"
+msgstr "Soorten kortingen"
+
+#. module: bi_invoice_discount
+#: model:ir.model.fields,field_description:bi_invoice_discount.field_account_move__discount_value
+#: model:ir.model.fields,field_description:bi_invoice_discount.field_discount_type__discount_value
+msgid "Discount Value"
+msgstr "Kortingswaarde:"
+
+#. module: bi_invoice_discount
+#: model:ir.model.fields,field_description:bi_invoice_discount.field_discount_type__display_name
+msgid "Display Name"
+msgstr "Weergavenaam"
+
+#. module: bi_invoice_discount
+#: model:ir.model.fields,field_description:bi_invoice_discount.field_discount_type__id
+msgid "ID"
+msgstr "ID kaart"
+
+#. module: bi_invoice_discount
+#: model:ir.model,name:bi_invoice_discount.model_account_move
+msgid "Journal Entries"
+msgstr "Journaalposten"
+
+#. module: bi_invoice_discount
+#: model:ir.model,name:bi_invoice_discount.model_account_move_line
+msgid "Journal Item"
+msgstr "Journaalitem"
+
+#. module: bi_invoice_discount
+#: model:ir.model.fields,field_description:bi_invoice_discount.field_discount_type____last_update
+msgid "Last Modified on"
+msgstr "Laatst gewijzigd op"
+
+#. module: bi_invoice_discount
+#: model:ir.model.fields,field_description:bi_invoice_discount.field_discount_type__write_uid
+msgid "Last Updated by"
+msgstr "Laatst bijgewerkt door"
+
+#. module: bi_invoice_discount
+#: model:ir.model.fields,field_description:bi_invoice_discount.field_discount_type__write_date
+msgid "Last Updated on"
+msgstr "Laatst geupdate op"
+
+#. module: bi_invoice_discount
+#: code:addons/bi_invoice_discount/models/account_move.py:0
+#, python-format
+msgid "You can't give more Discount Value than this Order!"
+msgstr "U kunt niet meer kortingswaarde geven dan deze bestelling!"
+
+#. module: bi_invoice_discount
+#: code:addons/bi_invoice_discount/models/account_move.py:0
+#: code:addons/bi_invoice_discount/models/account_move.py:0
+#, python-format
+msgid "You can't set more Discount Value then set on configuration."
+msgstr "U kunt niet meer kortingswaarde instellen dan ingesteld op configuratie."
+
+#. module: bi_invoice_discount
+#: model:ir.model,name:bi_invoice_discount.model_discount_type
+msgid "discount.type"
+msgstr ""
+
+#. module: bi_invoice_discount
+#: model:ir.model.fields,field_description:bi_invoice_discount.field_account_move__purchase_order
+msgid "is a PO"
+msgstr "is een PO"
+
+#. module: bi_invoice_discount
+#: model:ir.model.fields,field_description:bi_invoice_discount.field_account_move_line__discount_line
+msgid "is a discount line"
+msgstr "is een kortingslijn"
+
+#. module: bi_invoice_discount
+#: model_terms:ir.ui.view,arch_db:bi_invoice_discount.report_invoice_discount_inherit
+msgid "on"
+msgstr "Aan"

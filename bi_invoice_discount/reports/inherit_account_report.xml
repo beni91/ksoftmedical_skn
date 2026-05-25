@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="report_invoice_discount_inherit" inherit_id="account.report_invoice_document">
+            <xpath expr="//div[@class='clearfix']" position="replace">
+                <div class="clearfix">
+                    <div id="total" class="row">
+                        <div t-attf-class="#{'col-4' if report_type != 'html' else 'col-sm-7 col-md-5'} ml-auto">
+                            <table class="table table-sm">
+                                <t t-if="not o.discount_value">
+                                    <!--Tax totals-->
+                                    <t t-set="tax_totals" t-value="json.loads(o.tax_totals_json)"/>
+                                    <t t-call="account.document_tax_totals"/>
+
+                                    <!--Payments-->
+                                    <t t-if="print_with_payments">
+                                        <t t-if="o.payment_state != 'invoicing_legacy'">
+                                            <t t-set="payments_vals" t-value="o.sudo()._get_reconciled_info_JSON_values()"/>
+                                            <t t-foreach="payments_vals" t-as="payment_vals">
+                                                <tr>
+                                                    <td>
+                                                        <i class="oe_form_field text-right oe_payment_label">Paid on <t t-esc="payment_vals['date']" t-options='{"widget": "date"}'/></i>
+                                                    </td>
+                                                    <td class="text-right">
+                                                        <span t-esc="payment_vals['amount']" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                            <t t-if="len(payments_vals) > 0">
+                                                <tr class="border-black">
+                                                    <td><strong>Amount Due</strong></td>
+                                                    <td class="text-right">
+                                                        <span t-field="o.amount_residual"/>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </t>
+                                    </t>
+                                </t>
+                                
+                                <t t-if="o.discount_value">
+                                    <tr class="border-black" style="border-bottom:1px solid #dddddd;">
+                                            <td>
+                                                <strong>Amount Before Discount</strong>
+                                            </td>
+                                            <td class="text-right">
+                                                <span t-field="o.amount_untaxed"/>
+                                            </td>
+                                        </tr>
+                                        <tr class="border-black" style="border-bottom:1px solid #dddddd;">
+                                            <td>
+                                                <strong>Discount Type</strong>
+                                            </td>
+                                            <td class="text-right">
+                                                <span t-field="o.discount_type_id"/>
+                                            </td>
+                                        </tr>
+                                        <tr class="border-black" style="border-bottom:1px solid #dddddd;">
+                                            <td>
+                                                <strong>Invoice Discount</strong>
+                                            </td>
+                                            <td class="text-right">
+                                                <span t-field="o.discount_value"/>
+                                            </td>
+                                        </tr>
+                                        <tr class="border-black" style="border-bottom:1px solid #dddddd;">
+                                            <td>
+                                                <strong>Amount After Discount</strong>
+                                            </td>
+                                            <td class="text-right">
+                                                <span t-field="o.amount_after_discount"/>
+                                            </td>
+                                        </tr>
+                                	<!--Tax totals-->
+                                    <t t-set="tax_totals" t-value="json.loads(o.tax_totals_json)"/>
+                                    <t t-call="account.document_tax_totals"/>
+
+                                    <!--Payments-->
+                                    <t t-if="print_with_payments">
+                                        <t t-if="o.payment_state != 'invoicing_legacy'">
+                                            <t t-set="payments_vals" t-value="o.sudo()._get_reconciled_info_JSON_values()"/>
+                                            <t t-foreach="payments_vals" t-as="payment_vals">
+                                                <tr>
+                                                    <td>
+                                                        <i class="oe_form_field text-right oe_payment_label">Paid on <t t-esc="payment_vals['date']" t-options='{"widget": "date"}'/></i>
+                                                    </td>
+                                                    <td class="text-right">
+                                                        <span t-esc="payment_vals['amount']" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                            <t t-if="len(payments_vals) > 0">
+                                                <tr class="border-black">
+                                                    <td><strong>Amount Due</strong></td>
+                                                    <td class="text-right">
+                                                        <span t-field="o.amount_residual"/>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </t>
+                                    </t>
+                                </t>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </template>
+    </data>
+</odoo>

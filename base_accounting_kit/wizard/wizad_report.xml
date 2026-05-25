@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <report 
+            id="rapport_periodique_convention" 
+            model="rapport.convention.detail" 
+            string="Rapport Periodique Convention" 
+            report_type="qweb-pdf" 
+            name="base_accounting_kit.report_facture_convention_template" 
+            file="base_accounting_kit.report_facture_convention_template" />
+
+        <!-- <template id="report_facture_convention_template">
+            <t t-call="web.html_container">
+                <t t-call="web.internal_layout">
+                    <div class="page">
+                         <h5 >
+                                <center>
+                                    <h4>RAPPORT PERIODIQUE CONVENTION</h4>
+                                </center>
+                                <p></p>
+                                <center>DU <b><t t-esc="report_infos[0]['date_debut']"/></b> AU <b><t t-esc="report_infos[0]['date_fin']"/></b>
+                                <br/>
+                                <center>CONVENTION: <b><t t-esc="report_infos[0]['convention_id']"/></b> | MONTANT : <b><t t-esc="montant_global"/> <t t-esc="devise"/></b></center>
+                            </center>
+                        </h5>
+
+                         <t t-foreach="factures" t-as="facture">
+                            <div class="row" style="margin-top:40px!important;">
+                                <div class="col-12">
+                                     <div class="card" style="background-color:#999999!important" >
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-4">
+                                                    Date: <t t-esc="facture['date']"/><br/>
+                                                </div>
+                                                <div class="col-4">
+                                                    REF : <t t-esc="facture['ref']"/><br/>
+                                                </div>
+                                                <div class="col-4">
+                                                    Patient : <t t-esc="facture['partner']"/><br/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <table class="table table-sm" style="">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">#</th>
+                                                <th scope="col">Date</th>
+                                                <th scope="col">Acte</th>
+                                                <th scope="col">Montant</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr t-foreach="facture['lignes_de_facture']" t-as="ligne">
+                                                <th scope="row"></th>
+                                                <td><t t-esc="ligne['date']"/></td>
+                                                <td><t t-esc="ligne['produit']"/></td>
+                                                <td><t t-esc="ligne['prix']"/><t t-esc="facture['devise']"/></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                </t>
+            </t>
+        </template> -->
+
+        <template id="report_facture_convention_template">
+            <t t-call="web.html_container">
+                <t t-call="web.internal_layout">
+                    <div class="page">
+
+                         <t t-foreach="report_infos" t-as="report">
+                            <div>
+
+                                <h5 >
+                                    <center>
+                                        <h4>RAPPORT PERIODIQUE CONVENTION</h4>
+                                    </center>
+                                    <p></p>
+                                    <center>
+                                        DU <b><t t-esc="report_infos[0]['date_debut']"/></b> AU <b><t t-esc="report_infos[0]['date_fin']"/></b>
+                                        <br/>
+                                        <center>CONVENTION: <b><t t-esc="report_infos[0]['convention_id']"/></b> </center>
+                                    </center>
+                                </h5>
+                                
+                                <br/>
+
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Patient</th>
+                                            <th>Réf Facture</th>
+                                            <th>Date</th>
+                                            <!-- <th>Devise</th> -->
+                                            <th>Acte</th>
+                                            <th>Montant</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        
+                                        <t t-foreach="factures" t-as="partner_data">
+                                            <tr>
+                                                <td colspan="4"><t t-esc="partner_data['partner']"/></td>
+                                                <!-- <td><b>Total:</b> <t t-esc="som"/><t t-esc="devise"/></td> -->
+                                            </tr>
+                                            <t t-foreach="partner_data['invoices']" t-as="invoice">
+                                                <tr>
+                                                    <td></td>
+                                                    <td><t t-esc="invoice['ref']"/></td>
+                                                    <td><t t-esc="invoice['date']"/></td>
+                                                    <td></td>
+                                                </tr>
+                                                <t t-foreach="invoice['lignes_de_facture']" t-as="ligne">
+                                                    <tr>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <!-- <td></td> -->
+                                                        <td><t t-esc="ligne['produit']"/></td>
+                                                        <td><t t-esc="ligne['prix']"/><t t-esc="devise"/></td>
+                                                    </tr>
+                                                </t>
+                                            </t>
+                                        </t>
+                                    </tbody>
+                                </table><br/>
+								<center>
+                                    MONTANT GENERAL : <b><t t-esc="montant_global"/> <t t-esc="devise"/></b>
+                                </center>
+                            </div>
+                        </t>
+
+                    </div>
+                </t>
+            </t>
+        </template>
+
+
+    </data>
+</odoo>

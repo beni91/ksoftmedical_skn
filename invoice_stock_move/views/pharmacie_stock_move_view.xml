@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="customer_pharmacie_stock_move_view" model="ir.ui.view">
+            <field name="name">Move Name</field>
+            <field name="model">module.ordonnance</field>
+            <field name="inherit_id" ref="ksoftmedical.view_pharmacie_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//header" position="inside">
+                    <button name="action_stock_move" string="Transferer" type="object" class="oe_highlight"
+                            attrs="{'invisible':[('internal_status', '!=', 'pret')]}"/>
+                </xpath>
+                <xpath expr="//field[@name='service_id']" position="after">
+                    <field name="picking_type_id" string="Depot" readonly="1" force_save="1"/>
+                    <field name="invoice_picking_id" string="Bon de Livraison" 
+                        attrs="{'invisible': [('internal_status', 'not in', ['delivered'])]}"
+						readonly="1" force_save="1"/>
+                </xpath>
+                <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
+                    <button type="object"
+                            name="action_view_picking" internal_status="pret,partiel"
+                            class="oe_stat_button"
+                            attrs="{'invisible':['|',('internal_status','in',['draft','canced']),('picking_count', '&lt;', 1)]}"
+                            icon="fa-truck">
+                        <field name="picking_count" string="Sortir le stock" widget="statinfo"/>
+                    </button>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>

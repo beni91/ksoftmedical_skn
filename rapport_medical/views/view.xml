@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<!-- Stock -->
+
+	<menuitem id="rapport_menu_root"
+				name="Rapports"
+				groups="ksoftmedical.group_fertility_tresorerie"
+				web_icon="rapport_medical,static/src/img/Note.png"
+				sequence="55"/>
+
+		<menuitem id="rapport_stock_menu_root"
+					name="Rapport de Stock"
+					parent="rapport_menu_root"
+					sequence="55"/>
+
+		<menuitem id="rapport_stock_menu_root2"
+					name="Rapport de Stock"
+					parent="rapport_menu_root"
+					sequence="56"/>
+					
+
+		<!-- stock -->
+
+		<!-- Account -->
+
+			<menuitem id="menu_rapport_financier" parent="rapport_menu_root" 
+				sequence="5" name="Rapport Financier" groups="ksoftmedical.group_fertility_tresorerie"/>
+
+				<menuitem id="menu_rapport_financier_prive" parent="menu_rapport_financier" groups="ksoftmedical.group_fertility_tresorerie" 
+				action="action_dg_dailybook_wizard" sequence="1" name="Rapport de caisse privés"/>
+				
+				<menuitem id="menu_rapport_financier_convention" parent="menu_rapport_financier" groups="ksoftmedical.group_fertility_tresorerie" 
+				action="action_dg_convdailybook_wizard" sequence="2" name="Rapport de caisse abonné"/>
+				
+				<menuitem id="menu_myinvoice2" parent="menu_rapport_financier" groups="ksoftmedical.group_fertility_tresorerie" 
+				action="ksoftmedical.action_reception_invoice_today" sequence="3" name="Factures du jour"  />
+				
+				<menuitem id="menu_myinvoice22" parent="menu_rapport_financier" groups="ksoftmedical.group_fertility_tresorerie" 
+				action="ksoftmedical.action_reception_invoice_all" sequence="4" name="Toutes mes factures"  />
+	
+
+		<!-- Account -->
+
+		<!-- Stock Pharmacie -->
+			<menuitem id="menu_pharmacie_stock_report" parent="rapport_menu_root" groups="ksoftmedical.group_fertility_tresorerie"
+              sequence="10"
+              name="Rapport Stock"/>
+			  
+				<!--menuitem id="menu_pharmacie_sales_report12" 
+					groups="ksoftmedical.group_fertility_pharmacie"
+					parent="menu_pharmacie_report2"
+					action="ksoftmedical.action_releve_vente_pharmacie"
+					sequence="2"
+					name="Rapport de vente"/-->
+		<!-- Stock Pharmacie -->
+		
+		<!-- Statistique -->
+			<menuitem id="menu_statistique_report" parent="rapport_menu_root" groups="ksoftmedical.group_fertility_tresorerie"
+              sequence="10"
+              name="Statistique"/>
+			  
+				<menuitem id="menu_statistique_pharma_report" 
+					groups="ksoftmedical.group_fertility_tresorerie"
+					parent="menu_statistique_report"
+					action="action_prescription_medical"
+					sequence="1"
+					name="Prescriptions"/>
+				
+				<menuitem id="menu_statistique_consultation_report" 
+					groups="ksoftmedical.group_fertility_tresorerie"
+					parent="menu_statistique_report"
+					action="action_prescription_medical"
+					sequence="1"
+					name="Consultations"/>
+				
+				<menuitem id="menu_statistique_labo_report" 
+					groups="ksoftmedical.group_fertility_tresorerie"
+					parent="menu_statistique_report"
+					action="action_prescription_medical"
+					sequence="1"
+					name="Laboratoire"/>
+				
+				<menuitem id="menu_statistique_imagerie_report" 
+					groups="ksoftmedical.group_fertility_tresorerie"
+					parent="menu_statistique_report"
+					action="action_prescription_medical"
+					sequence="1"
+					name="Imagerie"/>
+				
+				<menuitem id="menu_statistique_disp_report" 
+					groups="ksoftmedical.group_fertility_tresorerie"
+					parent="menu_statistique_report"
+					action="action_prescription_medical"
+					sequence="1"
+					name="Dispensaire"/>
+				
+				<menuitem id="menu_statistique_hospi_report" 
+					groups="ksoftmedical.group_fertility_tresorerie"
+					parent="menu_statistique_report"
+					action="action_prescription_medical"
+					sequence="1"
+					name="Hospitalisation"/>
+				
+				<menuitem id="menu_statistique_sommary_report" 
+					groups="ksoftmedical.group_fertility_tresorerie"
+					parent="menu_statistique_report"
+					action="action_prescription_medical"
+					sequence="1"
+					name="Résumé statistique"/>
+		<!-- Statistique -->
+
+		
+
+
+
+</odoo>

@@ -1,0 +1,180 @@
+<odoo>
+
+    <record id="view_account_journal_form" model="ir.ui.view">
+        <field name="name">account.journal.form</field>
+        <field name="model">account.journal</field>
+        <field name="inherit_id" ref="account.view_account_journal_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='type']" position="after">
+                <field name="user_ids" widget="many2many_tags"/>
+            </xpath>
+        </field>
+    </record>
+	
+	<record id="view_id_payment_register_form2" model="ir.ui.view">
+        <field name="name">account.payment.register.form</field>
+        <field name="model">account.payment.register</field>
+        <field name="type">search</field>
+        <field name="inherit_id" ref="account.view_account_payment_register_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='journal_id']" position="attributes">
+                <attribute name="domain">[('user_ids','child_of', uid)]</attribute> 
+            </xpath>
+
+        </field>
+    </record>
+	
+	<!--<record id="account_journal_dashboard_kanban_view1" model="ir.ui.view"> -->
+        <!-- <field name="name">account.journal.dashboard.kanban</field> -->
+        <!-- <field name="model">account.journal</field> -->
+        <!-- <field name="inherit_id" ref="account.account_journal_dashboard_kanban_view"/> -->
+        <!-- <field name="arch" type="xml"> -->
+			<!-- <xpath expr="//div[hasclass('col overflow-hidden text-left')]" position="before">		 -->
+				<!-- <div class="col overflow-hidden text-left"> -->
+					<!-- <a type="object" name="open_action" context="{'search_default_draft': '1'}"> -->
+						<!-- <span t-if="journal_type == 'sale'" title="Invoices to Validate"> Mes factures </span> -->
+					<!-- </a> -->
+				<!-- </div> -->
+            <!-- </xpath> -->
+			
+        <!-- </field> -->
+    <!-- </record> -->
+	
+	<!--record id="account_journal_dashboard_kanban_view1" model="ir.ui.view">
+        <field name="name">account.journal.dashboard.kanban</field>
+        <field name="model">account.journal</field>
+        <field name="arch" type="xml">
+            <kanban create="false">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="type"/>
+                <field name="color"/>
+                <field name="show_on_dashboard"/>
+                <field name="kanban_dashboard"/>
+                <field name="activity_ids"/>
+                <field name="activity_state"/>
+                <field name="alias_domain"/>
+                <templates-->
+				
+					<!--t t-name="kanban-box">
+						<div class="o_kanban_card_header">
+								<div class="o_kanban_card_header_title">
+									<div class="o_primary col-12 p-0 w-75">
+										<field name="name"/>
+									</div>
+								</div>
+							</div>
+                        <div class="col-6 col-sm-5 mb-3 mb-sm-0 o_kanban_primary_left">
+                            <t>
+                                <button type="object" name="action_create_new" class="btn btn-primary o_invoice_new">
+                                    <span>New Invoice</span>
+                                </button>
+                            </t>
+                            <t t-if="journal_type == 'purchase'">
+                                <field name="entries_count" invisible="1"/>
+                                <t t-if="record.entries_count.raw_value > 0">
+                                    <button class="btn btn-primary o_button_upload_bill oe_kanban_action_button" journal_type="purchase" groups="account.group_account_invoice">
+                                        <span>Upload</span>
+                                    </button>
+                                </t>
+                                <t t-else="">
+                                    <button type="object" name="action_create_vendor_bill" class="btn btn-primary oe_kanban_action_button" journal_type="purchase" groups="account.group_account_invoice">
+                                        <span>Upload</span>
+                                    </button>
+                                </t>
+                                <a type="object" name="action_create_new" class="o_invoice_new" groups="account.group_account_invoice">Create Manually</a>
+                            </t-->
+                        <!--/div>
+                        <div class="col-6 col-sm-7 o_kanban_primary_right">
+                            <div class="row" t-if="dashboard.number_draft">
+                                <div class="col overflow-hidden text-left">
+                                    <a type="object" name="open_action" context="{'search_default_draft': '1'}">
+                                        <span t-if="journal_type == 'sale'" title="Invoices to Validate"><t t-esc="dashboard.number_draft"/> Invoices to Validate</span>
+                                        <span t-if="journal_type == 'purchase'" title="Bills to Validate"><t t-esc="dashboard.number_draft"/> Bills to Validate</span>
+                                    </a>
+                                </div>
+                                <div class="col-auto text-right">
+                                    <span><t t-esc="dashboard.sum_draft"/></span>
+                                </div>
+                            </div>
+                            <div class="row" t-if="dashboard.number_waiting">
+                                <div class="col overflow-hidden text-left">
+                                    <a type="object" t-if="journal_type == 'sale'" name="open_action"
+                                    context="{'search_default_open':1, 'search_default_posted':1, 'search_default_partial': 1}" id="account_dashboard_sale_pay_link">
+                                        <t t-esc="dashboard.number_waiting"/> Unpaid Invoices
+                                    </a>
+
+                                    <a type="object" t-if="journal_type == 'purchase'" name="open_action"
+                                    context="{'search_default_open':1, 'search_default_posted':1, 'search_default_partial': 1}" id="account_dashboard_purchase_pay_link">
+                                        <t t-esc="dashboard.number_waiting"/> Bills to Pay
+                                    </a>
+                                </div>
+                                <div class="col-auto text-right">
+                                    <span><t t-esc="dashboard.sum_waiting"/></span>
+                                </div>
+                            </div-->
+                            <!--div class="row">
+                                <div class="col overflow-hidden text-left">
+                                    <a type="object" name="open_action">
+                                        <span title="Late Invoices"> Late Invoices</span>
+                                        <span title="Late Bills"> Late Bills</span>
+                                    </a>
+                                </div>
+                                <div class="col-auto text-right">
+                                    <span><t t-esc="dashboard.sum_late"/></span>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+					
+					<t t-name="kanban-box">
+						<div class="oe_kanban_global_click">
+							<div class="o_kanban_card_header">
+								<div class="o_kanban_card_header_title">
+									<div class="o_primary col-12 p-0 w-75">
+										<field name="name"/>
+									</div>
+								</div>
+							</div>
+							<div class="container o_kanban_card_content mt-3">
+								<div class="row">
+									<div class="col-6 o_kanban_primary_left">
+										<t>
+											<button type="object" name="action_create_new" class="btn btn-primary o_invoice_new">
+												<span>New Invoice</span>
+											</button>
+										</t>
+									</div>
+									<div class="col-6 o_kanban_primary_right">
+										 <div class="col overflow-hidden text-left">
+											<a type="object" name="open_action">
+												<span title="Late Invoices"> Mes factures</span>
+											</a>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</t>
+				</templates>
+                    
+                    
+            </kanban>
+        </field>
+    </record-->
+	
+	
+	<!--record id="open_account_dashboard_kanban_custom" model="ir.actions.server">
+        <field name="name">Tableau de board</field>
+        <field name="model_id" ref="model_account_journal"/>
+		<field name="state">code</field>
+        <field name="code">action=model.action_get_users()</field>
+    </record>
+	
+	<menuitem id="menu_board_journal_2" name="Tableau de bord"
+			parent="account.menu_finance"
+			action="open_account_dashboard_kanban_custom" groups="base_accounting_kit.group_ngaliema_cassier"
+			sequence="1"/-->
+
+</odoo>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="configuration_action" model="ir.actions.act_window">
+        <field name="name">Parametre</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module': 'commission', 'bin_size': False}</field>
+    </record>
+ <record id="res_config_settings_view_form_commission" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.commission</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="100"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('settings')]" position="inside">
+                <div class="app_settings_block o_commission_block"
+                     data-string="Commission"
+                     string="Prélevement Frais Informatique"
+                     data-key="commission"
+                     >
+                     <div class="icon d-none d-md-block" style="background : url('/prevelement_frais_informatique/static/description/icon.png') no-repeat center;background-size:contain;">
+                     </div>
+                    <h2>Parametrage de Frais Informatique</h2>
+                    <div class="row mt16 o_settings_container" id="first_ord_1">
+					<div class="col-xs-12 col-md-6 o_setting_box" id="discount_setting">
+						<div class="o_setting_right_pane">
+							<label for="type_prevelement"/>
+							<field name="type_prevelement"/>
+						</div>
+					</div>
+					<div class="col-xs-12 col-md-6 o_setting_box">
+						<div class="o_setting_right_pane">
+							<label for="montant_prelever" attrs="{'invisible': ['|',('type_prevelement','=', 'par_categorie_article'),('type_prevelement','=', False)]}"/>
+							<field name="montant_prelever" attrs="{'required': [('type_prevelement','=', 'par_montant_global')],'invisible': ['|',('type_prevelement','=', 'par_categorie_article'),('type_prevelement','=', False)]}"/>
+						</div>
+					</div>
+
+				</div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

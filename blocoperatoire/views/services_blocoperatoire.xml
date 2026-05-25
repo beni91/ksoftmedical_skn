@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<record id="view_listehospitalisation_form2" model="ir.ui.view">
+		<field name="name">module.hospitalisation.form</field>
+		<field name="model">module.hospitalisation</field>
+		<field name="inherit_id" ref="fertility_hospitalisation.view_listehospitalisation_form"/>
+		<field name="arch" type="xml">
+			<xpath expr="//page[4]" position="inside">
+		        <group string="Bloc Opératoire">
+		        	<field name="hospi_bloc" nolabel="1"
+		        		context="{'default_patient_id': patient_id}">
+		        		<tree>
+		        			<field name="bloc_name"/>
+		        			<field name="date_intervention" required="1"/>
+		        			<field name="heure_intervention" required="1"/>
+		        			<field name="actes" required="1"
+		        				widget="Many2one"  domain="[('is_actes_medicaux','=',True)]"/>
+		        				<field name="doctor"/>
+		        				<field name="state"/>
+	        			</tree>
+	        			<form>
+	        				<sheet>
+	        					<group>
+	        						<group id="header_left_group">
+	        							<field name="patient_id" 
+	        								readonly="1" force_save="1"/>
+	        								<field name="dob" force_save="1"/>
+	        								<field name="age" force_save="1"/>
+	        								<field name="sex" force_save="1"/>
+	        							</group>
+	        							<group id="header_right_group">
+	        								<field name="doctor"/>
+	        							</group>
+	        						</group>
+	        						<group string="Info sur Intervention">
+	        							<group id="header_left_group">
+	        								<field name="actes" required="1"/>
+	        							</group>
+	        							<group id="header_right_group">
+	        								<field name="date_intervention" required="1"/>
+	        								<field name="heure_intervention" required="1"/>
+	        							</group>
+	        						</group>
+	        					</sheet>
+	        				</form>
+	        			</field>
+		        </group>
+		    </xpath>
+		</field>
+	</record>
+
+
+</odoo>

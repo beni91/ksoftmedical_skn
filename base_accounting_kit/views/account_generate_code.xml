@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_generatecode_form" model="ir.ui.view">
+        <field name="name">account.generate.code.form</field>
+        <field name="model">account.journal.code</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="internal_status" widget="statusbar"/>
+                    <button name="open_generate_code" class="oe_highlight" type="object"
+                            attrs="{'invisible': [('internal_status', '!=', 'new')]}"
+                            string="Ouvrir le code jour"/>
+                    
+                    <button name="close_generate_code" class="oe_highlight" type="object"
+                            attrs="{'invisible': [('internal_status', '!=', 'cours')]}"
+                            string="Fermer le code jour"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group id="header_left_group" >
+                            <field name="date_ouverture"/>
+                            <field name="date_fermeture" readonly="0"/>
+                            <field name="journal" domain="[('orientation_journal','=','code')]"/>
+                        </group>
+                        <group id="header_right_group">
+                            <field name="code"/>
+                            <field name="code_jour" readonly="0"/>
+                            <field name="equipe"/>
+                            <field name="date_ouverture1"/>
+                            <field name="date_fermeture1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_generatecode_tree" model="ir.ui.view">
+        <field name="name">account.generate.code.tree</field>
+        <field name="model">account.journal.code</field>
+        <field name="arch" type="xml">
+            <tree decoration-success="internal_status=='cours'">
+                <field name="date_ouverture"/>
+                <field name="date_fermeture"/>
+                <field name="journal"/>
+                <field name="code_jour"/>
+                <field name="equipe"/>
+                <field name="internal_status"/>
+            </tree>
+        </field>
+    </record>
+
+
+    <record id="action_generatecode" model="ir.actions.act_window">
+        <field name="name">Generation code jour</field>
+        <field name="res_model">account.journal.code</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+    </record>
+
+  
+
+    <!-- Rapport Caisse -->
+		<menuitem id="menu_generate_code" name="Code Jour" parent="account.menu_finance" sequence="10">
+		
+            <menuitem id="menu_generate_code_jour" name="Generation Code Jour" action="action_generatecode" sequence="1"
+				/>
+				
+			<!--menuitem id="menu_action_print_maternite" name="Rapport Maternité" action="account.action_move_in_invoice_type" sequence="3"/>
+			<menuitem id="menu_action_print_imagerie" name="Rapport Imagerie" action="account.action_move_in_invoice_type" sequence="4"/>
+			<menuitem id="menu_action_print_garde" name="Rapport Garde" action="account.action_move_in_invoice_type" sequence="5"/-->
+        </menuitem>
+
+
+
+    <!-- CONSULTATION SOCIALE -->
+
+    <!-- <record id="action_appointment_social_all" model="ir.actions.act_window">
+        <field name="name">Toutes les consultations</field>
+        <field name="res_model">fertility.appointment</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('internal_status','=','consult_social')]</field>
+    </record>
+    <record id="action_appointment_social_today" model="ir.actions.act_window">
+        <field name="name">Prévu aujourd'hui</field>
+        <field name="res_model">fertility.appointment</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('internal_status','=','consult_social'),('date','=',context_today())]</field>
+    </record> -->
+
+
+    <!-- CONSULTATION GYNECO -->
+
+    <!-- <record id="action_appointment_gyneco_all" model="ir.actions.act_window">
+        <field name="name">Toutes les consultations</field>
+        <field name="res_model">fertility.appointment</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('internal_status','in',['attente','consult_gyneco','open','closed'])]</field>
+    </record>
+
+    <record id="action_appointment_inwait_today" model="ir.actions.act_window">
+        <field name="name">Patients en attente du médecin</field>
+        <field name="res_model">fertility.appointment</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">
+            [('internal_status','=','attente'),('date','=',context_today())]
+        </field>
+    </record>
+
+    <record id="action_appointment_encours_today" model="ir.actions.act_window">
+        <field name="name">Patients en consultation</field>
+        <field name="res_model">fertility.appointment</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">
+            [('internal_status','in',['open', 'consult_gyneco']),('date','=',context_today())]
+        </field>
+    </record>
+
+    <record id="action_appointment_test_today" model="ir.actions.act_window">
+        <field name="name">Patients en test</field>
+        <field name="res_model">fertility.appointment</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">
+            [('internal_status','=','open'),('date','=',context_today())]
+        </field>
+    </record>
+
+    <menuitem id="menu_consultation_gyneco" parent="menu_consult" groups="group_fertility_medecin_gyneco"
+              sequence="2"
+              name="Consultations"
+    /> -->
+
+    <!--menuitem id="menu_consultation_gyneco1" parent="menu_consultation_gyneco" groups="group_fertility_medecin_gyneco"
+              action="action_appointment_gyneco_today"
+              sequence="1"
+              name="Prévu aujourd'hui"
+    /-->
+
+    <!-- <menuitem id="menu_consultation_attente" parent="menu_consultation_gyneco" groups="group_fertility_medecin_gyneco"
+              action="action_appointment_inwait_today"
+              sequence="1"
+              name="Patient en attente du médecin"
+    />
+
+    <menuitem id="menu_consultation_consult" parent="menu_consultation_gyneco" groups="group_fertility_medecin_gyneco"
+              action="action_appointment_encours_today"
+              sequence="2"
+              name="Patient en consultation"
+    /> -->
+
+    <!--menuitem id="menu_consultation_test" parent="menu_consultation_gyneco" groups="group_fertility_medecin_gyneco"
+              action="action_appointment_test_today"
+              sequence="3"
+              name="Patient en test"
+    /-->
+
+    <!-- <menuitem id="menu_consultation_gyneco2" parent="menu_consultation_gyneco" groups="group_fertility_medecin_gyneco"
+              action="action_appointment_gyneco_all"
+              sequence="5"
+              name="Toutes les consultations"
+    /> -->
+
+    <!-- LES RENDEZ-VOUS -->
+    <!--record id="view_appointment_patient_tree_inherited" model="ir.ui.view">
+        <field name="name">ksoft.appointment.tree.inherit</field>
+        <field name="model">ksoft.appointment</field>
+        <field name="inherit_id" ref="ksoftmedical.view_appointment_patient_tree"/>
+        <field name="arch" type="xml">
+            <field name="ref_moved" position="attributes">
+                <attribute name="optional">1</attribute>
+            </field>
+        </field>
+    </record-->
+    <!-- <record id="view_appointment_consultation_tree" model="ir.ui.view">
+        <field name="name">ksoft.appointment.tree2</field>
+        <field name="model">ksoft.appointment</field>
+        <field name="arch" type="xml">
+            <tree decoration-success="internal_status=='invoicing'"
+                  decoration-info="internal_status=='home'"
+                  decoration-muted="internal_status=='closed'"
+                  decoration-danger="etat=='annul'">
+
+                <field name="date_rdv"/>
+                <field name="patient_id"/>
+                <field name="gender" optional="hide"/>
+                <field name="age" optional="hide"/>
+                <field name="convention_id" string="Convention" optional="hide"/>
+                <field name="medecin"/>
+                <field name="etat" invisible="1"/>
+                <field name="internal_status" string="Etat Rdv"/>
+                <field name="status_moved" string="Etat Facture"/>
+                <field name="status_consultation" string="Etat Consult."/>
+            </tree>
+        </field>
+    </record>
+
+
+    <record id="action_rdv_consultation_all" model="ir.actions.act_window">
+        <field name="name">Tous les rendez-vous</field>
+        <field name="res_model">ksoft.appointment</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree, form</field>
+    </record>
+
+    <record id="action_rdv_consultation_du_jour" model="ir.actions.act_window">
+        <field name="name">Rendez-vous du jour</field>
+        <field name="res_model">ksoft.appointment</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree, form</field>
+        <field name="domain">[('date_rdv','=',context_today())]</field>
+    </record> -->
+
+    <!--menuitem id="menu_rdv_consult_all" parent="menu_rdv_consult"
+              action="action_rdv_consultation_all"
+              sequence="2"
+              name="Tous les rendez-vous"
+    / -->
+
+</odoo>

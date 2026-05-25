@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+        <!-- Rapport comptabilité periodique  -->
+    <record id="view_releve_vente_pharmacie_wizard" model="ir.ui.view">
+        <field name="name">Rélevé de Vente Pharmacie</field>
+        <field name="model">account.cash.report</field>
+        <field name="arch" type="xml">
+            <form string="Rapport Comptable">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="start_date" required="1"/>
+                            <field name="end_date_pharma" />
+							
+                        </group>
+                        <group>
+                            <field name="code_jour" 
+							domain="[('date_ouverture','=',start_date),('date_fermeture','=',end_date_pharma),('internal_status','=','close')]" 
+							widget="selection"
+							required="1"/>
+							
+							<!--field name="convention" domain="[('is_company','=',True)]" 
+							/-->
+							
+                        </group>
+                    </group>
+					
+					<field name="convention_ids" string="Selectionnez une convention"/>
+
+                </sheet>
+                <footer>
+                    <button name="compta_convention_report_print" string="Rapport Convention PDF" type="object" class="btn-primary"/>
+                    <button name="compta_private_report_print" string="Rapport Privé PDF" type="object" class="btn-primary"/>
+					<!--button name="change_society_to_person" string="Societe to Individual" type="object" class="btn-primary"/-->
+					
+                    <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="z" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+
+    <!-- Rapport periodique de caisse 
+    <record id="view_report_dailybook_wizard" model="ir.ui.view">
+        <field name="name">Rapport de Caisse</field>
+        <field name="model">account.cash.report</field>
+        <field name="arch" type="xml">
+            <form string="Daily Report">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="start_date" required="1"/>
+                            <field name="end_date" required="1"/>
+                        </group>
+                        <group>
+                            <field name="journal" domain="[('type','=','sale')]" required="1"/>
+                            <field name="journal_payement" domain="[('type', 'in', ('bank', 'cash'))]"/>
+
+                        </group>
+                    </group>
+
+                </sheet>
+                <footer>
+                    <button name="dailybook_print" string="Impression PDF" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="z" />
+                </footer>
+            </form>
+        </field>
+    </record>-->
+
+        <!-- Rapport periodique par patient 
+    <record id="view_report_dailybook_patient_wizard" model="ir.ui.view">
+        <field name="name">Rapport du patient</field>
+        <field name="model">account.cash.report</field>
+        <field name="arch" type="xml">
+            <form string="Daily Report">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="start_date" required="1"/>
+                            <field name="end_date" required="1"/>
+                        </group>
+                        <group>
+                            <field name="journal" domain="[('type','=','sale')]" required="1"/>
+                        </group>
+                    </group>
+
+                </sheet>
+                <footer>
+                    <button name="dailybook_patient_print" string="Impression PDF" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="z" />
+                </footer>
+            </form>
+        </field>
+    </record>-->
+
+    <record id="action_releve_vente_pharmacie" model="ir.actions.act_window">
+        <field name="name">Rélevé de Vente Pharmacie</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">account.cash.report</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_releve_vente_pharmacie_wizard"/>
+        <field name="target">new</field>
+    </record>
+
+    <!--record id="action_report_dailybook_patient_wizard" model="ir.actions.act_window">
+        <field name="name">Rapport du patient</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">account.cash.report</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_report_dailybook_patient_wizard"/>
+        <field name="target">new</field>
+    </record>
+
+    <record id="action_report_compta_wizard" model="ir.actions.act_window">
+        <field name="name">Rapport Comptable</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">account.cash.report</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_report_comptable_wizard"/>
+        <field name="target">new</field>
+    </record-->
+
+    <!--record id="action_report_caisse" model="ir.actions.report">
+        <field name="name">Rapport de Caisse</field>
+        <field name="model">account.cash.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">base_accounting_kit.report_dailybook</field>
+        <field name="report_file">base_accounting_kit.report_dailybook</field>
+        <field name="print_report_name">'Rapport-%s' %(object.rapport_name)</field>
+        <field name="binding_model_id" ref="model_account_cash_report"/>
+        <field name="binding_type">report</field>
+        <field name="attachment_use">False</field>
+    </record>
+
+    <record id="action_report_dette" model="ir.actions.report">
+        <field name="name">Rapport des dettes</field>
+        <field name="model">account.cash.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">base_accounting_kit.report_private_dette</field>
+        <field name="report_file">base_accounting_kit.report_private_dette</field>
+        <field name="print_report_name">'Rapport-%s' %(object.rapport_name)</field>
+        <field name="binding_model_id" ref="model_account_cash_report"/>
+        <field name="binding_type">report</field>
+        <field name="attachment_use">False</field>
+    </record-->
+
+
+    <record id="action_convention_report_compta" model="ir.actions.report">
+        <field name="name">Rélevé de vente Pharmacie / Conventionné</field>
+        <field name="model">account.cash.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ksoftmedical.releve_vente_pharmacie_convention</field>
+        <field name="report_file">ksoftmedical.releve_vente_pharmacie_convention</field>
+        <field name="print_report_name">'Releve-%s' %(object.rapport_name)</field>
+        <field name="binding_model_id" ref="model_account_cash_report"/>
+        <field name="binding_type">report</field>
+        <field name="attachment_use">False</field>
+    </record>
+
+    <record id="action_prives_report_compta" model="ir.actions.report">
+        <field name="name">Rélevé de vente Pharmacie / Comptant</field>
+        <field name="model">account.cash.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ksoftmedical.releve_vente_pharmacie_comptant</field>
+        <field name="report_file">ksoftmedical.releve_vente_pharmacie_comptant</field>
+        <field name="print_report_name">'Releve-%s' %(object.rapport_name)</field>
+        <field name="binding_model_id" ref="model_account_cash_report"/>
+        <field name="binding_type">report</field>
+        <field name="attachment_use">False</field>
+    </record>
+
+
+    <menuitem id="menu_action_releve_pharma" name="Rapport Pharmacie" action="action_releve_vente_pharmacie" 
+                parent="base_accounting_kit.menu_cash_reporting" sequence="3"
+                groups="base_accounting_kit.group_ngaliema_cassier_pharmacie"/>
+
+    <!-- <menuitem id="menu_dailyreporting1" parent="base_accounting_kit.menu_vzraporting" name="Caisse" sequence="2" groups="ksoftmedical.group_fertility_caisse"/> -->
+
+            <!-- <menuitem id="menu_dailybook10"  parent="menu_dailyreporting1" -->
+                <!-- action="action_releve_vente_pharmacie" name="Rapport journalier de caisse" sequence="1"/> -->
+            <!-- <menuitem id="menu_dailybook11"  parent="menu_dailyreporting1" -->
+                <!-- action="action_report_dailybook_patient_wizard" name="Rapport des dettes" sequence="1"/> -->
+
+
+    <!--menuitem id="menu_compta_reportinf" parent="base_accounting_kit.menu_vzraporting" name="Comptabilité" sequence="3" groups="ksoftmedical.group_fertility_caisse"/>
+
+            <menuitem id="menu_compta_report1"  parent="menu_compta_reportinf"
+                action="action_report_compta_wizard" name="Rapport Comptables" sequence="1"/>
+            <menuitem id="menu_compta_report2"  parent="menu_compta_reportinf"
+                action="action_report_compta_wizard" name="Rapport privés" sequence="2"/>
+
+            <menuitem id="menu_dailybook12"  parent="menu_dailyreporting1"
+                action="action_report_dailybookwizard" name="Rapport des dettes" sequence="1"/-->
+</odoo>
