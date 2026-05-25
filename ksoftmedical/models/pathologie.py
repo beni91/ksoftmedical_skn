@@ -35,9 +35,9 @@ class PathologieModule(models.Model):
     pnompatient = fields.Char(related='patient_id.postnom', string="Postnom")
     prnompatient = fields.Char(related='patient_id.prenom', string="Prenom")
     dob = fields.Date(related='patient_id.birth', string='Date Naiss', readonly=True, )
-    sex = fields.Selection([('m', 'Masculin'), ('f', 'Féminin')], string='Sexe', readonly=True)
+    sex = fields.Selection([('M', 'Masculin'), ('F', 'Féminin')], string='Sexe', readonly=True)
     age = fields.Integer(related='patient_id.age', string='Age', readonly=True)
-    date_diagnostic = fields.Datetime(string='Date', readonly=True, default=fields.Date.today)
+    date_diagnostic = fields.Datetime(string='Date', readonly=True, default=fields.Date.context_today)
     medecin = fields.Many2one('fertility.doctor', readonly=True, string="Médecin")
     medecin_diag = fields.Many2one('res.users', readonly=True, string="Médecin")
     internal_status = fields.Selection([('hypo', 'Hypothèse'), ('def', 'Définitive')],

@@ -1,0 +1,9 @@
+# Ne pas suivre les fichiers compilés Python
+*.pyc
+*.pyo
+__pycache__/
+
+# Ne pas suivre les fichiers de configuration ou logs locaux (optionnel mais recommandé)
+*.log
+.idea/
+.vscode/

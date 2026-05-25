@@ -421,10 +421,10 @@ class DiagnosticHospitalisation(models.Model):
 
     diagnostic_hospi = fields.Many2one('module.hospitalisation', string="Hospitalisation")
 
-    @api.model
-    def create(self, vals):
-        #vals['origine'] = "Hospitalisation"
-        return super(DiagnosticHospitalisation, self).create(vals)
+    # @api.model
+    # def create(self, vals):
+    #     #vals['origine'] = "Hospitalisation"
+    #     return super(DiagnosticHospitalisation, self).create(vals)
 
 
 # class BlocHospitalisation(models.Model):

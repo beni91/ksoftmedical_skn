@@ -89,7 +89,7 @@ class Appointment(models.Model):
     matricule = fields.Char(related='patient_id.matricule', string="Matricule", store=True)
     categorie = fields.Selection(related='patient_id.categorie', string="Catégorie", store=True)
     classe = fields.Selection(related='patient_id.classe', string="Classe", store=True)
-
+    image_1920 = fields.Image(string="Photo", max_width=1920, max_height=1920)
     numero_billet = fields.Char(string="Billet d'envoi")
     email = fields.Char(related='patient_id.email', string="Email", store=True)
     phone = fields.Char(related='patient_id.phone', string="Téléphone", store=True)
@@ -1415,12 +1415,42 @@ class PathologieAppointment(models.Model):
     _order = 'date_diagnostic desc'
 
     appointment_id = fields.Many2one('fertility.appointment', string='Appointment')
+    saving_pathologie = fields.Boolean(string="OK")
+    cancel_pathologie = fields.Boolean(string="NO")
+    confirm_status = fields.Selection([('draft', 'Brouillon'), ('conf', 'Confirmer'), ('cancel', 'Annuler')],
+                                      default='draft', string='Etat')
+    cancel_by = fields.Many2one('res.users', readonly=True, string="Cancel par")
+    date_cancel = fields.Datetime(string='Date')
     
     @api.depends('appointment_id')
     def appointment_patient(self):
         if self.appointment_id:
             self.patient_id = self.appointment_id.patient_id.id
 
+    @api.onchange('saving_pathologie')
+    def save_pathologie_medical(self):
+        if self.saving_pathologie:
+            patho = self.create({
+                'pathologie': self.pathologie.id,
+                'explication': self.explication,
+                'confirm_status':'conf',
+                #'saving_pathologie':True,
+                #'date_diagnostic': fields.Datetime.now(),
+            })
+
+    @api.onchange('cancel_pathologie')
+    def cancel_pathologie_medical(self):
+        if self.cancel_pathologie:
+            patho = self.write({
+                'cancel_by': self.env.user.id,
+                'confirm_status':'cancel',
+                'cancel_pathologie':True,
+                'date_cancel': fields.Datetime.now(),
+            })
+
+    def unlink(self):
+        #self.ensure_one()
+        raise UserError(_("Vous ne pouvez pas effectuer cette action"))
 
 class AppointmentType(models.Model):
     _name = 'fertility.appointment.type'
@@ -1864,6 +1894,8 @@ class Appointment(models.Model):
     
     ### Résumé antécédents
     resume_atcd = fields.Html(related='patient_id.resume_atcd',string="Résumé Antécédent")
+
+    resume_diagnost = fields.Html(compute='_get_last_diagnostics',string="Résumé Diagnostics")
     
     
     @api.onchange('type_consultation')
@@ -1890,6 +1922,35 @@ class Appointment(models.Model):
         else:
             self.examen_physique = cont
     
+    @api.depends('diagnostics_ids')
+    def _get_last_diagnostics(self):
+        #content =""
+        for appointment_id in self:
+            rhs = gp = ''
+            list_diag = []
+            diagnostics = self.env['module.diagnostics'].search([('patient_id','=',appointment_id.patient_id.id)])
+            list_diag = []
+            content =""
+            if diagnostics:
+                content += '<table class="table">'
+                content += '<tr><th width="20%" style="text-align:center">DATE</th><th width="30%" style="text-align:center">DIAGNOSTICS</th>'
+                content += '<th width="30%" style="text-align:center">COMMENTAIRE</th><th width="20%" style="text-align:center">MEDECIN</th></tr>'
+                content += '<tr><th colspan="4" style="text-align:center;" class="table-info">Affichage limité aux 3 derniers diagnostics. Pour voir plus, cliquez sur le button "Diagnostics"</th>'
+                list_diag = diagnostics[-3:]
+                #raise UserError(diagnostics)
+                for diag_id in list_diag:
+                    content += '<tr><td>'+ str((diag_id.date_diagnostic).strftime("%d/%m/%Y")) +'</td>'
+                    content += '<td>'+ str(diag_id.pathologie.name) +'</td>'
+                    content += '<td>'+ str(diag_id.explication) +'</td>'
+                    content += '<td>'+ str(diag_id.medecin_diag.partner_id.display_name) +'</td></tr>'
+                
+                content += '</table>'
+                
+            #appointment_id.write({'resume_diagn':content})
+            
+            #for diag in self:
+            appointment_id.resume_diagnost = content
+
     def action_save_consultation(self):
         ## Examen medical générale
         content = ""
