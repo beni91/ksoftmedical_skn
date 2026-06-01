@@ -131,7 +131,7 @@
         <field name="context">{'default_appointment_id':active_id}</field>
     </record>
 
-    <record id="view_appointment_form" model="ir.ui.view">
+	<record id="view_appointment_form" model="ir.ui.view">
         <field name="name">fertility.appointment.form</field>
         <field name="model">fertility.appointment</field>
         <field name="arch" type="xml">
@@ -178,290 +178,26 @@
                             </p>
                         </div>
                     </center>
-
-                <field name="patient_id" invisible="1"/> 
-                <field name="gender" invisible="1"/>
-                <field name="prenom" invisible="1"/>
-                <field name="postnom" invisible="1"/>
-                <field name="birth" invisible="1"/>
-                <field name="age" invisible="1"/>
-                <field name="categorie" invisible="1"/>
-                <field name="parent_id" invisible="1"/>
-                <field name="matricule" invisible="1"/>
-                <field name="classe" invisible="1"/>
-                <field name="numero_billet" invisible="1"/>
-                <field name="function" invisible="1"/>
-                <field name="date" invisible="1"/>
-                <field name="date_cons_1" invisible="1"/>
-                <field name="date_cons_2" invisible="1"/>
-                <field name="motif_rdv" invisible="1"/>
-                <field name="type_cas" invisible="1"/>
-                <field name="speciality" invisible="1"/>
-                <field name="type_consultation" invisible="1"/>
-                <field name="infirmiere_id" invisible="1"/>
-                <field name="doctor_id" invisible="1"/>
-                <field name="product_id" invisible="1"/>
-
-
-                <div class="row">
-
-				  <!-- ================= LEFT CARD : PATIENT ================= -->
-				  <div class="col-lg-4">
-
-					  <div class="o_patient_card_container p-3 mb-3"
-						  style="
-							  border:1px solid #d1ecf1;
-							  border-radius:12px;
-							  box-shadow:0 6px 12px rgba(0,0,0,0.08);
-							  background:white;
-						  ">
-
-						  <!-- PHOTO -->
-						  <div class="text-center mb-3">
-
-							  <div style="
-									  width:100px;
-									  height:100px;
-									  margin:auto;
-									  border-radius:50%;
-									  overflow:hidden;
-									  border:3px solid white;
-									  box-shadow:0 2px 8px rgba(0,0,0,0.2);
-								  ">
-
-								  <t t-if="record.image_1920 and record.image_1920.raw_value">
-									  <img t-att-src="'/web/image/fertility.appointment/' + record.id.raw_value + '/image_1920'"
-										   style="width:100%;height:100%;object-fit:cover"/>
-								  </t>
-
-								  <t t-else="">
-									  <img src="/ksoftmedical/static/avatar.jpg"
-										   style="width:100%;height:100%;object-fit:cover"/>
-								  </t>
-
-							  </div>
-
-							  <h4 class="mt-2 text-primary">
-								  <field name="patient_id" readonly="1"/>
-							  </h4>
-
-							  <div class="text-muted">
-								  <i class="fa fa-birthday-cake"/> 
-								  <field name="birth"/> 
-								  (<field name="age"/> ans)
-							  </div>
-
-							  <div class="text-muted">
-								  <i class="fa fa-user"/> 
-								  <field name="gender"/>
-							  </div>
-
-						  </div>
-
-
-						  <!-- DETAILS PRO -->
-						  <h5 class="text-info border-bottom pb-1">
-							  <i class="fa fa-info-circle"/> Détails Professionnels
-						  </h5>
-
-						  <table class="table table-sm table-borderless">
-
-							  <tr>
-								  <td><b>Catégorie</b></td>
-								  <td><field name="categorie"/></td>
-							  </tr>
-
-							  <tr>
-								  <td><b>Convention</b></td>
-								  <td><field name="parent_id"/></td>
-							  </tr>
-
-							  <tr>
-								  <td><b>Matricule</b></td>
-								  <td><field name="matricule"/></td>
-							  </tr>
-
-							  <tr>
-								  <td><b>Classe</b></td>
-								  <td><field name="classe"/></td>
-							  </tr>
-
-							  <tr>
-								  <td><b>Numéro Billet</b></td>
-								  <td><field name="numero_billet"/></td>
-							  </tr>
-
-							  <tr>
-								  <td><b>Fonction</b></td>
-								  <td><field name="function"/></td>
-							  </tr>
-
-						  </table>
-
-					  </div>
-
-				  </div>
-
-
-				  <!-- ================= RIGHT PANEL ================= -->
-				  <div class="col-lg-8">
-
-
-					  <!-- ACTION BUTTONS -->
-					  <div class="row o_stat_buttons mb-3">
-
-						  <div class="col-md-3 mb-2">
-                            <button string="Dossier Archivé" type="action"
-                                name="%(action_view_archive_patient_tree)d"
-                                class="oe_stat_button btn btn-outline-primary w-100 h-70"
-                                icon="fa-archive"/>
-						  </div>
-
-						  <div class="col-md-3 mb-2">
-							  <button string="Impression dossier" type="action"
-                                name="%(action_wizard_reporting_appointment)d"
-                                class="oe_stat_button btn btn-outline-primary w-100 h-70" icon="fa-print"/>
-						  </div>
-
-						  <div class="col-md-3 mb-2">
-							  <button string="Consultations" type="object"
-                                name="historique_appointment" context="{'default_patient_id': patient_id}"
-                                class="oe_stat_button btn btn-outline-primary w-100 h-70" icon="fa-user-md"/>
-						  </div>
-
-						  <div class="col-md-3 mb-2">
-							  <button string="S.Vitaux" type="object"
-                                name="open_list_surveillance" context="{'default_patient_id': patient_id}"
-                                class="oe_stat_button btn btn-outline-primary w-100 h-70" icon="fa-heartbeat"/>
-						  </div>
-
-						  <div class="col-md-3 mb-2">
-							  <button string="Diagnostics" type="object"
-                                name="historique_diagnostic" context="{'default_patient_id': patient_id}"
-                                class="oe_stat_button btn btn-outline-primary w-100 h-70" icon="fa-warning"/>
-						  </div>
-
-						<div class="col-md-3 mb-2">
-							<button name="action_open_sommaire_laboresult" type="object"
-                                class="oe_stat_button btn btn-outline-primary w-100 h-70" icon="fa-flask">
-                                <div class="o_form_field o_stat_info">
-                                    <span class="o_stat_value">
-                                    </span>
-                                    <span class="o_stat_text">Labo</span>
-                                </div>
-                            </button>
-						</div>
-
-                        <div class="col-md-3 mb-2">
-							<button name="action_open_sommaire_imagerieresult" type="object"
-                                class="oe_stat_button btn btn-outline-primary w-100 h-70" icon="fa-x-ray">
-                                <div class="o_form_field o_stat_info">
-                                    <span class="o_stat_value">
-                                    </span>
-                                    <span class="o_stat_text">Imagerie</span>
-                                </div>
-                            </button>
-						</div>
-
-                        <div class="col-md-3 mb-2">
-							<button name="action_open_sommaire_laboresult" type="object"
-                                class="oe_stat_button btn btn-outline-primary w-100 h-70" icon="fa-flask">
-                                <div class="o_form_field o_stat_info">
-                                    <span class="o_stat_value">
-                                    </span>
-                                    <span class="o_stat_text">Labo</span>
-                                </div>
-                            </button>
-						</div>
-
-                        <div class="col-md-3 mb-2">
-							<button name="action_open_list_medicament"  context="{'default_patient_id': patient_id}"
-                                class="oe_stat_button btn btn-outline-primary w-100 h-70" icon="fa-plus">
-                                <div class="o_form_field o_stat_info">
-                                    <span class="o_stat_value">
-                                    </span>
-                                    <span class="o_stat_text">Prescriptions</span>
-                                </div>
-                            </button>
-						</div>
-
-					</div>
-
-
-					  <!-- NOTEBOOK -->
-					  <notebook>
-
-						  <page string="Antécédents">
-                            <header>
-                                <button string="Ajouter un antécédent" type="object"
-                                    name="action_patient"
-                                    class="oe_highlight" icon="fa-info-circle"/>
-                            </header>
-							<!--group>
-							   <field name="resume_atcd" readonly="1" nolabel="1" widget="html"/>
-							</group-->
-                            <div class="card border-info mb-3 shadow-sm">
-                                        <div class="card-header bg-info text-white py-1" 
-                                            style="cursor: pointer;" 
-                                            data-toggle="collapse" 
-                                            data-target="#collapseATCD" 
-                                            aria-expanded="false" 
-                                            aria-controls="collapseATCD">
-                                            
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <span>
-                                                    <i class="fa fa-id-card-alt mr-2"></i>
-                                                    <b>Aperçu des Antécédents</b>
-                                                </span>
-                                                <i class="fa fa-chevron-down"></i> </div>
-                                        </div>
-
-                                        <div id="collapseATCD" class="collapse">
-                                            <div class="card-body p-0" style="background: #fcfcfc; border-top: 1px solid #17a2b8;">
-                                                <div style="padding: 10px;">
-                                                    <field name="resume_atcd" readonly="1" nolabel="1" widget="html"/>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-						  </page>
-
-
-						  <page string="Diagnostics récents" id="info_recent_diagnostics">
-
-							  <group>
-								  <field name="resume_diagnost" readonly="1" nolabel="1" widget="html"/>
-							  </group>
-
-						  </page>
-
-					  </notebook>
-
-				  </div>
-
-			  </div>
-
-
-
-
-                    <!--div class="oe_button_box" name="button_box">
+                    <div class="oe_button_box" name="button_box">
 						<button string="Dossier Archivé" type="action"
                                 name="%(action_view_archive_patient_tree)d"
                                 class="oe_stat_button" icon="fa-archive"/>
                         <button string="Impression dossier" type="action"
                                 name="%(action_wizard_reporting_appointment)d"
                                 class="oe_stat_button" icon="fa-print"/>
-						<button string="Consultations" type="object"
-                                name="historique_appointment" context="{'default_patient_id': patient_id}"
+                        <button string="Historique consultation" type="action"
+                                name="%(action_wizard_dossier_patient)d"
+                                class="oe_stat_button" icon="fa-address-card"/>
+						<button string="Consultations" type="action"
+                                name="%(action_wizard_dossier_patient_reception)d" context="{'default_patient_id': patient_id}"
                                 class="oe_stat_button" icon="fa-user-md"/>
 						
-						<button string="S.Vitaux" type="object"
-                                name="open_list_surveillance" context="{'default_patient_id': patient_id}"
+						<button string="S.Vitaux" type="action"
+                                name="%(action_wizard_dossier_patient)d"
                                 class="oe_stat_button" icon="fa-heartbeat"/>
 								
-						<button string="Diagnostics" type="object"
-                                name="historique_diagnostic" context="{'default_patient_id': patient_id}"
+						<button string="Diagnostics" type="action"
+                                name="%(action_wizard_dossier_patient)d"
                                 class="oe_stat_button" icon="fa-warning"/>
 								
 						<button name="action_open_sommaire_laboresult" type="object"
@@ -480,7 +216,7 @@
                                 <span class="o_stat_text">Imagerie</span>
                             </div>
 						</button>
-						<button name="action_open_list_medicament"  context="{'default_patient_id': patient_id}"
+						<button name="action_open_list_medicament"  context="{'default_patient_id': active_id}"
                                 class="oe_stat_button" icon="fa-plus">
 							<div class="o_form_field o_stat_info">
                                 <span class="o_stat_value">
@@ -525,8 +261,8 @@
                         <group id="header_right_group" string="Informations sur la Consultation">
                             
                             <field name="date"/>
-                            <field name="date_cons_1" readonly="0"/>
-                            <field name="date_cons_2" readonly="0"/>
+                            <field name="date_cons_1" readonly="1"/>
+                            <field name="date_cons_2" readonly="1"/>
                             <field name="doctor_id" readonly="1"/>
                             <field name="speciality" readonly="1"/>
                             <field name="product_id" options="{'no_create': True,'no_create_edit': True}"/>
@@ -542,14 +278,34 @@
                     </group>
                     
                             <div name="button_box" class="oe_button_box">
-                               <button string="Ajouter un antécédent" type="object"
+                                <button string="Ajouter un antécédent" type="object"
                                     name="action_patient"
-                                    class="oe_stat_button" icon="fa-info-circle"/> 
+                                    class="oe_stat_button" icon="fa-address-card"/>
                             </div>
                      
                         <group string="ANTECEDENTS ET ALLERGIES">
-                                <field name="resume_atcd" readonly="1" nolabel="1"/>
-                        </group-->
+                            <group string="Allergies" id="header_left_group">
+                                <field name="allergie" nolabel="1" readonly="1">
+                                    <tree editable="bottom">
+                                        <field name="date_detection"/>
+                                        <field name="allergie_details" required="1"/>
+                                        <field name="comment"/>
+                                        <field name="etat" widget="boolean_toggle"/>
+                                    </tree>
+                                </field>
+                            </group>
+                            <group string="ATCD" id="header_right_group">
+                                <field name="atcd_medical" nolabel="1" readonly="1">
+                                    <tree editable="bottom">
+                                        <field name="date_detection"/>
+                                        <field name="type_atcd"/>
+                                        <field name="allergie" required="1"/>
+                                        
+                                        <field name="etat" widget="boolean_toggle"/>
+                                    </tree>
+                                </field>
+                            </group>
+                        </group>
                     
                     <notebook>
                         <page string="Signes vitaux">
@@ -629,8 +385,7 @@
                             <button name="ksoftmedical.action_imagerie_launchwizard" class="oe_highlight" type="action"
                                     string="Faire une demande"/>
                             <button name="action_send_examimagerie" type="object" string="Envoyer à la caisse"/>
-							<button name="action_send_sanspayer_examimagerie" type="object"
-								groups="ksoftmedical.group_fertility_autorisation_paiement" string="Labo sans payer"/>	
+
                             <br/><br/><br/>
                             <button name="action_open_sommaire_imagerieresult" type="object"
                                     string="Voir tous les resultats imagerie" />
@@ -638,7 +393,7 @@
                                 <field name="imagerie_ids" nolabel="1">
                                     <tree editable="bottom" create="0">
                                         <field name="is_print"/>
-                                        <field name="date_request" readonly="0"/>
+                                        <field name="date_request" readonly="1"/>
                                         <field name="status" readonly="1"/>
                                         <field name="imagerie_name" invisible="1"/>
                                         <field name="analyse" domain="[('is_imagerie','=',True)]" readonly="1"
@@ -664,8 +419,8 @@
                                         <field name="labo_name" readonly="0" invisible="1"/>
                                         
                                         <field name="analyse" invisible="0" required="False"/>
-                                        <field name="description" readonly="0" widget="html"/>
-                                        <field name="valeur_normale" invisible="0" readonly="0" widget="html"/>
+                                        <field name="description" readonly="0"/>
+                                        <field name="valeur_normale" invisible="0" readonly="0"/>
                                         <field name="is_pathologique" readonly="0"/>
                                         <field name="analyse_autres" invisible="1"/>
                                         <field name="examen_text" string="Clinique"/>
@@ -767,8 +522,7 @@
                         <page string="Sejour" attrs="{'invisible': [('internal_status', '=', 'attente')]}">
                             <div class="oe_button_box" name="button_box">
                                 <button name="ksoftmedical.action_constransfert_patient" class="oe_highlight" type="action"
-                                    icon="fa-bed" string="Interner un patient"
-									attrs="{'invisible': [('internal_status', '=', 'transfered')]}"/>
+                                    icon="fa-bed" string="Interner un patient"/>
                                     
                             </div>
                             <group>
