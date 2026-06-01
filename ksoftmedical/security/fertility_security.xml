@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<record id="module_category_fertility" model="ir.module.category">
+		<field name="name">KsoftMedical</field>
+		<field name="description">Profil Medical</field>
+		<field name="sequence">4</field>
+	</record>
+	<record id="group_fertility_user" model="res.groups">
+		<field name="name">Utilisateur</field>
+		<field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+		<field name="category_id" ref="module_category_fertility"/>
+		<field name="users" eval="[(4, ref('base.user_admin'))]"/>
+	</record>
+	
+	<record id="group_fertility_reception" model="res.groups">
+		<field name="name">Reception</field>
+		<field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+		<field name="category_id" ref="module_category_fertility"/>
+		<field name="users" eval="[(4, ref('base.user_admin'))]"/>
+	</record>
+	
+	<record id="group_fertility_caisse" model="res.groups">
+		<field name="name">Caisse</field>
+		<field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+		<field name="category_id" ref="module_category_fertility"/>
+		<field name="users" eval="[(4, ref('base.user_admin'))]"/>
+	</record>
+	
+	<record id="group_fertility_tresorerie" model="res.groups">
+		<field name="name">Tresorerie</field>
+		<field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+		<field name="category_id" ref="module_category_fertility"/>
+		<field name="users" eval="[(4, ref('base.user_admin'))]"/>
+	</record>
+	
+	<record id="group_fertility_infirmier" model="res.groups">
+		<field name="name">Infirmier</field>
+		<field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+		<field name="category_id" ref="module_category_fertility"/>
+		<field name="users" eval="[(4, ref('base.user_admin'))]"/>
+	</record>
+	
+	
+	<record id="group_fertility_chefinfirmier" model="res.groups">
+		<field name="name">Chef Infirmier</field>
+		<field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+		<field name="category_id" ref="module_category_fertility"/>
+		<field name="users" eval="[(4, ref('base.user_admin'))]"/>
+	</record>
+	
+	<record id="group_fertility_medecin" model="res.groups">
+		<field name="name">Medecin</field>
+		<field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+		<field name="category_id" ref="module_category_fertility"/>
+		<field name="users" eval="[(4, ref('base.user_admin'))]"/>
+	</record>
+	
+	<record id="group_fertility_medecin_gyneco" model="res.groups">
+		<field name="name">Medecin Ophta</field>
+		<field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+		<field name="category_id" ref="module_category_fertility"/>
+		<field name="users" eval="[(4, ref('base.user_admin'))]"/>
+	</record>
+	
+	<record id="group_fertility_laboratoire" model="res.groups">
+		<field name="name">Laboratoire</field>
+		<field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+		<field name="category_id" ref="module_category_fertility"/>
+		<field name="users" eval="[(4, ref('base.user_admin'))]"/>
+	</record>
+	
+	<record id="group_fertility_recept_labo" model="res.groups">
+		<field name="name">Reception Laboratoire</field>
+		<field name="category_id" ref="module_category_fertility"/>
+	</record>
+	
+	<record id="group_fertility_imagerie" model="res.groups">
+		<field name="name">Imagerie</field>
+		<field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+		<field name="category_id" ref="module_category_fertility"/>
+		<field name="users" eval="[(4, ref('base.user_admin'))]"/>
+	</record>
+
+	<record id="group_fertility_pharmacie" model="res.groups">
+		<field name="name">Pharmacie</field>
+		<field name="category_id" ref="module_category_fertility"/>
+	</record>
+	
+	<record id="group_fertility_pharmacie_chef" model="res.groups">
+		<field name="name">Chef Pharmacie</field>
+		<field name="category_id" ref="module_category_fertility"/>
+	</record>
+	
+	<record id="group_fertility_autorisation_paiement" model="res.groups">
+		<field name="name">Autorisation de paiement</field>
+		<field name="category_id" ref="module_category_fertility"/>
+	</record>
+	
+	<record id="group_fertility_shopoptique" model="res.groups">
+		<field name="name">Shop Optique</field>
+		<field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+		<field name="category_id" ref="module_category_fertility"/>
+		<field name="users" eval="[(4, ref('base.user_admin'))]"/>
+	</record>
+
+
+	<record id="group_ksoft_admin" model="res.groups">
+		<field name="name">Admin</field>
+		<field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+		<field name="category_id" ref="module_category_fertility"/>
+		<field name="users" eval="[(4, ref('base.user_admin'))]"/>
+	</record>
+
+
+</odoo>

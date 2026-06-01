@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+	<record id="action_report_appointment_labo" model="ir.actions.report">
+	 	<field name="name">Bon de Laboratoire</field>
+	 	<field name="model">fertility.appointment</field>
+	 	<field name="report_type">qweb-pdf</field>
+	 	<field name="report_name">ksoftmedical.report_appointment_labo</field>
+	 	<field name="report_file">ksoftmedical.report_appointment_labo</field>
+	 	<field name="print_report_name">'Laboratoire - %s' % (object.name)</field>
+	 	<field name="binding_model_id" ref="model_fertility_appointment"/>
+	 	<field name="binding_type">report</field>
+	 	<field name="groups_id" eval="[(4, ref('group_fertility_medecin_gyneco')),
+	 								   (4, ref('group_fertility_medecin'))]"/>
+	</record>
+
+	<record id="action_report_appointment_imagerie2" model="ir.actions.report">
+	 	<field name="name">Bon imagerie</field>
+	 	<field name="model">fertility.appointment</field>
+	 	<field name="report_type">qweb-pdf</field>
+	 	<field name="report_name">ksoftmedical.report_appointment_imagerie2</field>
+	 	<field name="report_file">ksoftmedical.report_appointment_imagerie2</field>
+	 	<field name="print_report_name">'Imagerie - %s' % (object.name)</field>
+	 	<field name="binding_model_id" ref="model_fertility_appointment"/>
+	 	<field name="binding_type">report</field>
+	 	<field name="groups_id" eval="[(4, ref('group_fertility_medecin_gyneco')),
+	 								   (4, ref('group_fertility_medecin'))]"/>
+	</record>
+
+	<!--record id="action_report_appointment_imagerie" model="ir.actions.report">
+	 	<field name="name">Tests complémentaires</field>
+	 	<field name="model">fertility.appointment</field>
+	 	<field name="report_type">qweb-pdf</field>
+	 	<field name="report_name">ksoftmedical.report_appointment_imagerie</field>
+	 	<field name="report_file">ksoftmedical.report_appointment_imagerie</field>
+	 	<field name="print_report_name">'Tests_compl - %s' % (object.name)</field>
+	 	<field name="binding_model_id" ref="model_fertility_appointment"/>
+	 	<field name="binding_type">report</field>
+	 	<field name="groups_id" eval="[(4, ref('group_fertility_medecin_gyneco')),
+	 								   (4, ref('group_fertility_medecin'))]"/>
+	</record-->
+
+	<record id="action_report_appointment_prescription" model="ir.actions.report">
+	 	<field name="name">Prescriptions Médicales</field>
+	 	<field name="model">fertility.appointment</field>
+	 	<field name="report_type">qweb-pdf</field>
+	 	<field name="report_name">ksoftmedical.report_ordonnance</field>
+	 	<field name="report_file">ksoftmedical.report_ordonnance</field>
+	 	<field name="print_report_name">'Ordonnances - %s' % (object.name)</field>
+	 	<field name="binding_model_id" ref="model_fertility_appointment"/>
+	 	<field name="binding_type">report</field>
+	 	<field name="groups_id" eval="[(4, ref('group_fertility_medecin_gyneco')),
+	 								   (4, ref('group_fertility_medecin'))]"/>
+	</record>
+	
+	<!--record id="action_report_prescription_lunette" model="ir.actions.report">
+	 	<field name="name">Prescriptions Lunettes</field>
+	 	<field name="model">fertility.appointment</field>
+	 	<field name="report_type">qweb-pdf</field>
+	 	<field name="report_name">ksoftmedical.report_lunettes</field>
+	 	<field name="report_file">ksoftmedical.report_lunettes</field>
+	 	<field name="print_report_name">'Lunettes - %s' % (object.name)</field>
+	 	<field name="binding_model_id" ref="model_fertility_appointment"/>
+	 	<field name="binding_type">report</field>
+	 	<field name="groups_id" eval="[(4, ref('group_fertility_medecin_gyneco')),
+	 								   (4, ref('group_fertility_medecin'))]"/>
+	</record>
+
+
+	<record id="action_report_appointment_autres" model="ir.actions.report">
+	 	<field name="name">Autres Orientations</field>
+	 	<field name="model">fertility.appointment</field>
+	 	<field name="report_type">qweb-pdf</field>
+	 	<field name="report_name">ksoftmedical.report_orientation_imagerie</field>
+	 	<field name="report_file">ksoftmedical.report_orientation_imagerie</field>
+	 	<field name="print_report_name">'Orientation - %s' % (object.name)</field>
+	 	<field name="binding_model_id" ref="model_fertility_appointment"/>
+	 	<field name="binding_type">report</field>
+	 	<field name="groups_id" eval="[(4, ref('group_fertility_medecin_gyneco')),
+	 								   (4, ref('group_fertility_medecin'))]"/>
+	</record-->
+	
+	<!--record id="action_report_resultat_laboratoire" model="ir.actions.report">
+	 	<field name="name">Resultat Laboratoire</field>
+	 	<field name="model">fertility.appointment</field>
+	 	<field name="report_type">qweb-pdf</field>
+	 	<field name="report_name">fertility.report_appointment_order</field>
+	 	<field name="report_file">fertility.report_appointment_order</field>
+	 	<field name="print_report_name">'Resultat Laboratoire - %s' % (object.name)</field>
+	 	<field name="binding_model_id" ref="model_fertility_appointment"/>
+	 	<field name="binding_type">report</field>
+	 	<field name="groups_id" eval="[(4, ref('group_fertility_medecin_gyneco')),
+	 								   (4, ref('group_fertility_medecin'))]"/>
+	</record>
+
+	<record id="action_report_protocole_imagerie" model="ir.actions.report">
+	 	<field name="name">Protocole Imagerie</field>
+	 	<field name="model">fertility.appointment</field>
+	 	<field name="report_type">qweb-pdf</field>
+	 	<field name="report_name">fertility.report_appointment_order</field>
+	 	<field name="report_file">fertility.report_appointment_order</field>
+	 	<field name="print_report_name">'Resultat Imagerie - %s' % (object.name)</field>
+	 	<field name="binding_model_id" ref="model_fertility_appointment"/>
+	 	<field name="binding_type">report</field>
+	 	<field name="groups_id" eval="[(4, ref('group_fertility_medecin_gyneco')),
+	 								   (4, ref('group_fertility_medecin'))]"/>
+	</record-->
+	
+	<!-- Impression protocole -->
+	<record id="action_report_protocole_autres" model="ir.actions.report">
+	 	<field name="name">Protocole Imagerie</field>
+	 	<field name="model">fertility.examen.imagerie</field>
+	 	<field name="report_type">qweb-pdf</field>
+	 	<field name="report_name">ksoftmedical.report_protocole_imagerie</field>
+	 	<field name="report_file">ksoftmedical.report_protocole_imagerie</field>
+	 	<field name="print_report_name">'Protocole - %s' % (object.imagerie_name)</field>
+	 	<field name="binding_model_id" ref="model_fertility_examen_imagerie"/>
+	 	<field name="binding_type">report</field>
+	 	<field name="groups_id" eval="[(4, ref('group_fertility_imagerie'))]"/>
+	</record>
+	
+	<!-- Impression laboratoire -->
+	<record id="action_report_laboratoire" model="ir.actions.report">
+	 	<field name="name">Resultat Laboratoire</field>
+	 	<field name="model">fertility.wizard.result.labo</field>
+	 	<field name="report_type">qweb-pdf</field>
+	 	<field name="report_name">ksoftmedical.report_examen_laboratoire</field>
+	 	<field name="report_file">ksoftmedical.report_examen_laboratoire</field>
+	 	<field name="print_report_name">'Labo - %s' % (object.labo_name)</field>
+	 	<field name="binding_model_id" ref="model_fertility_wizard_result_labo"/>
+	 	<field name="binding_type">report</field>
+	 	<field name="groups_id" eval="[(4, ref('group_fertility_laboratoire'))]"/>
+	</record>
+
+
+
+</odoo>

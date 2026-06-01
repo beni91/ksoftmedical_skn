@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<record id="view_traitementpma_form" model="ir.ui.view">
+		<field name="name">fertility.traitmentpma.form</field>
+		<field name="model">fertility.pma</field>
+		<field name="inherit_id" ref="fertility.view_pma_form"/>
+		<field name="arch" type="xml">
+			<xpath expr="//page[1]" position="replace">
+				<page id="param_ids_nurse" string="Signes vitaux" attrs="{'invisible': [('status', 'not in', ['stimulation','open_stimulation','ponction','transfer','open_transfer'])]}">
+					<field name="pma_surveillance" 
+						context="{'default_patient_id': patient_id}" 
+						 nolabel="1">
+						<tree decoration-danger="is_alert==True">
+							<field name="date_surveillance" />
+							<field name="heure" />
+							<field name="temperature" />
+							<field name="tension" />
+							<field name="respiration" />
+							<field name="pulsation"/>
+							<field name="glycemie"/>
+							<field name="saturation"/>
+							<field name="is_alert"/>
+							<field name="infirmier"/>
+						</tree>
+						<form>
+							<sheet>
+								<group>
+									<group id="header_left_group">
+										<field name="date_surveillance" />
+										<field name="heure" />
+									</group>
+									<group id="header_right_group">
+										<field name="is_alert"/>
+										<field name="infirmier" readonly="1"/>
+									</group>
+								</group>
+								<group string="Parametres Vitaux">
+									<group id="header_left_group">
+										<field name="temperature" />
+										<field name="tension" />
+										<field name="respiration" />
+										<field name="pulsation"/>
+										<field name="glascow"/>
+									</group>
+									<group id="header_right_group">
+										<field name="glycemie"/>
+										<field name="saturation"/>
+										<field name="pad"/>
+										<field name="pas"/>
+									</group>
+								</group>
+								<group>
+									<group id="header_left_group">
+										<field name="conscience" />
+										<field name="vomissement" />
+										<field name="qtity_vomi"/>
+										<field name="duirese"/>
+										<field name="qtity_duirese"/>
+									</group>
+									<group id="header_right_group">
+										<field name="mvts"/>
+										<field name="diarhee"/>
+										<field name="qtity_diarhe"/>
+										<field name="pansement"/>
+										<field name="aspect_pansement"/>
+									</group>
+								</group>
+							</sheet>
+						</form>
+					</field>
+				</page>
+			</xpath>
+			
+			<xpath expr="//page[2]/group[5]" position="replace">
+				<group col="4" string="Traitement de stimulation"></group>
+				<group col="4" id="traitement_pma" string="Cycle">
+					<group>
+						<field name="cycle_naturel" />
+					</group>
+					<group>
+						<field name="cycle_programme" />
+					</group>
+					<group>
+						<field name="cycle_substitue"/>
+					</group>
+					<group>
+						<field name="cycle_naturel_modif" />
+					</group>
+				</group>
+				<group id="traitement_pma2" string="Feuille de traitement">
+						<field name="pma_traitement_inf" 
+								context="{'default_patient_id': patient_id}" 
+								nolabel="1">
+							<tree attrs="{'readonly': [('internal_status', '=', 'done')]}">
+								<field name="date_traitement" required="0"/>
+								<field name="produit"/>
+								<!--field name="actes_medicaux"/-->
+								<field name="materiels" widget="many2many_tags" />
+								<field name="posologie" />
+								<field name="voie" />
+								<field name="plan_traitement"  widget="html"/>
+								<field name="plan_realisation"  widget="html"/>
+								<field name="internal_status" />
+								<button name="confirm_traitement" class="fa fa-handshake-o" 
+										type="object"
+										string="Valider"/>
+							</tree>
+							<form>
+								 <header>
+									<field name="internal_status" widget="statusbar"/>
+								</header>
+									<sheet>
+										<group>
+											<group id="header_left_group" string="Médicaments">
+												<field name="patient_id" invisible="1"/> 
+												<field name="date_traitement" required="0"/>
+												<field name="produit" domain="[('is_medicaments','=',True)]"
+													options="{'no_create_edit': True}"/>
+												<field name="posologie" />
+												<field name="voie" />
+											</group>
+											<group id="header_left_group" string="Actes Médicaux/Infirmiers">
+												<field name="materiels" 
+													widget="many2many_tags" options="{'no_create_edit': True}"/>
+											</group>
+										</group>
+										<group>
+											<group id="header_left_group">
+												<field name="plan_traitement" widget="html" />
+											</group>
+											<group id="header_left_group">
+												<field name="nbre_occurence_rea" readonly="1" force_save="1"/>
+												<field name="plan_realisation"  widget="html"/>
+											</group>
+										</group>
+										<group string="Details plan de Soins">
+											<field name="done_traitement" 
+												context="{'default_patient_id': patient_id}" 
+												attrs="{'readonly': [('internal_status', '=', 'done')]}"
+												nolabel="1">
+												<tree editable="bottom">
+													<field name="heure"/>
+													<field name="infirmier"/>
+													<field name="heure_rea" force_save="1"/>
+													<field name="infirmier_rea" force_save="1"/>
+													<field name="is_done"/>
+													<field name="nbre_occurence" force_save="1"/>	
+													<field name="internal_status"/>
+												</tree>
+											</field>
+										</group>
+									</sheet>
+								</form>
+						</field>
+				</group>
+			</xpath>
+			
+			<xpath expr="//page[3]/group[1]" position="after">
+				<group id="traitement_pma3" string="Feuille de traitement">
+						<field name="pma_traitement_inf2" 
+								context="{'default_patient_id': patient_id}" 
+								nolabel="1">
+							<tree attrs="{'readonly': [('internal_status', '=', 'done')]}">
+								<field name="date_traitement" required="0"/>
+								<field name="produit"/>
+								<!--field name="actes_medicaux"/-->
+								<field name="materiels" widget="many2many_tags" />
+								<field name="posologie" />
+								<field name="voie" />
+								<field name="plan_traitement"  widget="html"/>
+								<field name="plan_realisation"  widget="html"/>
+								<field name="internal_status" />
+								<button name="confirm_traitement" class="fa fa-handshake-o" 
+										type="object"
+										string="Valider"/>
+							</tree>
+							<form>
+								 <header>
+									<field name="internal_status" widget="statusbar"/>
+								</header>
+									<sheet>
+										<group>
+											<group id="header_left_group" string="Médicaments">
+												<field name="patient_id" invisible="1"/> 
+												<field name="date_traitement" required="0"/>
+												<field name="produit" domain="[('is_medicaments','=',True)]"
+													options="{'no_create_edit': True}"/>
+												<field name="posologie" />
+												<field name="voie" />
+											</group>
+											<group id="header_left_group" string="Actes Médicaux/Infirmiers">
+												<field name="materiels" 
+													widget="many2many_tags" options="{'no_create_edit': True}"/>
+											</group>
+										</group>
+										<group>
+											<group id="header_left_group">
+												<field name="plan_traitement" widget="html" />
+											</group>
+											<group id="header_left_group">
+												<field name="nbre_occurence_rea" readonly="1" force_save="1"/>
+												<field name="plan_realisation"  widget="html"/>
+											</group>
+										</group>
+										<group string="Details plan de Soins">
+											<field name="done_traitement" 
+												context="{'default_patient_id': patient_id}" 
+												attrs="{'readonly': [('internal_status', '=', 'done')]}"
+												nolabel="1">
+												<tree editable="bottom">
+													<field name="heure"/>
+													<field name="infirmier"/>
+													<field name="heure_rea" force_save="1"/>
+													<field name="infirmier_rea" force_save="1"/>
+													<field name="is_done"/>
+													<field name="nbre_occurence" force_save="1"/>	
+													<field name="internal_status"/>
+												</tree>
+											</field>
+										</group>
+									</sheet>
+								</form>
+						</field>
+				</group>
+			</xpath>
+			
+			<xpath expr="//page[2]" position="after">
+				<page id="evolution" string="Evolutions Médicales" attrs="{'invisible': [('status', 'not in', ['stimulation','open_stimulation','ponction','transfer','open_transfer'])]}">
+					<field name="pma_evolution" 
+						context="{'default_patient_id': patient_id}" 
+						nolabel="1">
+						<tree editable="bottom" 
+							attrs="{'invisible': [('internal_status', '=', 'deleted')]}">
+							<field name="date_evolution" />
+							<field name="evolution" />
+							<field name="medecin" />
+							<field name="internal_status" invisible="1"/>
+						</tree>
+					</field>
+				</page>
+				
+				<page id="evolution_infirmier" string="Evolutions Infirmières" attrs="{'invisible': [('status', 'not in', ['stimulation','open_stimulation','ponction','transfer','open_transfer'])]}">
+					<field name="pma_evolution_inf" 
+							context="{'default_patient_id': patient_id}" 
+							nolabel="1">
+						<tree editable="bottom"
+							attrs="{'invisible': [('internal_status', '=', 'deleted')]}">
+							<field name="date_evolution" />
+							<field name="evolution" string="Observations Infirmières"/>
+							<field name="infirmier" />
+							<field name="internal_status" invisible="1"/>
+						</tree>
+					</field>
+				</page>
+			</xpath>
+			
+			
+		</field>
+	</record>
+			
+			
+</odoo>

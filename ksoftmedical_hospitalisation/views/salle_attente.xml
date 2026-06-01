@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<!--record id="view_imagerie_hospiwizard" model="ir.ui.view">
+        <field name="name">Examen Imagerie</field>
+        <field name="model">fertility.wizard.imagerie</field>
+        <field name="priority">1</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="category_id" domain="['|',('parent_id.name','like','IMAGERIE'),('parent_id.name','like','LABORATOIRE')]"
+                           options="{'no_create': True,'no_create_edit': True}"/>
+                    <field name="product_ids" widget="many2many_checkboxes" domain="[('categ_id','=',category_id),('is_imagerie','=',True)]"
+                           options="{'no_create': True,'no_create_edit': True}"/>
+					<field name="product_labo_ids" widget="many2many_checkboxes" domain="[('categ_id','=',category_id),('is_labo','=',True)]"
+                           options="{'no_create': True,'no_create_edit': True}"/>
+                </group>
+                <footer>
+                    <button name="action_create" string="Faire une demande" type="object" class="oe_highlight"/>
+                    <button string="Annuler" class="oe_link" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_imagerie_hospi_launchwizard" model="ir.actions.act_window">
+        <field name="name">Nouvelle examen</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">fertility.wizard.imagerie</field>
+        <field name="binding_view_types">form</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_imagerie_hospiwizard"/>
+        <field name="target">new</field>
+        <field name="context">{'default_hospi_id':active_id}</field>
+    </record-->
+
+
+	<record id="view_salle_attente_tree" model="ir.ui.view">
+		<field name="name">module.transfert.patient.tree</field>
+		<field name="model">module.transfert.patient</field>
+		<field eval="8" name="priority"/>
+		<field name="arch" type="xml">
+			<tree string="Salle d'Attente" sample="1" multi_edit="1">
+				<field name="date_transfert" />
+				<field name="patient_id"/>
+				<field name="medecin_tut"/>
+				<field name="service_id" />
+				<field name="pavillon_dest"/>
+				<field name="note_medecin"/>
+                <field name="status" />
+			</tree>
+		</field>
+	</record>
+
+
+	<record id="view_salle_attente_form" model="ir.ui.view">
+		<field name="name">module.transfert.patient.tree</field>
+		<field name="model">module.transfert.patient</field>
+		<field name="arch" type="xml">
+			<form>
+                <header >
+					<field name="status" widget="statusbar"/>
+					<button name="confirme_transfert" class="oe_highlight" type="object" 
+						string="Confirmer le transfert" />
+					<!--button name="action_return" type="object"
+						string="Annuler" /-->
+				</header>
+				<sheet>
+					<group>
+						<group>
+							<field name="date_transfert" readonly="1"/>
+							<field name="patient_id" readonly="1"/>
+							<field name="service_id" domain="[('type_rdv','in',('hospi','urg','rea'))]"/>
+							<field name="medecin_tut" required="1"/>
+							<field name="pavillon_dest" required="1" domain="[('service_id','=',service_id)]"/>
+						</group> 
+						<group>
+							<field name="date_confirmation" readonly="1"/>
+							<field name="consultation_id" readonly="1"/>
+							<field name="user_inf_id"/>
+							<field name="status" widget="badge" readonly="1"/>
+						</group> 
+					</group> 
+					<group string="Selectionner une chambre">
+						<field name="chambre_ids" domain="[('pavillon_id','=',pavillon_dest)]"/>  
+					</group>
+                    
+                    <group string="Traitements">
+                        <field name="note_medecin" widget="html" readonly="1"/>
+                    </group>
+					
+				</sheet>
+			</form>
+		</field>
+	</record>
+	
+	<record id="action_salle_attente" model="ir.actions.act_window">
+		<field name="name">Salle d'attente</field>
+		<field name="res_model">module.transfert.patient</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain">[('status','=','draft')]</field>
+		<field name="context">{}</field>
+	</record>
+	
+	<record id="action_view_salle_attente_tree" model="ir.actions.act_window.view">
+        <field name="act_window_id" ref="action_salle_attente"/>
+        <field name="sequence" eval="1"/>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="view_salle_attente_tree"/>
+    </record>
+
+    <record id="action_view_salle_attente_form" model="ir.actions.act_window.view">
+        <field name="act_window_id" ref="action_salle_attente"/>
+        <field name="sequence" eval="3"/>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_salle_attente_form"/>
+    </record>
+
+
+	<menuitem id="menu_hospitalisation_attente" parent="menu_module_hospitalisation" 
+			action="action_salle_attente" sequence="1"
+			name="Salle d'admission" />
+
+		
+
+		<!--menuitem id="menu_doctor_cfg" parent="menu_cfg_hr" groups="base.group_user" action="action_doctor_dashboard"
+				  sequence="1" name="Médecins" /-->
+
+</odoo>

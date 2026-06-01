@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="action_labo_launchwizard2" model="ir.actions.act_window">
+		<field name="name">Nouvelle examen</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="res_model">fertility.wizard.labo</field>
+		<field name="binding_view_types">form</field>
+		<field name="view_mode">form</field>
+		<field name="view_id" ref="view_labo_wizard"/>
+		<field name="target">new</field>
+		<field name="context">{'default_pma_id':active_id}</field>
+	</record>
+
+	<record id="action_imagerie_launchwizard2" model="ir.actions.act_window">
+		<field name="name">Nouvelle examen</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="res_model">fertility.wizard.imagerie</field>
+		<field name="binding_view_types">form</field>
+		<field name="view_mode">form</field>
+		<field name="view_id" ref="view_imagerie_wizard"/>
+		<field name="target">new</field>
+		<field name="context">{'default_pma_id':active_id}</field>
+	</record>
+	<record id="view_pma_form" model="ir.ui.view">
+		<field name="name">fertility.pma.form</field>
+		<field name="model">fertility.pma</field>
+		<field name="arch" type="xml">
+			<form>
+				<header>
+					<field name="status" widget="statusbar"/>
+					<!-- <button name="action_home_done" class="oe_highlight" type="object" attrs="{'invisible': [('status', '!=', 'invoicing1')]}" string="Valider" /> -->
+					<button name="action_stimulation_done" class="oe_highlight" type="object" attrs="{'invisible': [('status', '!=', 'stimulation')]}"
+						string="Valider" />
+					<button name="action_close" type="object"
+						string="Annuler" />
+					<button name="action_return" type="object" string="Retour" />
+				</header>
+				<sheet>
+					<div name="button_box" class="oe_button_box">
+						<button string="Dossier patient" type="object"
+							name="action_patient"
+							class="oe_stat_button" icon="fa-address-card"/>
+					</div>
+					<div>
+						<h3 class="mt0">
+							<field name="name"/>
+							
+						</h3>
+						<field name="date" readonly="False"/>
+					</div>
+					<group string="Identification du patient">
+						<group id="header_left_group">
+							<field name="patient_id" readonly="0"/>
+							<field name="parent_id"  string="Convention"/>
+							<field name="gender"/>
+							<field name="age"/>
+							<!-- <field name="move_id1" readonly="1"/>
+							<field name="move_id2" readonly="1"/> -->
+						</group>
+					</group>
+					<notebook>
+						<page id="param_ids_nurse" string="Signes vitaux" attrs="{'invisible': [('status', 'not in', ['stimulation','open_stimulation','ponction','transfer','open_transfer'])]}">
+							<group col="2">
+								<group>
+									<field name="temperature"/>
+									<field name="weight" />
+									<field name="height" />
+									<field name="systolic" />
+									<field name="diastolics" />
+									<field name="bpm" />
+									<field name="respiratory_rate"/>
+								</group>
+								<group>
+									<field name="glycemia" />
+									<field name="is_glycemia" />
+									<field name="osat"/>
+									<field name="pc" />
+									<field name="pb"/>
+									<field name="abdominal_circ" />
+									<field name="hip" />
+								</group>
+							</group>
+						</page>
+						<page id="stimulation" string="Stimulation" attrs="{'invisible': [('status', 'not in', ['stimulation','open_stimulation','ponction','transfer','open_transfer'])]}">
+							<group>
+								<group>
+									<field name="technique_envisage"/>
+								</group>
+								<group>
+									<field name="origine_gamete"/>
+								</group>
+							</group>
+							<group>
+								<group>
+									<field name="technique_associe"/>
+								</group>
+								<group>
+									<field name="indication_fertilite"/>
+								</group>
+							</group>
+							<group>
+								<group  string="Tentative">
+									<field name="tentative_no" />
+									<field name="tentative_total" />
+									<field name="tentative_project" />
+									<field name="tentative_muette" />
+								</group>
+								<group string="Vérification dossier">
+									<field name="date_serologie_f" />
+									<field name="date_serologie_h" />
+									<field name="date_cs" />
+									<field name="date_bilan" />
+								</group>
+							</group>
+							
+							<group id="protocole_pma" string="Protocole">
+								<group string="Agonistes">
+									<field name="agonistes"/>
+									<field name="protocol_court"/>
+									<field name="protocol_long_retard"/>
+									<field name="protocol_long_folliculaire"/>
+									<field name="protocol_long_luteale"/>
+									<field name="citrate"/>	
+								</group>
+								<group string="Antagonistes">
+									<field name="antagonistes"/>
+									<field name="dose_unique"/>
+									<field name="dose_multiple"/>
+									<field name="orgalutran"/>
+									<field name="cetrotide"/>									
+									<field name="nb_total_comprime"/>
+								</group>
+							</group>
+								
+							<group id="traitement_pma" string="Traitement de stimulation">
+								<group>
+									<field name="cycle_naturel" />
+									<field name="cycle_programme" />
+									<field name="cycle_substitue"/>
+									<field name="cycle_naturel_modif" />
+									<field name="traitement_stimulation" />	
+								</group>
+								<group>
+									<field name="gonal"/>
+									<field name="purgegon" />
+									<field name="fostimon" />
+									<field name="pergoveris" />							
+									<field name="menopur"/>
+									<field name="luveris" />									
+								</group>
+							</group>
+							
+							<group id="suivi_pma" string="Suivi de stimulation/Traitement et Dosage">
+								<field name="traitement_ids" nolabel="1">
+									<tree editable="bottom">
+										<field name="jour"/>
+										<field name="e2"/>
+										<field name="pr"/>
+										<field name="lh"/>
+										<field name="ovaire_droit"/>
+										<field name="ovaire_gauche" />
+										<field name="endometre" />
+									</tree>
+								</field>
+							</group>
+							
+							<group col="3">
+								<group string="Annulation">
+								</group>
+								
+								<group string="Déclenchement">
+									<field name="hcg_urinaire"/>
+									<field name="hcg_recombinante" />
+									<field name="declenchement_datetime" />
+									<field name="declenchement_autre" />
+								</group>
+								
+								<group string="Traitement Post Transfert">
+									<field name="progestatif"/>
+									<field name="hcg" />
+								</group>
+							</group>
+							<!--group string="Commentaires">
+								<field name="commentaire_clinique"/>
+							</group-->
+						</page>
+						
+						<page id="poction" string="Ponction Ovocytes" 
+							attrs="{'invisible': [('status', 'not in', ['ponction','transfer','open_transfer'])]}">
+							<group>
+								<group>
+									<field name="date_ponction"/>
+									<field name="ponctionner"/>
+								</group>
+								<group>
+									<field name="is_verify"/>
+									<field name="date_declenchement"/>
+								</group>
+							</group>
+							<group string="Traitement"></group>
+							<group>
+								<group>
+									<field name="ponction"/>
+								</group>
+								<group>
+									<field name="nbre_foll1"/>
+									<field name="nbre_foll2"/>
+									<field name="nbre_ovocyte"/>
+								</group>
+							</group>
+							<group string="EMBRYOLOGIE"></group>
+							<group><field name="technique_envisage"/></group>
+							<group>
+								<group>
+									<field name="nbre_ovocyt_mature"/>
+								</group>
+								<group>
+									<field name="nbre_embryon"/>
+								</group>
+							</group>
+							<group>
+								<group>
+									<field name="type_embryon1"/>
+									<field name="type_embryon2"/>
+									<field name="type_embryon3"/>
+								</group>
+								<group>
+									<field name="congelation"/>
+									<field name="congelation1"/>
+									<field name="congelation1"/>
+								</group>
+							</group>
+						</page>
+
+						
+						<page id="lab_ids" string="Examen Laboratoire" attrs="{'invisible': [('status', 'not in', ['stimulation','open_stimulation','ponction','transfer','open_transfer'])]}">
+							<button name="ksoftmedical.action_labo_launchwizard2" class="oe_highlight" type="action" string="Faire une demande" />
+							<field name="labo_ids">
+								<tree editable="bottom">
+									<field name="date_request" readonly="1"/>
+									<field name="status" readonly="1"/>
+									<field name="labo_name" readonly="1"/>
+									<field name="analyse"/>
+									<field name="description" readonly="1"/>
+									<field name="valeur_normale"/>
+								</tree>
+							</field>
+						</page>
+						
+						<page id="imagerie_ids" string="Examen Imagerie" attrs="{'invisible': [('status', 'not in', ['stimulation','open_stimulation','ponction','transfer','open_transfer'])]}">
+							<button name="ksoftmedical.action_imagerie_launchwizard2" class="oe_highlight" type="action" string="Faire une demande" />
+							<field name="imagerie_ids">
+								<tree editable="bottom">
+									<field name="date_request" readonly="1"/>
+									<field name="status" readonly="1"/>
+									<field name="imagerie_name" readonly="1" />
+									<field name="protocol"/>
+								</tree>
+							</field>
+						</page>
+					</notebook>			
+				</sheet>
+			</form>
+		</field>
+	</record>
+
+	<record id="view_pma_tree" model="ir.ui.view">
+		<field name="name">fertility.pma.tree</field>
+		<field name="model">fertility.pma</field>
+		<field name="arch" type="xml">
+			<tree>
+				<field name="date"/>
+				<field name="name"/>
+				<field name="patient_id"/>
+				<field name="parent_id" string="Convention"/>
+				<field name="gender"/>
+				<field name="age"/>
+				<field name="doctor_id"/>
+				<field name="consult_examen_id"/>
+				<field name="status"/>
+			</tree>
+		</field>
+	</record>
+
+	<record id="action_pma_all" model="ir.actions.act_window">
+		<field name="name">Toutes les dossiers</field>
+		<field name="res_model">fertility.pma</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain">[]</field> 
+	</record>
+	<record id="action_pma_open" model="ir.actions.act_window">
+		<field name="name">Dossiers en cours</field>
+		<field name="res_model">fertility.pma</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain">[('internal_status','not in',['closed'])]</field> 
+	</record>
+
+	<!--menuitem id="menu_pma" parent="menu_consult" groups="group_fertility_infirmier,group_fertility_medecin_gyneco"
+		sequence="2"
+		name="PMA"
+		/>
+		<menuitem id="menu_pma1" parent="menu_pma" groups="group_fertility_infirmier,group_fertility_medecin_gyneco" action="action_pma_open"
+			sequence="1"
+			name="Dossiers en cours"
+			/>
+		<menuitem id="menu_pma2" parent="menu_pma" groups="group_fertility_infirmier,group_fertility_medecin_gyneco" action="action_pma_all"
+			sequence="2"
+			name="Toutes les dossiers"
+			/-->
+
+</odoo>

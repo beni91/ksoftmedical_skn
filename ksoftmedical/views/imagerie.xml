@@ -1,0 +1,443 @@
+<odoo>
+
+	<record id="view_fertility_examen_imagerie_filter" model="ir.ui.view">
+		<field name="name">fertility.examen.imagerie.search</field>
+		<field name="model">fertility.examen.imagerie</field>
+		<field name="arch" type="xml">
+			<search string="Search Imagerie">
+				<field name="date_request"/>
+				<field name="patient_id"/>
+				<field name="type_analyse"/>
+				<field name="analyse"/>
+				<separator/>
+
+				<separator/>
+				<group expand="0" string="Group By">
+					<filter string="Patient" name="group_by_patient" domain="[]" context="{'group_by': 'patient_id'}"/>
+					<filter string="Analyses" name="group_by_analyse" domain="[]" context="{'group_by': 'analyse'}"/>
+					<filter string="Type Analyse" name="group_by_tpanalyse" domain="[]" context="{'group_by': 'type_analyse'}"/>
+					<filter string="Date de demande" name="groupby_date" domain="[]" context="{'group_by': 'date_request'}"/>
+				</group>
+			</search>
+		</field>
+	</record>
+
+	<record id="view_imagerie_tree" model="ir.ui.view">
+		<field name="name">fertility.examen.imagerie.tree</field>
+		<field name="model">fertility.examen.imagerie</field>
+		<field name="arch" type="xml">
+			<tree>
+				<field name="date_request"/>
+				<field name="patient_id"/>
+				<field name="gender"  readonly="1"/>
+				<field name="age"  readonly="1"/>
+				<field name="patient_id" readonly="1"/>
+				<field name="status"  widget="badge"
+					decoration-danger="status=='invoicing'"
+                    decoration-info="status=='protocol'"
+                    decoration-success="status=='done'"
+                           optional="show"/>
+				<field name="type_analyse"/>
+				<field name="analyse"/>
+				<field name="move_id" invisible="0" string="N° Fact"/>
+				<field name="move_line_id"  invisible="1"/>
+				<field name="etat_facturation"/>
+			</tree>
+		</field>
+	</record>
+
+	<record id="view_imagerie_form" model="ir.ui.view">
+		<field name="name">fertility.examen.imagerie.form</field>
+		<field name="model">fertility.examen.imagerie</field>
+		<field name="arch" type="xml">
+			<form string="Voyage">
+				<header>
+					<field name="status" widget="statusbar"/>
+					<button name="action_done" class="oe_highlight" type="object" attrs="{'invisible': [('status', '!=', 'ongoing')]}" string="Valider" />
+					<button name="action_protocol_done" class="oe_highlight" type="object" attrs="{'invisible': [('status', '!=', 'protocol')]}" string="Valider" />
+				</header>
+				<sheet>
+					<div>
+						<h1 class="mt0">
+							<field name="imagerie_name"  readonly="1"/>
+						</h1>
+
+					</div>
+					<group string="Patient">
+						<field name="patient_id"  readonly="1"/>
+						<field name="parent_id"  string="Convention" readonly="1"/>
+						<field name="gender"  readonly="1"/>
+						<field name="age"  readonly="1"/>
+					</group>
+					<group string="Examen Imagerie">
+						<field name="date_request"  readonly="1"/>
+						<field name="type_analyse" readonly="1" />
+						<field name="analyse" readonly="1"/>
+						<field name="clinique" readonly="1"/>
+						<field name="demandeur" readonly="1"/>
+					</group>
+					<group string="Protocole" attrs="{'invisible': [('status', '=', 'invoicing')]}">
+						<group>
+							<field name="date_analyse" readonly="1"  attrs="{'invisible': [('status', '!=', 'done')]}"  string="Date de validation:"/>
+							<field name="technicien" readonly="1"  attrs="{'invisible': [('status', '!=', 'done')]}" string="Valider par:"/>
+							
+						</group>
+
+						<group>
+						<label for="url_clicher"/>
+							<field name="url_clicher" nolabel="1" attrs="{'readonly': [('status', 'not in', ['protocol'])]}" 
+							widget ="url" cols="2"/>
+						</group>
+					</group>
+					<group attrs="{'invisible': [('status', '=', 'invoicing')]}">
+					<label for="protocol"/>
+						<field name="protocol" widget="html" nolabel="1" attrs="{'readonly': [('status', 'not in', ['protocol'])]}"
+							placeholder="Saisir le protocole d'imagerie ici"/>
+						
+					</group>
+
+				</sheet>
+			</form>
+		</field>
+	</record>
+
+	<record id="view_resultimagerie_tree" model="ir.ui.view">
+		<field name="name">fertility.examen.imagerie.tree</field>
+		<field name="model">fertility.examen.imagerie</field>
+		<field name="arch" type="xml">
+			<tree create="false" edit="false">
+				<field name="date_request"/>
+				<field name="date_analyse"  string="D. Resultat"/>
+				<field name="patient_id" invisible="0"/>
+				<field name="gender" invisible="0"/>
+				
+				<field name="age" invisible="0"/>
+				<field name="parent_id" invisible="0"/>
+				<field name="type_analyse" invisible="1"/>
+				<field name="analyse"/>
+				<field name="protocol" widget="html"/>
+				<field name="status"  widget="badge"
+					decoration-danger="status=='invoicing'"
+                    decoration-info="status=='protocol'"
+                    decoration-success="status=='done'"
+                           optional="show"/>
+			</tree>
+		</field>
+	</record>
+	
+	<record id="view_out_invoice_tree_imagerie" model="ir.ui.view">
+            <field name="name">account.out.invoice.tree</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_invoice_tree"/>
+            <!--field name="mode">primary</field-->
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_id']" position="attributes">
+                    <attribute name="invisible">0</attribute>
+                </xpath>
+            </field>
+        </record>
+	
+	<!-- Voir les factures de laboratoire -->
+		<record id="action_imagerie_invoice_today" model="ir.actions.act_window">
+            <field name="name">Mes factures</field>
+            <field name="res_model">account.move</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_out_invoice_tree_imagerie"/>
+            <field name="search_view_id" ref="account.view_account_invoice_filter"/>
+            <field name="domain">[('libelle', '=', 'imagerie'),('invoice_date_due','=',context_today())]</field>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Créer une facture
+              </p><p>
+                Factures des examens imageries
+              </p>
+            </field>
+        </record>
+		
+		<record id="action_imagerie_invoice_all" model="ir.actions.act_window">
+            <field name="name">Mes factures</field>
+            <field name="res_model">account.move</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_out_invoice_tree_imagerie"/>
+            <field name="search_view_id" ref="account.view_account_invoice_filter"/>
+            <field name="domain">[('libelle', '=', 'imagerie')]</field>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Créer une facture
+              </p><p>
+                Factures des examens laboratoires
+              </p>
+            </field>
+        </record>
+
+	<!-- Voir tous les resultats -->
+	<record id="action_resultatimagerie_all" model="ir.actions.act_window">
+		<field name="name">Tableau synthétique des Resultats Imageries</field>
+		<field name="res_model">fertility.examen.imagerie</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_id" ref="ksoftmedical.view_resultimagerie_tree"/>
+		<field name="view_mode">tree</field>
+		<field name="domain">[('internal_status','=','done')]</field>
+	</record>
+
+
+
+	<record id="action_imagerie_all" model="ir.actions.act_window">
+		<field name="name">Toutes les examens</field>
+		<field name="res_model">fertility.examen.imagerie</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain">[]</field>
+	</record>
+	<record id="action_imagerie_today" model="ir.actions.act_window">
+		<field name="name">Prévu aujourd'hui</field>
+		<field name="res_model">fertility.examen.imagerie</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain">[('date_request','=',context_today())]</field>
+	</record>
+
+	<!-- Menu Demande Imagerie Jour -->
+	<record id="action_imagedemande_jour" model="ir.actions.act_window">
+		<field name="name">Aujourd'hui</field>
+		<field name="res_model">fertility.examen.imagerie</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain">[('internal_status','=','draft'),('date_request','=',context_today())]</field>
+	</record>
+
+	<!-- Menu Demande Imagerie All -->
+	<record id="action_imagedemande_all" model="ir.actions.act_window">
+		<field name="name">Toutes les demandes</field>
+		<field name="res_model">fertility.examen.imagerie</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain">[('internal_status','=','draft')]</field>
+	</record>
+
+	<!-- Menu Protocole à saisir jour -->
+	<record id="action_imageprotocole_jour" model="ir.actions.act_window">
+		<field name="name">Prévu aujourd'hui</field>
+		<field name="res_model">fertility.examen.imagerie</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain">[('internal_status','in',['protocol','invoicing']),('date_request','=',context_today())]</field>
+	</record>
+	
+	<record id="action_imageprotocole_form_view_jr" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_imagerie_form"/>
+            <field name="act_window_id" ref="action_imageprotocole_jour"/>
+        </record>
+        <record id="action_imageprotocole_tree_view_jr" model="ir.actions.act_window.view">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_imagerie_tree"/>
+            <field name="act_window_id" ref="action_imageprotocole_jour"/>
+        </record>
+
+	<!-- Menu Protocole à saisir all -->
+	<record id="action_imageprotocole_all" model="ir.actions.act_window">
+		<field name="name">Protocoles</field>
+		<field name="res_model">fertility.examen.imagerie</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain">[('internal_status','in',['protocol','invoicing'])]</field>
+	</record>
+	
+	<record id="action_imageprotocole_form_view_all" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_imagerie_form"/>
+            <field name="act_window_id" ref="action_imageprotocole_all"/>
+        </record>
+        <record id="action_imageprotocole_tree_view_all" model="ir.actions.act_window.view">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_imagerie_tree"/>
+            <field name="act_window_id" ref="action_imageprotocole_all"/>
+        </record>
+
+	<!-- Menu Protocole à valider jour -->
+	<record id="action_imagevalidation_jour" model="ir.actions.act_window">
+		<field name="name">Prévu aujourd'hui</field>
+		<field name="res_model">fertility.examen.imagerie</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain">[('internal_status','=','ongoing'),('date_request','=',context_today())]</field>
+	</record>
+	
+	<record id="action_imagevalidation_form_view_jr" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_imagerie_form"/>
+            <field name="act_window_id" ref="action_imagevalidation_jour"/>
+        </record>
+        <record id="action_resultat_tree_view_jr" model="ir.actions.act_window.view">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_imagerie_tree"/>
+            <field name="act_window_id" ref="action_imagevalidation_jour"/>
+        </record>
+
+	<!-- Menu Protocole valider all -->
+	<record id="action_imagevalidation_all" model="ir.actions.act_window">
+		<field name="name">Protocole à valider</field>
+		<field name="res_model">fertility.examen.imagerie</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain">[('internal_status','=','ongoing'),]</field>
+	</record>
+	
+	<record id="action_imagevalidation_form_view_all" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_imagerie_form"/>
+            <field name="act_window_id" ref="action_imagevalidation_all"/>
+        </record>
+        <record id="action_resultat_tree_view_all" model="ir.actions.act_window.view">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_imagerie_tree"/>
+            <field name="act_window_id" ref="action_imagevalidation_all"/>
+        </record>
+
+	<!-- Menu Protocole valider jour -->
+	<record id="action_imagevalider_jour" model="ir.actions.act_window">
+		<field name="name">Prévu aujourd'hui</field>
+		<field name="res_model">fertility.examen.imagerie</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain">[('internal_status','=','done'),('date_request','=',context_today())]</field>
+	</record>
+	
+	  <record id="action_resultat_form_view_jour" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_imagerie_form"/>
+            <field name="act_window_id" ref="action_imagevalider_jour"/>
+        </record>
+        <record id="action_resultat_tree_view_jour" model="ir.actions.act_window.view">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_resultimagerie_tree"/>
+            <field name="act_window_id" ref="action_imagevalider_jour"/>
+        </record>
+
+	<!-- Menu Protocole à valider all -->
+	<record id="action_imagevalider_all" model="ir.actions.act_window">
+		<field name="name">Protocole validé</field>
+		<field name="res_model">fertility.examen.imagerie</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain">[('internal_status','=','done'),]</field>
+	</record>
+	
+	  <record id="action_resultat_form_view_all" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_imagerie_form"/>
+            <field name="act_window_id" ref="action_imagevalider_all"/>
+        </record>
+		
+        <record id="action_resultat_tree_view_all" model="ir.actions.act_window.view">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_resultimagerie_tree"/>
+            <field name="act_window_id" ref="action_imagevalider_all"/>
+        </record>
+
+	<menuitem id="menu_imagerie" parent="menu_consult" groups="group_fertility_reception"
+		sequence="2"
+		name="Imagerie"
+		/>
+		<menuitem id="menu_imagerie1" parent="menu_imagerie" groups="group_fertility_reception" action="action_imagerie_today"
+			sequence="1"
+			name="Prévu aujourd'hui"
+			/>
+		<menuitem id="menu_imagerie2" parent="menu_imagerie" groups="group_fertility_reception" action="action_imagerie_all"
+			sequence="2"
+			name="Tous les examens"
+			/>
+
+
+	<!-- Menu Imagerie -->
+	<menuitem id="menu_topimagerie"  groups="group_fertility_imagerie"
+		sequence="25"
+		name="Imagerie" web_icon="ksoftmedical,static/description/imagerie/icon.png"
+		/>
+
+		<!-- Menu Demande Imagerie -->
+		<menuitem id="menu_imagerie_demande" parent="menu_topimagerie"  groups="group_fertility_reception"
+		sequence="1"
+		name="Demandes"
+		/>
+			<menuitem id="menu_demande_j" parent="menu_imagerie_demande"  groups="group_fertility_reception"
+			sequence="1"
+			action="action_imagedemande_jour"
+			name="Demande du jour"
+			/>
+
+			<!--menuitem id="menu_demande_all" parent="menu_imagerie_protocole"  groups="group_fertility_reception"
+			sequence="2"
+			action="action_imagedemande_demande"
+			name="Toutes les demandes"
+			/-->
+
+		<!-- Menu Saisie Protocole -->
+		<menuitem id="menu_imagerie_protocole" parent="menu_topimagerie"  groups="group_fertility_imagerie"
+		sequence="2"
+		name="Examens payés"
+		/>
+			<menuitem id="menu_imagerie_protocole1" parent="menu_imagerie_protocole"  groups="group_fertility_imagerie"
+			sequence="1"
+			action="action_imageprotocole_jour"
+			name="Examens du jour"
+			/>
+
+			<menuitem id="menu_imagerie_protocole2" parent="menu_imagerie_protocole"  groups="group_fertility_imagerie"
+			sequence="2"
+			action="action_imageprotocole_all"
+			name="Tous les examens"
+			/>
+
+
+		<!-- Menu Attente de validation -->
+		<menuitem id="menu_imagerie_validation" parent="menu_topimagerie"  groups="group_fertility_imagerie"
+		sequence="3"
+		name="Examens à Valider"
+		/>
+			<menuitem id="menu_imagerie_validation1" parent="menu_imagerie_validation"  groups="group_fertility_imagerie"
+			sequence="1"
+			action="action_imagevalidation_jour"
+			name="Examens du jour"
+			/>
+
+			<menuitem id="menu_imagerie_validation2" parent="menu_imagerie_validation"  groups="group_fertility_imagerie"
+			sequence="2"
+			action="action_imagevalidation_all"
+			name="Tous les examens à valider"
+			/>
+
+
+		<!-- Menu Validé -->
+		<menuitem id="menu_imagerie_valider" parent="menu_topimagerie"  groups="group_fertility_imagerie,group_fertility_reception"
+		sequence="4"
+		name="Examens validés"
+		/>
+			<menuitem id="menu_imagerie_valider1" parent="menu_imagerie_valider"  groups="group_fertility_imagerie,group_fertility_reception"
+			sequence="1"
+			action="action_imagevalider_jour"
+			name="Examens du jour"
+			/>
+
+			<menuitem id="menu_imagerie_valider2" parent="menu_imagerie_valider"  groups="group_fertility_imagerie,group_fertility_reception"
+			sequence="2"
+			action="action_imagevalider_all"
+			name="Tous les examens validés"
+			/>
+
+</odoo>

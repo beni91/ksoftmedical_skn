@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<template id="report_resltat_laboratoire_document">
+	    <t t-call="web.external_layout">
+	        <div class="page">
+	        	<p>
+				<h2 class="mt16" style="text-align:center !important;">
+	                <span>RESULTAT DE LABORATOIRE</span>
+	            </h2>
+				</p>
+	            <br/>
+	            <div class="oe_structure"/>
+	            	<table class="table table-borderless">
+	            		<tr>
+	            			<th with="50%" class="text-left">
+	            				<ul class="list-inline">
+								  <li class="list-inline-item">Nom:</li>
+								  <li class="list-inline-item">
+										<t t-if="form_data.get('patient_id')">
+											<t t-esc="form_data['patient_id'][1]"/>
+										</t>
+								  </li>
+								</ul>
+								<ul class="list-inline">
+									<li class="list-inline-item">Sexe:</li>
+									<li class="list-inline-item">
+										<t t-if="form_data.get('gender')">
+											<t t-esc="form_data['gender']"/>
+										</t>
+									</li>
+								</ul>
+								<ul class="list-inline">
+									<li class="list-inline-item">Age:</li>
+									<li class="list-inline-item">
+										<t t-if="form_data.get('age')">
+											<t t-esc="form_data['age']"/>
+										</t>
+									</li>
+								</ul>
+							</th>
+	            			<th with="50%" class="text-left">
+	            				<!--ul class="list-inline">
+								  <li class="list-inline-item">Date:</li>
+								  <li class="list-inline-item">
+										<t t-if="form_data.get('start_date')">
+											<t t-esc="form_data['start_date'][1]"/>
+										</t>
+								  </li>
+								</ul-->
+	            			</th>
+	            		</tr>
+	            	</table>
+	            	<br/>
+				
+				<t t-if="labo_data">
+                        <table class="table">
+                                <tr>
+									<th name="th_sequence" class="text-left">
+                                        <span>Date de demande</span>
+                                    </th>
+                                    <th name="th_sequence" class="text-left">
+                                        <span>Examens demandés</span>
+                                    </th>
+                                    <th name="th_date" class="text-left">
+                                        <span>Résultats</span>
+                                    </th>
+									<th name="th_state" class="text-left">
+                                        <span>Médecin Demandeur</span>
+                                    </th>
+                                </tr>
+                            <t t-foreach="labo_data" t-as="line">
+                                <tr>
+									<td>
+                                        <span t-esc="line['date_request']"/>
+                                    </td>
+                                    <td>
+                                        <span t-esc="line['analyse'][1]"/>
+                                    </td>
+                                    <td>
+                                        <span t-esc="line['description']"/>
+                                    </td>
+                                    <td>
+                                        <span t-raw="line['valeur_normale']"/>
+                                    </td>
+									<td>
+                                        <t t-if="line['medecin_demander']"><span t-esc="line['medecin_demander'][1]"/></t>
+                                    </td>
+									
+                                </tr>
+                            </t>
+
+                        </table>
+				</t>
+	        
+	            <br/>
+
+	            <div class="mt32 ml64 mr4" name="signature">
+	                <div class="offset-8">
+	                    <strong>Signature</strong>
+	                </div>
+	                <br/>
+	                <div class="offset-8 text-center"></div>
+	                <div class="offset-8">
+	                    <!--span t-field="doc.doctor_id"/-->
+	                </div>
+	                <br/><br/><br/>
+	                <div class="offset-8">
+	                <p>Fait à Kinshasa, le <span t-esc="time.strftime('%Y-%m-%d %H:%M:%S')"/></p>
+	                </div>
+	            </div>
+
+	            <div class="oe_structure"/>
+	        </div>
+	    </t>
+	</template>
+
+
+	<template id="report_examen_laboratoire">
+	    <t t-call="web.html_container">
+	        <!--t t-foreach="docs" t-as="doc"-->
+	            <t t-call="ksoftmedical.report_resltat_laboratoire_document"/>
+	        <!--/t-->
+	    </t>
+	</template>
+
+	<!--template id="report_saleorder_pro_forma">
+	    <t t-call="web.html_container">
+	        <t t-set="is_pro_forma" t-value="True"/>
+	        <t t-set="docs" t-value="docs.with_context(proforma=True)"/>
+	        <t t-foreach="docs" t-as="doc">
+	            <t t-call="sale.report_saleorder_document" t-lang="doc.partner_id.lang"/>
+	        </t>
+	    </t>
+	</template-->
+
+</odoo>

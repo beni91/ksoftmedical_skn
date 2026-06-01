@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	
+
+	<record id="action_patient_tree" model="ir.actions.act_window">
+		<field name="name">Patient</field>
+		<field name="res_model">fertility.patient</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain">[('is_company','=', False)]</field> 
+		<field name="context">{'is_company':False, 'default_is_company':False}</field>
+	</record>
+
+	<record id="action_convention_tree" model="ir.actions.act_window">
+		<field name="name">Convention</field>
+		<field name="res_model">fertility.patient</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain">[('is_company','=', True)]</field> 
+		<field name="context">{'is_company':True, 'default_is_company':True}</field>
+	</record>
+
+
+	<record id="action_facturation_patient_tree" model="ir.actions.act_window">
+		<field name="name">Privé</field>
+		<field name="res_model">account.move</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain">[('partner_id.parent_id','=', False),('journal_id.type', '=', 'sale')]</field> 
+		<field name="context">{}</field>
+	</record>
+
+	<record id="action_facturation_convention_tree" model="ir.actions.act_window">
+		<field name="name">Convention</field>
+		<field name="res_model">account.move</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain">[('partner_id.parent_id','!=', False),('journal_id.type', '=', 'sale')]</field> 
+		<field name="context">{}</field>
+	</record>
+
+	<record id="action_appointment_dashboard" model="ir.actions.act_window">
+		<field name="name">Conventionné</field>
+		<field name="res_model">fertility.appointment.type</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">kanban</field>
+		<field name="domain"></field> 
+		<field name="context">{}</field>
+	</record>
+
+	<menuitem id="menu_reception" sequence="10" groups="group_fertility_reception"
+		name="Reception" />
+
+		<menuitem id="menu_consultation" parent="menu_reception" groups="group_fertility_reception" action="action_appointment_dashboard"
+			sequence="1"
+			name="Consultation"/>
+
+		<menuitem id="menu_patient" parent="menu_reception" groups="group_fertility_reception"
+			sequence="2"
+			name="Patient"/>
+
+			<menuitem id="menu_patient1" parent="menu_patient" groups="group_fertility_reception" action="action_patient_tree"
+				sequence="1"
+				name="Patient"/>
+			<menuitem id="menu_convention" parent="menu_patient" groups="group_fertility_reception" action="action_convention_tree"
+				sequence="2"
+				name="Convention"  />
+
+		<menuitem id="menu_facturation" parent="menu_reception" groups="group_fertility_caisse" action="action_convention_tree"
+			sequence="2"
+			name="Facturation"  />
+
+			<menuitem id="menu_facturation_patient" parent="menu_facturation" groups="group_fertility_caisse" action="action_facturation_patient_tree"
+				sequence="1"
+				name="Privé"  />
+			<menuitem id="menu_facturation_convention" parent="menu_facturation" groups="group_fertility_caisse" action="action_facturation_convention_tree"
+				sequence="2"
+				name="Conventionné"  />
+</odoo>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="wizard_reporting_appointment_view" model="ir.ui.view">
+        <field name="name">wizard.reporting.appointment.view.form</field>
+        <field name="model">fertility.wizard.dossier.medical.patient</field>
+        <field name="arch" type="xml">
+            <form string="">
+                <!--button name="get_dossier_content" type="object" string="Afficher"/-->
+                <sheet>
+                    <!--group string="Identité patient">
+						<group>
+							<field name="patient_id" context="{'default_patient_id': patient_id}"/>
+							<field name="nbre_ligne"/>
+							<field name="see_resume"/>
+							
+						</group>
+						<group>
+							<field name="service" widget="selection"/>
+							<field name="medecin" widget="selection"/>
+							<field name="speciality" widget="selection" invisible="1"/>
+						</group>
+					</group-->
+					<group string="Résumé dossier patient">
+						<field name="content" widget="html" nolabel="1" readonly="1"/>
+					</group>
+                </sheet>
+				<footer>
+					<button name="get_appointment_report" type="object" string="Actualiser"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="z" />
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="action_wizard_reporting_appointment"  model="ir.actions.act_window">
+        <field name="name">Dossier Medical</field>
+        <field name="res_model">fertility.wizard.dossier.medical.patient</field>
+        <field name="view_mode">form</field>
+        <field name="binding_view_types">form</field>
+        <field name="target">new</field>
+   </record>
+   
+   <record id="action_wizard_reporting_appointment_form" model="ir.actions.act_window.view">
+        <field name="sequence" eval="1"/>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="wizard_reporting_appointment_view"/>
+        <field name="act_window_id" ref="action_wizard_reporting_appointment"/>
+    </record>
+    
+   
+</odoo>

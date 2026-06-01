@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="product_template_form_view" model="ir.ui.view">
+        <field name="name">product.template.form.inherit2</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <field name="company_id" position="after">
+                <field name="valeur_normale"/>
+				<field name="tube"/>
+            </field>
+            <div name="options" position="inside">
+                <span class="d-inline-block">
+                    <field name="is_consultation"/>
+                    <label for="is_consultation"/>
+                </span>
+                <span class="d-inline-block">
+                    <field name="is_labo"/>
+                    <label for="is_labo"/>
+                </span>
+                <span class="d-inline-block">
+                    <field name="is_imagerie"/>
+                    <label for="is_imagerie"/>
+                </span>
+                <span class="d-inline-block">
+                    <field name="is_actes_medicaux"/>
+                    <label for="is_actes_medicaux"/>
+                </span>
+                <span class="d-inline-block">
+                    <field name="is_actes_inf"/>
+                    <label for="is_actes_inf"/>
+                </span>
+                <span class="d-inline-block">
+                    <field name="is_medicaments"/>
+                    <label for="is_medicaments"/>
+                </span>
+                <span class="d-inline-block">
+                    <field name="is_shop"/>
+                    <label for="is_shop"/>
+                </span>
+                <span class="d-inline-block">
+                    <field name="is_materiels"/>
+                    <label for="is_materiels"/>
+                </span>
+                <span class="d-inline-block">
+                    <field name="is_chirurgie"/>
+                    <label for="is_chirurgie"/>
+                </span>
+				<span class="d-inline-block">
+                    <field name="is_chambre"/>
+                    <label for="is_chambre"/>
+                </span>
+                <span class="d-inline-block">
+                    <field name="is_autres"/>
+                    <label for="is_autres"/>
+                </span>
+            </div>
+        </field>
+    </record>
+
+
+    <record id="product_category_form_view" model="ir.ui.view">
+        <field name="name">product.category.form</field>
+        <field name="model">product.category</field>
+        <field name="inherit_id" ref="product.product_category_form_view"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='parent_id']" position="before">
+                <field name="code_service"/>
+            </xpath>
+
+        </field>
+
+    </record>
+    <record id="view_posologie_tree" model="ir.ui.view">
+        <field name="name">fertility.posologie.tree</field>
+        <field name="model">fertility.posologie</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="intitule_posologie" invisible="1" readonly="1"/>
+            </tree>
+        </field>
+    </record>
+    <record id="action_posologie" model="ir.actions.act_window">
+        <field name="name">Posologie</field>
+        <field name="res_model">fertility.posologie</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+    <!--menuitem id="menu_posologie" parent="menu_config" groups="ksoftmedical.group_ksoft_admin" sequence="1"
+              name="Posologie"
+              action="action_posologie"/-->
+
+</odoo>

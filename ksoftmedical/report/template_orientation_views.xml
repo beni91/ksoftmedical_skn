@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<template id="report_orientation_document">
+	    <t t-call="web.external_layout">
+	        <div class="page">
+	        	<p>
+				<h2 class="mt16" style="text-align:center !important;">
+	                <span>BON D'ORIENTATION MEDICALE</span>
+	            </h2>
+				</p>
+	            <br/>
+	            <div class="oe_structure"/>
+	            	<table class="table table-borderless">
+	            		<tr>
+	            			<th with="50%" class="text-left">
+	            				<ul class="list-inline">
+								  <li class="list-inline-item">Nom Patient:</li>
+								  <li class="list-inline-item"><span t-field="doc.patient_id"/></li>
+								</ul>
+								<ul class="list-inline">
+								  <li class="list-inline-item">Sexe:</li>
+								  <li class="list-inline-item"><span t-field="doc.gender"/></li>
+								</ul>
+								<ul class="list-inline">
+								  <li class="list-inline-item">Age:</li>
+								  <li class="list-inline-item"><span t-field="doc.age"/></li>
+								</ul>
+							</th>
+	            			<th with="50%" class="text-left">
+	            				<ul class="list-inline">
+								  <li class="list-inline-item">Date de consultation:</li>
+								  <li class="list-inline-item"><span t-field="doc.date"/></li>
+								</ul>
+	            			</th>
+	            			
+	            		</tr>
+	            		
+	            	</table>
+	            	<br/>
+	            	
+
+	            <!-- Is there a discount on at least one line? >
+	            <t t-set="display_discount" t-value="any(l.discount for l in doc.order_line)"/-->
+				<table class="table">
+					
+					<tr class="table-active" style="text-transform:uppercase;">
+						<th name="th_description" class="text-primary">Date de demande</th>
+						<th name="th_description" class="text-primary">Orientation Médicale</th>
+					</tr>
+					<tbody>
+						<t t-foreach="doc.done_orientation" t-as="line">
+	                        <tr t-if="line.is_print == True">
+								<td class="w-10">
+									<span t-field="line.date_orientation"/>
+								</td>
+								<td class="w-90">
+									<span t-field="line.orientation"/>
+									<br/><br/>
+									<h6>Clinique:</h6>
+									<span t-field="line.description"/>
+								</td>
+	                        </tr>
+	                    </t>
+	            	</tbody>				
+	            </table>
+					
+	        
+	            <br/>
+
+	            <div class="mt32 ml64 mr4" name="signature">
+	                <div class="offset-8">
+	                    <strong>Signature</strong>
+	                </div>
+	                <br/>
+	                <div class="offset-8 text-center"></div>
+	                <div class="offset-8">
+	                    <span t-field="doc.doctor_id"/>
+	                </div>
+	                <br/><br/><br/>
+	                <div class="offset-8">
+	                <p>Fait à Kinshasa, le <span t-esc="time.strftime('%Y-%m-%d %H:%M:%S')"/></p>
+	                </div>
+	            </div>
+
+	            <div class="oe_structure"/>
+	        </div>
+	    </t>
+	</template>
+
+
+	<template id="report_orientation_imagerie">
+	    <t t-call="web.html_container">
+	        <t t-foreach="docs" t-as="doc">
+	            <t t-call="ksoftmedical.report_orientation_document" t-lang="doc.partner_id.lang"/>
+	        </t>
+	    </t>
+	</template>
+
+	<!--template id="report_saleorder_pro_forma">
+	    <t t-call="web.html_container">
+	        <t t-set="is_pro_forma" t-value="True"/>
+	        <t t-set="docs" t-value="docs.with_context(proforma=True)"/>
+	        <t t-foreach="docs" t-as="doc">
+	            <t t-call="sale.report_saleorder_document" t-lang="doc.partner_id.lang"/>
+	        </t>
+	    </t>
+	</template-->
+
+</odoo>

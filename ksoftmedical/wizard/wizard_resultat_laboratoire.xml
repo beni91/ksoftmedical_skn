@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_resultat_laboratoire_wizard" model="ir.ui.view">
+        <field name="name">Impression Résultat Laboratoire</field>
+        <field name="model">fertility.wizard.result.labo</field>
+        <field name="arch" type="xml">
+            <form string="Impression Résultat Laboratoire">
+                <sheet>
+                    <group>
+                        <field name="patient_id" required="1"/>
+						<field name="age" readonly="1"/>
+						<field name="gender" readonly="1"/>
+                        <field name="start_date" required="1"/>
+                        <field name="end_date" required="1"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="labo_print_results" string="Impression PDF" type="object" class="btn-primary"/>
+                    <!--button name="labo_print_results_xlsx" string="Impression XLSX" type="object" class="btn-primary"/-->
+                    <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="z" />
+                </footer>
+            </form>
+        </field>
+    </record>
+	
+	<record id="action_resultat_laboratoirewizard" model="ir.actions.act_window">
+		<field name="name">Impression Résultat</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="res_model">fertility.wizard.result.labo</field>
+		<field name="view_mode">form</field>
+		<field name="view_id" ref="view_resultat_laboratoire_wizard"/>
+		<field name="target">new</field>
+	</record>
+
+	
+	<!-- Menu Resultat inscrit -->
+	<menuitem id="menu_labo_impr" parent="ksoftmedical.menu_laboratoire"  groups="group_fertility_laboratoire"
+		sequence="1"
+		name="Impression"
+		/>
+		<menuitem id="menu_labo_impr1" parent="menu_labo_impr"  groups="group_fertility_laboratoire"
+			sequence="1"
+			action="action_resultat_laboratoirewizard"
+			name="Impression des résultats"
+			/>
+</odoo>

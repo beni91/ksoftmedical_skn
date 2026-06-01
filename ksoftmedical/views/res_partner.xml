@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+		<record id="view_partnercustom_form" model="ir.ui.view">
+            <field name="name">res.partner.form</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+            	<page name='internal_notes' position="after">
+                    <page name='document_obligatoire' string="Documents à fournir">
+                        <group>
+                    	   <field name="matricule" string="Matricule"/>
+                    	   <field name="bon_envoi" string="Bon d'Envoi"/>
+                    	   <field name="classeuser" string="Classe"/>
+                        </group>
+                	</page>
+                </page>
+
+            </field>
+        </record>
+
+
+	
+
+</odoo>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+      <!-- Add "Asset Category" to supplier invoices -->
+    <record model="ir.ui.view" id="view_invoice_code_jour2">
+        <field name="name">account.invoice.code.form</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+			<xpath expr="//field[@name='invoice_date']" position="after">
+				<field name="code_jour" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_generatecode_form2" model="ir.ui.view">
+        <field name="name">account.generate.code.form</field>
+        <field name="model">account.journal.code</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="internal_status" widget="statusbar"/>
+                    <button name="open_generate_code" class="oe_highlight" type="object"
+                            attrs="{'invisible': [('internal_status', '!=', 'new')]}"
+                            string="Ouvrir le code jour"/>
+                    
+                    <button name="close_generate_code" class="oe_highlight" type="object"
+                            attrs="{'invisible': [('internal_status', '!=', 'cours')]}"
+                            string="Fermer le code jour"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group id="header_left_group" >
+                            <field name="date_ouverture"/>
+                            <field name="date_fermeture" readonly="0"/>
+                            <field name="journal"/>
+                        </group>
+                        <group id="header_right_group">
+                            <field name="code"/>
+                            <field name="code_jour" readonly="0"/>
+                            <field name="equipe"/>
+                            <field name="date_ouverture1"/>
+                            <field name="date_fermeture1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_generatecode_tree2" model="ir.ui.view">
+        <field name="name">account.generate.code.tree</field>
+        <field name="model">account.journal.code</field>
+        <field name="arch" type="xml">
+            <tree decoration-success="internal_status=='cours'"
+				  decoration-primary="internal_status=='new'">
+                <field name="date_ouverture"/>
+                <field name="date_fermeture"/>
+                <field name="journal"/>
+                <field name="code_jour"/>
+                <field name="equipe"/>
+                <field name="internal_status"/>
+            </tree>
+        </field>
+    </record>
+
+
+    <record id="action_generatecode2" model="ir.actions.act_window">
+        <field name="name">Generation code jour</field>
+        <field name="res_model">account.journal.code</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('internal_status','!=','close')]</field>
+    </record>
+	
+	<record id="action_generatecode3" model="ir.actions.act_window">
+        <field name="name">Code Jour Cloturé</field>
+        <field name="res_model">account.journal.code</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('internal_status','=','close')]</field>
+    </record>
+
+  
+
+    <!-- Rapport Caisse -->
+		<menuitem id="menu_generate_code1" name="Code Jour" parent="ksoftmedical.menu_pharmacie"
+			groups="group_fertility_pharmacie,group_fertility_reception" sequence="5">
+		
+            <menuitem id="menu_generate_code_jour2" name="Session du Jour" action="action_generatecode2" sequence="1"
+				/>
+			<menuitem id="menu_generate_code_jour3" name="Session cloturé" action="action_generatecode3" sequence="2"
+				/>
+		
+        </menuitem>
+
+
+
+
+</odoo>

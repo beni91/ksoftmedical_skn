@@ -1,0 +1,620 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+	<record id="view_archive_patient_tree" model="ir.ui.view">
+        <field name="name">archive.patient.tree</field>
+        <field name="model">fertility.archive.patient</field>
+        <field name="arch" type="xml">
+            <tree create="false" edit="false">
+				<field name="resume_consult"/>
+            </tree>
+        </field>
+    </record>
+	
+	<record id="action_view_archive_patient_tree"  model="ir.actions.act_window">
+        <field name="name">Dossier Archivé</field>
+        <field name="res_model">fertility.archive.patient</field>
+        <field name="view_mode">tree</field>
+        <field name="binding_view_types">tree</field>
+        <field name="target">new</field>
+   </record>
+
+	<record id="view_appointment_quick_patient_form" model="ir.ui.view">
+        <field name="name">ksoft.appointment.form</field>
+        <field name="model">ksoft.appointment</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="internal_status" widget="statusbar" statusbar_visible="home,valid"/>
+                    <button name="action_create" class="oe_highlight" type="object"
+                            attrs="{'invisible': ['|',('internal_status', '!=', 'home'),('is_followUp','=',True)]}"
+                            string="Confirmer"/>
+					
+					<button name="action_create_woutinvoice" class="oe_highlight" type="object"
+                            attrs="{'invisible': ['|',('internal_status', '!=', 'home'),('is_followUp','=',True)]}"
+                            string="Confirmer sans payer"
+							groups="ksoftmedical.group_fertility_autorisation_paiement"/>
+
+                    <!--button name="shop" class="oe_highlight" type="object"
+                            attrs="{'invisible': ['|',('internal_status', '!=', 'home'),('is_followUp','=',True)]}"
+                            string="SHOP"/>					
+					
+                    <button name="action_create_sans_payer" class="oe_highlight" type="object"
+                            attrs="{'invisible': ['|',('internal_status', '!=', 'home'),('is_followUp','=',True)]}"
+                            string="Confirmer sans payer"/-->
+
+                    <button name="action_return" class="oe_highlight" type="object"
+                            attrs="{'invisible':['|',('internal_status',  'not in', ['home','invoicing']),('etat','=','annul'),('is_followUp','=',True)]}"
+                            string="Annuler"/>
+
+                    <button name="%(action_annuler_rdv)d" class="oe_highlight" type="action"
+                            string="Supprimer RDV"
+                            attrs="{'invisible':['|',('etat','=','annul'),('is_followUp','=',True)]}"/>
+
+                    <button name="action_pass_rdv_to_immed" class="oe_highlight" type="object"
+                            attrs="{'invisible':[('time_rdv','!=','rdv')]}"
+                            string="Envoyer au triage"/>
+
+                    <button name="add_to_appoint" class="oe_highlight" type="object"
+                            attrs="{'invisible':[('is_followUp','=',False)]}"
+                            string="Ajouter aux RDV"/>
+
+                </header>
+                <sheet>
+					<div style="float:left !important;">
+                         <button name="change_statut" class="oe_highlight" type="object"
+                            attrs="{'invisible': [('internal_status', '=', 'home')]}" string="Actualiser le statut"/>
+                    </div>
+                    <div name="button_box" class="oe_button_box">
+                        <button type="object" class="oe_stat_button" icon="fa-pencil-square-o" name="action_view_partner_consult_invoices"
+                            context="{'default_partner_id': active_id}"
+                            attrs="{'invisible':[('internal_status','=','home')]}">
+                            <div class="o_form_field o_stat_info">
+                                <span class="o_stat_value">
+                                    <field name="currency_id" invisible="1"/>
+                                    <field name="total_invoiced" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                </span>
+                                <span class="o_stat_text">Factures</span>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="oe_button_box" name="button_box">
+                        <button string="Voir les rdv de ce jours" type="action"
+                                name="%(action_wizard_day_reservation)d"
+                                class="oe_stat_button" icon="fa-address-card"  attrs="{'invisible':[('is_followUp','=',False)]}"/>
+                    </div>
+                    <widget name="web_ribbon" title="Annulé" bg_color="bg-danger"
+                            attrs="{'invisible':[('etat','!=','annul')]}"/>
+                    <!--div>
+                        <h3 class="mt0">
+                            <div>
+                                <label string="Patient" for="patient_id"/>
+                                <field name="patient_id" required="1"
+                                       attrs="{'readonly':[('internal_status','!=','home')]}"/>
+                            </div>
+                            <div>
+                                <label string="Visiteur" for="visitor"/>
+                                <field name="visitor" attrs="{'readonly':[('internal_status','!=','home')]}"/>
+                            </div>
+                        </h3>
+                    </div-->
+                    <group>
+                        <group id="header_left_group" string="IDENTIFICATION DU PATIENT">
+                            <field name="patient_id" attrs="{'readonly':[('internal_status','!=','home')]}"/>
+                            <field name="age" readonly="1"/>
+                            <field name="gender" readonly="1"/>
+                            <field name="phone" readonly="1"/>
+                            <field name="email" readonly="1"/>
+                            <field name="function" readonly="1"/>
+
+                            <field name="categorie" readonly="1"
+                                   attrs="{'readonly':[('internal_status','!=','home')]}"/>
+                            <field name="convention_id" string="Convention"
+                                   attrs="{'readonly':[('internal_status','!=','home')], 'invisible':[('categorie','!=','convention')]}"/>
+                            <field name="classe" readonly="1" attrs="{'invisible':[('categorie','!=','convention')]}"/>
+                            <field name="matricule" readonly="1"
+                                   attrs="{'invisible':[('categorie','!=','convention')]}"/>
+                            <field name="numero_billet"/>
+                            <field name="etat" invisible="1"/>
+                        </group>
+                        <group id="header_right_group" string="Informations sur le rdv">
+							<field name="type_transfert" />
+							<field name="origine_patient" attrs="{'invisible': [('type_transfert', '!=','avcdoc')]}"/>
+							<field name="nom_centre" attrs="{'invisible': [('origine_patient', '=','centre'),('type_transfert', '!=','avcdoc')]}"/>
+                            <field name="time_rdv" attrs="{'readonly':[('internal_status','!=','home')]}"/>
+                            <field name="title" invisible="1" attrs="{'readonly':[('internal_status','!=','home')]}"/>
+                            <field name="date_rdv" required="1" attrs="{'readonly':[('internal_status','!=','home')]}"/>
+                            <!--field name="heure_rdv"/-->
+                            <field name="service" attrs="{'readonly':[('internal_status','!=','home')]}"
+                                   domain="[('type_rdv','in',['cons','urg'])]" options="{'no_create': True,'no_create_edit': True}"/>
+                            <field name="type_rdv" invisible="0"/>
+                            <!--field name="service_consultation" string="Pavillon" attrs="{'required':[('type_rdv','in',['cons', 'chi'])],
+										'readonly':[('internal_status','!=','home')]}"/-->
+                            <field name="product_id"
+                                   attrs="{'required':[('type_rdv','=','cons')],'readonly':[('internal_status','!=','home')]}"
+                                   domain="[('is_consultation','=',True)]" 
+								   options="{'no_create': True,'no_create_edit': True}" string="Type de consultation"/>
+                            <!--field name="product_id2"
+                                   attrs="{'required':[('type_rdv','=','chi')],'readonly':[('internal_status','!=','home')]}"
+                                   domain="[('is_chirurgie','=',True)]"/-->
+                            <field name="medecin" options="{'no_create': True,'no_create_edit': True}"
+							attrs="{'required':[('type_rdv','in',['cons', 'chi'])],'readonly':[('internal_status','!=','home')]}"/>
+                            <field name="speciality" readonly="1"/>
+                            <field name="motif" attrs="{'readonly':[('internal_status','!=','home')]}"/>
+                            <field name="user_id" widget="many2one_avatar_user"/>
+                            <field name="type_patient" required="True"/>
+
+                            <field name="motannul" attrs="{'invisible':[('etat','!=','annul')]}"/>
+                            <field name="date_conf" attrs="{'invisible':[('internal_status','=','home')]}"
+                                   readonly="1"/>
+                            <field name="time_since_conf" attrs="{'invisible':[('internal_status','=','home')]}"/>
+                            <field name="date_recorded" readonly="1" invisible="1" string="Date d'enregistrement"/>
+                            <field name="is_followUp" invisible="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+	
+	<record id="view_patient_search" model="ir.ui.view">
+        <field name="name">fertility.patient.search</field>
+        <field name="model">fertility.patient</field>
+        <field name="arch" type="xml">
+            <search string="Liste patient">
+				 <field name="idpat"/>
+				<field name="nom"/>
+				<field name="postnom"/>
+				<field name="prenom"/>
+                <field name="gender" />
+                <field name="age" />
+                <field name="function" string="Profession"/>
+                <field name="categorie"/>
+                <field name="parent_id" string="Conventions/Assurances"/>
+                <field name="matricule"/>
+                <field name="classe" />
+				<field name="type_identification"/>
+				
+                <filter name="filter_categorie" string="Privés" domain="[('categorie','=','prive')]"/> <!--Ici on a crée un filtre-->
+				<filter name="filter_categorie2" string="Ayant Droit" domain="[('categorie','=','prive2')]"/>
+				<filter name="filter_categorie3" string="Conventionné" domain="[('categorie','=','convention')]"/>
+				<filter name="filter_hoe" string="Homme" domain="[('gender','=','M')]"/>
+				<filter name="filter_femme" string="Femme" domain="[('gender','=','F')]"/>
+               
+                <group string="Group By">
+					<filter string="Convention" name="group_by_Convention" context="{'group_by':'parent_id'}"/>
+					<filter string="Classe" name="group_by_Cas" context="{'group_by':'classe'}"/>
+					<filter string="Catégorie" name="group_by_tcons" context="{'group_by':'categorie'}"/>
+					<filter string="Identification" name="group_by_zone" context="{'group_by':'type_identification'}"/>
+					<filter string="Zone" name="group_by_transfert" context="{'group_by':'zone'}"/>
+					
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_patient_tree" model="ir.ui.view">
+        <field name="name">fertility.patient.tree</field>
+        <field name="model">fertility.patient</field>
+        <field eval="8" name="priority"/>
+        <field name="arch" type="xml">
+            <tree string="Contacts" sample="1" multi_edit="1" create="1">
+                <!--field name="photo" width="50px" height="50px" optional="show" widget="image"/-->
+                <field name="idpat"/>
+				<field name="nom"/>
+				<field name="postnom"/>
+				<field name="prenom"/>
+                <field name="gender" optional="show"/>
+                <field name="age" optional="show"/>
+                <field name="function" string="Profession"/>
+                <field name="phone" optional="show"/>
+                <field name="email" optional="show"/>
+                <field name="categorie" optional="show"/>
+                <field name="parent_id" optional="show" string="Conventions/Assurances"/>
+                <field name="matricule" optional="show"/>
+                <field name="classe" optional="show"/>
+				<field name="type_identification" widget="badge" 
+					decoration-success="type_identification == 'definitif'"
+                    decoration-danger="type_identification == 'provisoire'"/>
+                <field name="active" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- attrs="{'invisible': [('pma_id', '=', False)]}" -->
+
+    <record id="view_patient_form" model="ir.ui.view">
+        <field name="name">fertility.patient.form</field>
+        <field name="model">fertility.patient</field>
+        <field name="arch" type="xml">
+            <form create="0">
+				 <header>
+                    <button name="make_quick_appointment" class="oe_highlight" type="object"
+							groups="ksoftmedical.group_fertility_reception"
+							string="Créer un nouveau rdv"/>
+                </header>
+                <sheet>
+                    <div name="button_box" class="oe_button_box">
+						<button string="Dossier Archivé" type="action"
+                                name="%(action_view_archive_patient_tree)d"
+                                class="oe_stat_button" icon="fa-archive"/>
+                        <button type="object"
+                                name="open_list_appointment" context="{'default_patient_id': active_id}"
+                                class="oe_stat_button" icon="fa-calendar">
+							<div class="o_form_field o_stat_info">
+                                <span class="o_stat_value">
+                                    <field name="total_rdv"/>
+                                </span>
+                                <span class="o_stat_text">Rdv</span>
+                            </div>
+						</button>
+						<button string="Consultations" type="object"
+                                name="historique_appointment" context="{'default_patient_id': active_id}"
+                                class="oe_stat_button" icon="fa-user-md"/>
+						
+						<button string="S.Vitaux" type="object"
+                                name="open_list_surveillance" context="{'default_patient_id': active_id}"
+                                class="oe_stat_button" icon="fa-heartbeat"/>
+								
+						<button string="Diagnostics" type="object"
+                                name="historique_diagnostic" context="{'default_patient_id': active_id}"
+                                class="oe_stat_button" icon="fa-warning"/>
+								
+						<button type="object"
+                                name="open_list_labo"  context="{'default_patient_id': active_id}"
+                                class="oe_stat_button" icon="fa-flask">
+							<div class="o_form_field o_stat_info">
+                                <span class="o_stat_value">
+                                    <field name="total_laboratoire"/>
+                                </span>
+                                <span class="o_stat_text">Labo</span>
+                            </div>
+						</button>
+						<button type="object"
+                                name="open_list_imagerie"  context="{'default_patient_id': active_id}"
+                                class="oe_stat_button" icon="fa-x-ray">
+							<div class="o_form_field o_stat_info">
+                                <span class="o_stat_value">
+                                    <field name="total_imagerie"/>
+                                </span>
+                                <span class="o_stat_text">Imagerie</span>
+                            </div>
+						</button>
+						<button type="object"
+                                name="open_list_medicament"  context="{'default_patient_id': active_id}"
+                                class="oe_stat_button" icon="fa-plus">
+							<div class="o_form_field o_stat_info">
+                                <span class="o_stat_value">
+                                    <field name="total_prescription"/>
+                                </span>
+                                <span class="o_stat_text">Prescriptions</span>
+                            </div>
+						</button>
+						<button string="Hospitalisation" type="action"
+                                name="%(action_wizard_dossier_patient_reception)d"
+                                class="oe_stat_button" icon="fa-bed"/>
+						<button string="One Day" type="action"
+                                name="%(action_wizard_dossier_patient_reception)d"
+                                class="oe_stat_button" icon="fa-h-square"/>
+						<button string="Bloc Opératoire" type="action"
+                                name="%(action_wizard_dossier_patient_reception)d"
+                                class="oe_stat_button" icon="fa-address-card"/>
+								
+						<button type="object"
+                                name="action_open_list_invoices" context="{'default_partner_id': active_id}"
+                                class="oe_stat_button" icon="fa-usd">
+							<div class="o_form_field o_stat_info">
+                                <span class="o_stat_value">
+                                    <field name="currency_id" invisible="1"/>
+                                    <field name="total_invoiced" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                </span>
+                                <span class="o_stat_text">Facturé</span>
+                            </div>
+						</button>
+                    </div>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger"
+                            attrs="{'invisible': [('active', '=', True)]}"/>
+                    <div class="oe_title mb24">
+
+                        <field name="is_company" invisible="1"/>
+                        <field name="commercial_partner_id" invisible="1"/>
+                        <field name="active" invisible="1"/>
+                        <field name="country_code" invisible="1"/>
+                        <field name="type" invisible="1"/>
+                        <div class="oe_button_box" name="button_box"/>
+                        
+                        <h1>
+                            <field name="photo" widget="image" width="110px" height="90px" border-radius="30px" nolable="1"/>
+                            <field id="company" class="o_text_overflow" name="nom" default_focus="1"
+                                   placeholder="Nom de la Convention..."
+                                   attrs="{'required' : [('type', '=', 'contact'),('is_company', '=', True)], 'invisible': [('is_company','=', False)]}"/>
+                            <field id="individual" class="o_text_overflow" name="name" default_focus="1"
+                                   attrs="{'required' : [('type', '=', 'contact'), ('is_company', '=', False)], 'invisible': [('is_company','=', True)]}"
+                                   readonly="1"/>
+                        </h1>
+                        <div class="o_row" >
+                            
+                        </div>
+                    </div>
+                    <div class="oe_button_box">
+                        
+                    </div>
+                    <notebook colspan="4" attrs="{'invisible': [('is_company','=', True)]}">
+                        <page string="Identification" name="identity" autofocus="autofocus">
+                            <group>
+                                <group>
+                                    <field string="Name" name="name" readonly="0" invisible="1"/>
+                                    <field name="prenom" placeholder="Prénom"/>
+                                    <field name="nom" placeholder="Nom" required="1"/>
+                                    <field name="postnom" placeholder="Postnom"/>
+									<field name="pseudo" placeholder="Pseudonyme"/>
+                                    <field name="birth" placeholder="Date de naissance" required="1"/>
+									
+                                    <field name="age" placeholder="Date de naissance" readonly="1"/>
+                                    <field name="gender" placeholder="Genre" required="1"/>
+									<field name="etat_civil" placeholder="Etat Civil"/>
+                                    <span class="o_form_label o_td_label" name="address_name">
+                                        <b>Adresse</b>
+                                    </span>
+                                    <div class="o_address_format">
+                                        <field name="adresse" placeholder="N°:42, Av/ Prince de liège..."
+                                               class="o_address_street"/>
+                                        <!--field name="street2" placeholder="Street 2..." class="o_address_street" />
+                                        <field name="city" placeholder="City" class="o_address_city" /-->
+                                        <field name="quartier" class="o_address_state" placeholder="Quartier"/>
+                                        <field name="commune" placeholder="Commune" class="o_address_zip"
+                                               options="{'no_open': True, 'no_quick_create': True}"/>
+                                        <field name="country_id" placeholder="Pays" class="o_address_country"
+                                               options='{"no_open": True, "no_create": True}'/>
+                                        
+                                    </div>
+                                    <field name="zone"  placeholder="Zone ou Hors Zone"/>
+
+                                </group>
+                                <group col="4">
+                                    <group colspan="4">
+                                        <field name="phone" widget="phone" colspan="4"/>
+                                        <field name="email" widget="email" colspan="4"/>
+                                        <field name="function" string="Profession" colspan="4"/>
+                                        <!--field name="title" options='{"no_open": True}' placeholder="e.g. Mister" attrs="{'invisible': [('is_company', '=', True)]}"/>
+                                        <field name="category_id" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}" placeholder="Tags..."/-->
+                                    </group>
+                                    <group string="Informations Administratives" colspan="4">
+										<field name="is_diaspora" colspan="4"/>
+                                        <field name="categorie" colspan="4" required="1"/>
+                                        <field name="parent_id"
+                                               edit="False" create="False"
+                                               widget="res_partner_many2one"
+                                               placeholder="Nom de la Convention..."
+                                               domain="[('is_company', '=', True)]"
+                                               context="{'default_is_company': True, 'show_vat': True}"
+                                               attrs="{'invisible': ['|', '|', ('is_company','=', True),('parent_id', '=', False),('company_name', '!=', False), ('company_name','!=',''),('categorie', '!=','convention')],'required':[('categorie','=','convention')]}"/>
+                                        <field name="garant" colspan="4"/>
+										<field name="company_name"
+                                               attrs="{'invisible': ['|', '|', ('company_name', '=', False), ('company_name', '=', ''), ('is_company', '=', True)]}"/>
+                                        <field name="matricule" colspan="4"
+                                               attrs="{'invisible': [('categorie', '!=', 'convention')]}"/>
+                                        <field name="classe" colspan="4"
+                                               attrs="{'invisible': [('categorie', '!=', 'convention')]}"/>
+                                    </group>
+									<group string="Pièce d'identité" colspan="4">
+                                        <field name="type_identification" />
+										<field name="piece_identite"
+												attrs="{'required': [('type_identification', '=', 'definitif')]}"/>
+										<field name="num_piece" 
+												attrs="{'required': [('type_identification', '=', 'definitif')]}"/>
+                                        
+                                    </group>
+                                </group>
+                            </group>
+                            <!--notebook>
+                                <page id="mvt_patient" string="Mouvements Administratifs">
+                                    <button name="ksoftmedical.action_labo_launchwizard" class="oe_highlight" type="action"
+                                        string="Modifier le profil admin patient" />
+                                        <field name="mvt_patient" nolabel="1">
+                                            <tree editable="bottom">
+                                                <field name="datemodif" readonly="1"/>
+                                                <field name="patient_id" readonly="1"/>
+                                                <field name="matricule" readonly="1"/>
+                                                <field name="convention" readonly="1"/>
+                                                <field name="categorie" readonly="1"/>
+                                                <field name="classe" readonly="1"/>
+                                                <field name="user_id" readonly="1"/>
+                                                <field name="actuel" readonly="1"/>
+                                                <field name="etat" readonly="1"/>
+                                            </tree>
+                                        </field>
+                                </page>
+                            </notebook-->
+                        </page>
+                        <!--page string="Antécédents" name="antecedents">
+                            <group>
+                                <group string="Allergies">
+                                    <field name="allergie" nolabel="1">
+                                        <tree editable="bottom">
+                                            <field name="select" string="#"/>
+                                            <field name="code"/>
+                                            <field name="allergie_details" required="1"/>
+                                            <field name="comment"/>
+                                            <field name="etat" widget="boolean_toggle"/>
+                                        </tree>
+                                    </field>
+                                </group>
+                                <group string="ATCD Médicaux">
+                                    <field name="atcd_medical" nolabel="1">
+                                        <tree editable="bottom">
+                                            <field name="select" string="#"/>
+                                            <field name="code"/>
+                                            <field name="allergie" required="1"/>
+                                            <field name="comment"/>
+                                            <field name="etat" widget="boolean_toggle"/>
+                                        </tree>
+                                    </field>
+                                </group>
+                            </group>
+                            <group>
+                                <group>
+                                </group>
+                                <group>
+                                    <field name="lst_produit"/>
+                                </group>
+                            </group>
+                            <group string="Port de lunettes">
+                                <group>
+                                    <field name="lunettes"/>
+                                    <field name="lunettes_comm"/>
+                                </group>
+                                <group>
+                                    <field name="derniere_consult"/>
+                                </group>
+                            </group>
+                            <group string="Autres">
+                                <group>
+                                    <field name="atcd_description"/>
+
+                                </group>
+                                <group>
+                                    <field name="histoire_occ" string="Hist. Familliale Occ."/>
+                                </group>
+                            </group>
+                        </page-->
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="view_patient_antecedent_form" model="ir.ui.view">
+        <field name="name">fertility.patient.form</field>
+        <field name="model">fertility.patient</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger"
+                            attrs="{'invisible': [('active', '=', True)]}"/>
+                    <div class="oe_title mb24">
+
+                        <field name="is_company" invisible="1"/>
+                        <field name="commercial_partner_id" invisible="1"/>
+                        <field name="active" invisible="1"/>
+                        <field name="country_code" invisible="1"/>
+                        <field name="type" invisible="1"/>
+                        <h1>
+                            <field id="company" class="o_text_overflow" name="nom" default_focus="1"
+                                   placeholder="Nom de la Convention..."
+                                   attrs="{'required' : [('type', '=', 'contact'),('is_company', '=', True)], 'invisible': [('is_company','=', False)]}"/>
+                            <field id="individual" class="o_text_overflow" name="name" default_focus="1"
+                                   attrs="{'required' : [('type', '=', 'contact'), ('is_company', '=', False)], 'invisible': [('is_company','=', True)]}"
+                                   readonly="1"/>
+                        </h1>
+                        <div class="o_row">
+                            <field id="matricule" name="ID" attrs="{'readonly' : True}"/>
+
+                        </div>
+                    </div>
+
+                    <notebook colspan="4">
+                        <page string="Antécédents" name="antecedents" autofocus="autofocus">
+                            <group string="Allergies">
+                                <field name="allergie" nolabel="1">
+                                    <tree editable="bottom">
+                                        <field name="date_detection"/>
+                                        <field name="code"/>
+                                        <field name="allergie_details" required="1"/>
+                                        <field name="comment"/>
+                                        <field name="etat" widget="boolean_toggle"/>
+                                    </tree>
+                                </field>
+                            </group>
+                            <group string="ATCD">
+                                <field name="atcd_medical" nolabel="1">
+                                    <tree editable="bottom">
+                                        <field name="date_detection"/>
+										<field name="type_atcd"/>
+                                        <field name="allergie" required="1"/>
+                                        
+                                        <field name="comment"/>
+                                        <field name="etat" widget="boolean_toggle"/>
+                                    </tree>
+                                </field>
+                            </group>
+                           
+                        </page>
+                    </notebook>
+					<footer>
+						<button name="action_save_atcd" string="Enregistrer" type="object" class="oe_highlight"/>
+						<button string="Annuler" class="oe_link" special="cancel"/>
+					</footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="action_convention_custom" model="ir.actions.act_window">
+        <field name="name">Liste des conventions</field>
+        <field name="res_model">res.partner</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="domain">[('is_company','=', True)]</field>
+        <!--field name="context">{'is_company':False, 'default_is_company':False}</field-->
+    </record>
+
+    <record id="action_ksoftpatient_tree" model="ir.actions.act_window">
+        <field name="name">Liste des Patients</field>
+        <field name="res_model">fertility.patient</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('is_company','=', False)]</field>
+        <field name="context">{'is_company':False, 'default_is_company':False}</field>
+    </record>
+
+    <record id="action_ksoftconvention_tree" model="ir.actions.act_window">
+        <field name="name">Liste des Conventions</field>
+        <field name="res_model">fertility.patient</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{'default_is_company':True}</field>
+    </record>
+	
+	
+	<record id="quick_action_view_patient_appointment" model="ir.actions.act_window">
+        <field name="name">Quick Rdv</field>
+        <field name="res_model">ksoft.appointment</field>
+        <field name="view_mode">form</field>
+        <!--field name="domain">[('is_followUp','=',True)]</field>
+        <field name="view_id" ref="view_appointment_patient_calendar"/>
+        <field name="search_view_id" ref="view_appointment_patient_search"/-->
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Pas de Follow up
+            </p>
+        </field>
+    </record>
+
+    <!--record id="action_view_appointment_patient_calendar" model="ir.actions.act_window.view">
+        <field name="act_window_id" ref="action_appointment_patient"/>
+        <field name="sequence" eval="2"/>
+        <field name="view_mode">calendar</field>
+        <field name="view_id" ref="view_appointment_patient_calendar"/>
+    </record>
+
+    <record id="action_view_appointment_patient_tree" model="ir.actions.act_window.view">
+        <field name="act_window_id" ref="action_appointment_patient"/>
+        <field name="sequence" eval="1"/>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="view_appointment_patient_tree"/>
+    </record-->
+
+    <record id="quick_action_view_patient_form" model="ir.actions.act_window.view">
+        <field name="act_window_id" ref="quick_action_view_patient_appointment"/>
+        <field name="sequence" eval="3"/>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_appointment_quick_patient_form"/>
+    </record>
+
+
+</odoo>

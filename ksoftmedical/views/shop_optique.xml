@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_shop_tree" model="ir.ui.view">
+        <field name="name">module.shop.tree</field>
+        <field name="model">module.prescription</field>
+        <field name="arch" type="xml">
+            <tree decoration-success="internal_status=='delivered'"
+                  decoration-info="internal_status=='draft'"
+                  decoration-muted="internal_status=='pret'">
+                <field name="date_prescription"/>
+                <field name="patient_id"/>
+                <field name="age" optional="O"/>
+                <field name="parent_id" optional="0"/>
+                <field name="categorie"/>
+                <field name="numero_billet" optional="0"/>
+                <field name="medecin"/>
+                <field name="move_id" string="N° Facture"/>
+                <field name="internal_status" optional="0"/>
+                <field name="status_moved"/>
+                <field name="status"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_shop_search" model="ir.ui.view">
+        <field name="name">module.shop.search</field>
+        <field name="model">module.prescription</field>
+        <field name="arch" type="xml">
+            <search string="Patient">
+                <field name="patient_id"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_shop_form" model="ir.ui.view">
+        <field name="name">module.shop.form</field>
+        <field name="model">module.prescription</field>
+        <field name="arch" type="xml">
+            <form string="Prescription des lunettes">
+                <header>
+                    <field name="internal_status" widget="statusbar"/>
+                    <button name="action_autoriser" class="oe_highlight" type="object"
+                            attrs="{'invisible': [('internal_status', '!=', 'draft')]}" string="Envoyer a la caisse"/>
+
+                    <button name="action_complete_livraison" class="oe_highlight" type="object"
+                            attrs="{'invisible': [('internal_status', 'not in', ['pret'])]}"
+                            string="Livraison totale"/>
+
+                    <!--button name="action_retour_brouillon" class="oe_highlight" type="object"
+                            attrs="{'invisible': [('internal_status', '!=', 'pret')]}" string="Retour"/-->
+
+                    <button name="action_retour_pret" class="oe_highlight" type="object"
+                            attrs="{'invisible': [('internal_status', '!=', 'canced')]}" string="Retour"/>
+
+                    <button name="action_cancel" class="oe_highlight" type="object"
+                            attrs="{'invisible': [('internal_status', '=', 'canced')]}" string="Annuler"/>
+                </header>
+                <sheet>
+                    <div name="button_box" class="oe_button_box">
+                    </div>
+                    <group string="Info Patient">
+                        <group>
+                            <field name="patient_id" readonly="1"/>
+                            <field name="age" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="date_prescription"/>
+                            <field name="parent_id" string="Convention" readonly="1"/>
+                            <field name="matricule" readonly="1"/>
+                            <field name="categorie" readonly="1"/>
+                            <field name="classe" readonly="1"/>
+                            <field name="numero_billet" readonly="1"/>
+                            <field name="move_id" string="N° Facture" readonly="1"
+                                   attrs="{'invisible': [('internal_status', 'not in', ['invoicing','pret','delivered'])]}"/>
+                            <field name="service_id" readonly="0"/>
+
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page id="param_lunettes" string="Prescription">
+                            <group string="Lunettes">
+                                <field name="produit_ids"
+                                       context="{'default_patient_id': patient_id}" nolabel="1"
+                                       readonly="0">
+                                    <tree editable="bottom">
+                                        <field name="is_print" string="#"/>
+                                        <field name="date_prescription" readonly="1"/>
+                                        <field name="px" required="1"/>
+                                        <field name="sphere"/>
+                                        <field name="cylindre"/>
+                                        <field name="axe"/>
+                                        <field name="av1"/>
+                                        <field name="addition"/>
+                                        <field name="av2"/>
+                                        <field name="medecin_id"/>
+                                    </tree>
+                                </field>
+                            </group>
+                            <group>
+                                <field name="type_lunette" readonly="1"/>
+                                <field name="cord_commentaire" readonly="1"/>
+                                <field name="od_dist" readonly="1"/>
+                                <field name="og_dist" readonly="1"/>
+                                <field name="dist_pp" readonly="1"/>
+                            </group>
+                        </page>
+
+                        <page id="param_afacturer" string="Elements à facturer">
+                            <group string="Elements à facturer">
+                                <field name="invoice_prd_ids"
+                                       context="{'default_patient_id': patient_id}" nolabel="1">
+                                    <tree editable="bottom">
+                                        <field name="is_print" string="#"/>
+                                        <field name="date_prescription" readonly="1"/>
+                                        <field name="product" domain="[('is_shop','=',True)]" required="1"/>
+                                        <field name="product_uom"/>
+                                        <field name="quantity"/>
+                                        <field name="qtity_stock"/>
+                                    </tree>
+                                </field>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="action_lunettes_autoriz" model="ir.actions.act_window">
+        <field name="name">A valider</field>
+        <field name="res_model">module.prescription</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('internal_status','=','draft')]</field>
+    </record>
+
+    <record id="action_lunettes_all" model="ir.actions.act_window">
+        <field name="name">Toutes les prescriptions</field>
+        <field name="res_model">module.prescription</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('internal_status','!=','draft')]</field>
+    </record>
+
+    <record id="action_lunettes_today" model="ir.actions.act_window">
+        <field name="name">Prévu aujourd'hui</field>
+        <field name="res_model">module.prescription</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('date_prescription','=',context_today())]</field>
+    </record>
+
+    <record id="action_lunettes_pret" model="ir.actions.act_window">
+        <field name="name">A livrer</field>
+        <field name="res_model">module.prescription</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('internal_status','=','pret')]</field>
+    </record>
+
+
+    <!-- Menu Imagerie -->
+    <menuitem id="menu_shop_optique" groups="group_fertility_shopoptique,group_fertility_reception"
+              sequence="28"
+              name="Shop Optique"
+    />
+
+    <menuitem id="menu_shop0" parent="menu_shop_optique" groups="group_fertility_shopoptique"
+              action="action_lunettes_autoriz"
+              sequence="1"
+              name="A valider"
+    />
+
+    <!--menuitem id="menu_shop1" parent="menu_shop_optique" groups="group_fertility_shopoptique"
+              action="action_lunettes_today"
+              sequence="3"
+              name="Prévu aujourd'hui"
+    /-->
+    <menuitem id="menu_shop3" parent="menu_shop_optique" groups="group_fertility_shopoptique"
+              action="action_lunettes_pret"
+              sequence="2"
+              name="A livrer"
+    />
+    <menuitem id="menu_shop2" parent="menu_shop_optique" groups="group_fertility_shopoptique"
+              action="action_lunettes_all"
+              sequence="4"
+              name="Toutes les prescriptions"
+    />
+
+
+</odoo>

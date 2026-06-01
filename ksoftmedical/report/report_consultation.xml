@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <report 
+            id="report_financier_consultation" 
+            model="wizard.report.consultation" 
+            string="Rapport Financier Consultation" 
+            report_type="qweb-pdf" 
+            name="ksoftmedical.report_consultation_template" 
+            file="ksoftmedical.report_consultation_template" />
+
+        
+
+        <template id="report_consultation_template">
+            <t t-call="web.html_container">
+                <t t-call="web.external_layout">
+                    <style>
+                        .page{
+                                font-family: Arial, Helvetica, sans-serif!important;
+                                width: 100%!important;
+                                }
+                        .table {
+                                font-family: Arial, Helvetica, sans-serif!important;
+                                
+                                width: 100%!important;
+                                }
+
+                        .td_int{
+                            text-align:left;
+                            padding: 5px!important;
+                            font-size:14px!important;
+                        }
+
+                        td,th {
+                                border: 1px solid #ddd!important;
+                                padding: 5px!important;
+                                font-size:14px!important;
+                                text-align:center;
+                                }
+
+                        tr,td{
+                                    font-size:12px!important;
+                                }
+
+                        tr:nth-child(even){background-color: #f2f2f2!important;}
+
+                        tr:hover {background-color: #ddd!important;}
+
+                        th {
+                                font-size:14px!important;
+                                text-align: center!important;
+                                background-color: #ddd!important;
+                                color: black!important;
+                                }
+                        p{
+                            font-size:14px!important;
+                        }
+                        
+                    </style>
+
+                    <div class="page">
+                        <h2>Rapport Financier Consultation</h2>
+                        <p >Période : <span t-esc="periode['start_date']" /> - <span t-esc="periode['end_date']" /></p>
+
+                        <table class="table table-condensed">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Services</th>
+                                    <th>Actes</th>
+                                    <th>Montant</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <t t-foreach="records['daily_totals']" t-as="daily_total">
+                                    <tr>
+                                        <td><span t-esc="daily_total['date']" /></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td><span t-esc="daily_total['total_amount']" /></td>
+                                    </tr>
+                                    <t t-foreach="daily_total['services'].values()" t-as="service">
+                                        <tr>
+                                            <td></td>
+                                            <td><span t-esc="service['service']" /></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td><span t-esc="service['name']" /></td>
+                                                <td><span t-esc="service['amount']" /></td>
+                                            </tr>
+                                    </t>
+                                </t>
+
+                            </tbody>
+
+                            
+                        </table>
+                    </div>
+
+
+                    
+
+                </t>
+            </t>
+        </template>
+
+    </data>
+</odoo>

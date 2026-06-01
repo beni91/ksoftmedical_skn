@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <report 
+            id="report_financier_laboratoire" 
+            model="wizard.report.consultation" 
+            string="Rapport Financier laboratoire" 
+            report_type="qweb-pdf" 
+            name="ksoftmedical.report_laboratoire_template" 
+            file="ksoftmedical.report_laboratoire_template" />
+
+        
+
+        <template id="report_laboratoire_template">
+            <t t-call="web.html_container">
+                <t t-call="web.external_layout">
+                    <style>
+                        .page{
+                                font-family: Arial, Helvetica, sans-serif!important;
+                                width: 100%!important;
+                                }
+                        .table {
+                                font-family: Arial, Helvetica, sans-serif!important;
+                                
+                                width: 100%!important;
+                                }
+
+                        .td_int{
+                            text-align:left;
+                            padding: 5px!important;
+                            font-size:14px!important;
+                        }
+
+                        td,th {
+                                border: 1px solid #ddd!important;
+                                padding: 5px!important;
+                                font-size:14px!important;
+                                text-align:center;
+                                }
+
+                        tr,td{
+                                    font-size:12px!important;
+                                }
+
+                        tr:nth-child(even){background-color: #f2f2f2!important;}
+
+                        tr:hover {background-color: #ddd!important;}
+
+                        th {
+                                font-size:14px!important;
+                                text-align: center!important;
+                                background-color: #ddd!important;
+                                color: black!important;
+                                }
+                        p{
+                            font-size:14px!important;
+                        }
+                        
+                    </style>
+
+                    <div class="page">
+                        <h2>Rapport Financier Laboration</h2>
+                        <p >Période : <span t-esc="periode['start_date']" /> - <span t-esc="periode['end_date']" /></p>
+
+                        <table class="table table-condensed">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Service</th>
+                                    <th>Catégorie</th>
+                                    <th>Réf Facture</th>
+                                    <th>Montant</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <t t-foreach="records2" t-as="entry">
+                                        <td colspan="5" style="background-color: #f2f2f2;">
+                                            <strong>Service: <t t-esc="entry['service']" /></strong>
+                                            <br/>
+                                            Catégorie : <t t-esc="entry['categorie']" />
+                                            <br/>
+                                            valeur : <t t-esc="entry['somme']" />
+                                        </td>
+                                    </t>
+                                </tr>
+                                <t t-foreach="records" t-as="line">
+                                    
+                                        <tr>
+                                            <td><t t-esc="line['invoice_date']" /></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td><t t-esc="line['name']" /></td>
+                                            <td><t t-esc="line['amount']" /></td>
+                                            
+                                        </tr>
+                                    
+                                </t>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="4" style="text-align: right;"><strong>Somme générale :</strong></td>
+                                    <td><t t-esc="total_general" /></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+
+                    
+
+                </t>
+            </t>
+        </template>
+
+    </data>
+</odoo>

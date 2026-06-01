@@ -1,0 +1,642 @@
+<odoo>
+
+	<record id="view_labo_tree" model="ir.ui.view">
+		<field name="name">fertility.examen.labo.tree</field>
+		<field name="model">fertility.examen.labo</field>
+		<field name="arch" type="xml">
+			<tree create="false" decoration-danger="is_pathologique=='True'">
+				<field name="date_request"/>
+				<field name="echantillon_num"/>
+				<!--field name="partner_id" string="client"/>
+				<field name="client_nom"/-->
+				<field name="patient_id"/>
+				<field name="gender"  readonly="1"/>
+				<field name="age"  readonly="1"/>
+				<field name="categorie"  readonly="1"/>
+				<field name="parent_id"  string="Convention" invisible="0"/>
+				<field name="classe"  readonly="1"/>
+				<field name="numero_billet"  readonly="0"/>
+				<field name="status" widget="badge"
+                    decoration-danger="status=='invoicing'"
+                    decoration-info="status=='sample'"
+                    decoration-success="status=='done'"
+                           optional="show"/>
+				<field name="type_analyse"/>
+				<field name="analyse"/>
+				<field name="is_pathologique" invisible="1"/>
+				<field name="medecin_demander"/>
+				<field name="move_id"  invisible="0" string="N° Fact"/>
+				<field name="move_line_id"  invisible="1"/>
+				<field name="etat_facturation"/>
+			</tree>
+		</field>
+	</record>
+	
+	<record id="view_labo_tree_resultats" model="ir.ui.view">
+		<field name="name">fertility.labo.resultat.tree</field>
+		<field name="model">fertility.examen.labo</field>
+		<field name="arch" type="xml">
+			<tree create="false" edit="false" decoration-danger="is_pathologique=='True'">
+				<field name="date_request"/>
+				<field name="date_analyse"/>
+				<!--field name="echantillon_num"/>
+				<field name="partner_id" string="client"/>
+				<field name="client_nom"/-->
+				<field name="patient_id"/>
+				<field name="gender"  readonly="1"/>
+				<field name="age"  readonly="1"/>
+				<field name="categorie"  readonly="1"/>
+				<field name="parent_id"  string="Convention" invisible="0"/>
+				<!--field name="classe"  readonly="1"/>
+				<field name="numero_billet"  readonly="1"/>
+				<field name="status" widget="badge"
+                    decoration-danger="status=='invoicing'"
+                    decoration-info="status=='sample'"
+                    decoration-success="status=='done'"
+                           optional="show"/-->
+				<field name="type_analyse"/>
+				<field name="analyse"/>
+				<field name="description"/>
+				<field name="is_pathologique" invisible="1"/> 
+				<field name="medecin_demander"/>
+				<!--field name="move_id"  invisible="0" string="N° Fact"/>
+				<field name="move_line_id"  invisible="1"/>
+				<field name="etat_facturation"/-->
+			</tree>
+		</field>
+	</record>
+	
+	<record id="view_labo_form" model="ir.ui.view">
+		<field name="name">fertility.examen.labo.form</field>
+		<field name="model">fertility.examen.labo</field>
+		<field name="arch" type="xml">
+			<form string="Laboratoire" create="false" edit="true">
+				<header>
+					<field name="status" widget="statusbar"/>
+					<button name="action_sample_done" class="oe_highlight" type="object" 
+						attrs="{'invisible': [('status', '!=', 'sample')]}" string="Valider" 
+						groups="ksoftmedical.group_fertility_laboratoire"/>
+					<button name="action_done" class="oe_highlight" type="object" 
+					attrs="{'invisible': [('status', '!=', 'ongoing')]}" 
+					groups="ksoftmedical.group_fertility_laboratoire" string="Valider" />
+				</header>
+				<sheet>
+					<div>
+						<h1 class="mt0">
+							<field name="labo_name"  readonly="1"/>							
+						</h1>
+					</div>
+					<div name="button_box" class="oe_button_box" groups="ksoftmedical.group_fertility_recept_labo">
+                        <button type="object" class="oe_stat_button" icon="fa-pencil-square-o" name="action_view_partner_invoices"
+                            context="{'default_partner_id': active_id}"
+                            attrs="{'invisible':[('status','=','draft')]}">
+                            <!--div class="o_form_field o_stat_info">
+                                <span class="o_stat_value">
+                                    <field name="currency_id" invisible="1"/>
+                                    <field name="total_invoiced" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                </span>
+                                <span class="o_stat_text">Facturés</span>
+                            </div-->
+                        </button>
+                    </div>
+					<group>
+						<group string="Patient">
+							<field name="patient_id"  readonly="1"/>
+							
+							<field name="gender"  readonly="1"/>
+							<field name="age"  readonly="1"/>
+							<field name="categorie"  readonly="1"/>
+							<field name="parent_id"  string="Convention" invisible="0"/>
+							<field name="classe"  readonly="1"/>
+							<field name="numero_billet"  readonly="0"/>
+						</group>
+						<group string="Prélèvement">			
+							<field name="echantillon_num" attrs="{'readonly': [('status', '!=', 'sample')]}"/>
+							<field name="date_prelevement" readonly="1"/>
+							<field name="technicien_prelevement" readonly="1"/>
+							<!--field name="echantillon" widget="many2manyattendee"  attrs="{'readonly': [('status', '!=', 'sample')]}"/-->
+						</group>
+					</group>
+					<group string="Examen Laboratoire" 
+					attrs="{'invisible': [('status', 'not in', ['sample','ongoing','done'])]}"
+					groups="ksoftmedical.group_fertility_laboratoire">	
+						
+						<group>
+							<field name="date_request"  readonly="1"/>
+							<field name="type_analyse" readonly="1" />
+							<field name="medecin_demander" readonly="1"/>
+							<field name="analyse" readonly="1" />	
+							<field name="clinique" readonly="1"/>
+						</group>
+						<group>
+							
+						</group>
+					</group>
+					<group string="Examen Laboratoire" groups="ksoftmedical.group_fertility_laboratoire"
+					attrs="{'invisible': [('status', 'not in', ['ongoing','done'])]}">
+						<group>
+						<field name="date_analyse" readonly="1"  attrs="{'invisible': [('status', '!=', 'done')]}"  string="Date de validation:"/>					
+						<field name="technicien" readonly="1"  attrs="{'invisible': [('status', '!=', 'done')]}" string="Valider par:"/>
+						<field name="description" attrs="{'readonly': [('status', '!=', 'ongoing')]}"/>
+						<field name="is_pathologique"/>
+						
+						</group>
+						<!--group>
+							<button name="action_sample_done" class="oe_highlight" type="object" 
+							string="Ajouter une valeur normale"/>
+							<field name="valeur_normale" readonly="1"/>
+						</group-->
+					</group>					
+				</sheet>
+			</form>
+		</field>
+	</record>
+
+	<record id="view_externe_labo_tree" model="ir.ui.view">
+		<field name="name">fertility.examen.externe.labo.tree</field>
+		<field name="model">fertility.examen.labo.demande</field>
+		<field name="arch" type="xml">
+			<tree create="true">
+				<field name="partner_id" string="client"/>
+				<field name="patient_id"  />
+				<field name="client_nom"  />
+				<field name="nom"  readonly="0" invisible="1"/>
+				<field name="postnom"  readonly="1" invisible="1"/>
+				<field name="prenom"  readonly="1" invisible="1"/>
+				<field name="birth"  readonly="0" />
+				<field name="gender"  readonly="1"/>
+				<field name="matricule"  readonly="1"/>
+				<field name="categorie"  readonly="0"/>
+				<field name="parent_id" string="Convention" />
+			</tree>
+		</field>
+	</record>
+	<record id="view_externe_labo_form" model="ir.ui.view">
+		<field name="name">fertility.examen.externe.labo.form</field>
+		<field name="model">fertility.examen.labo.demande</field>
+		<field name="arch" type="xml">
+			<form string="Laboratoire" create="true">
+				<!--header>
+					<field name="status" widget="statusbar"/>
+					<button name="action_sample_done" class="oe_highlight" type="object" 
+						attrs="{'invisible': [('status', '!=', 'draft')]}" string="Confirmer"/>
+					
+				</header-->
+				<sheet>
+					<group>
+						<group string="Patient">
+							<field name="partner_id" string="client"/>
+							<field name="patient_id"  />
+							<field name="client_nom"/>
+							<field name="nom"  readonly="0"/>
+							<field name="postnom"  readonly="1"/>
+							<field name="prenom"  readonly="1"/>
+							<field name="birth"  readonly="0"/>
+							<field name="gender"  readonly="1"/>
+							<field name="matricule"  readonly="1"/>
+							<field name="categorie"  required="1"/>
+							<field name="parent_id" string="Convention" 
+							readonly="0" attrs="{'invisible': [('categorie', '!=', 'convention')], 'required': [('categorie', '=', 'convention')]}"/>
+							<field name="numero_billet"  readonly="0"
+							attrs="{'invisible': [('categorie', '!=', 'convention')], 'required': [('categorie', '=', 'convention')]}"/>
+							<field name="email"  readonly="0"/>
+							<field name="phone"  readonly="0"/>
+							
+						</group>
+						<group string="Autres Informations">	
+							<field name="doctor_id"  string = "Médecin demandeur"
+								options="{'no_create': True, 'no_create_edit':True}" readonly="0"/>		
+							<!--field name="echantillon_num" attrs="{'readonly': [('status', '!=', 'sample')]}"/>
+							<field name="date_prelevement" readonly="1"/>
+							<field name="technicien_prelevement" readonly="1"/-->
+							<!--field name="echantillon" widget="many2manyattendee"  attrs="{'readonly': [('status', '!=', 'sample')]}"/-->
+						</group>
+					</group>
+					
+
+					<notebook>
+						<page string="Examens demandés">
+								<!--button name="ksoftmedical.action_imagerie_launchwizard" class="oe_highlight" type="action"
+										string="Selectionner les analyses"/-->
+								<button name="action_to_facturation" type="object" string="Envoyer à la caisse"/>
+
+							<group string="Examens de laboratoire">
+								<field name="labo_ids" nolabel="1">
+									<tree editable="bottom" create="true">
+										<field name="is_print"/>
+										<field name="date_request" readonly="0"/>
+										<field name="status" readonly="1" invisible="0"/>
+										<field name="labo_name" readonly="0" invisible="1"/>
+										<field name="type_analyse" readonly="1"/>
+										<field name="analyse" domain="[('is_labo','=',True)]" 
+											options="{'no_create': True, 'no_create_edit':True}" required="1"/>
+										<!--field name="description" readonly="0"/-->
+										<field name="valeur_normale" invisible="0" readonly="0"/>
+										<field name="analyse_autres" invisible="1"/>
+										<field name="examen_text" string="Clinique"/>
+										<field name="move_id"  invisible="0" string="N° Fact"/>
+										<field name="etat_facturation"/>
+									</tree>
+								</field>
+							</group>
+						</page>	
+					</notebook>				
+				</sheet>
+			</form>
+		</field>
+	</record>
+
+	<record id="view_resultlabo_tree" model="ir.ui.view">
+		<field name="name">fertility.examen.labo.tree</field>
+		<field name="model">fertility.examen.labo</field>
+		<field name="arch" type="xml">
+			<tree create="false" edit="false">
+				<field name="date_request"/>
+				<field name="date_analyse" string="D. validation:"/>
+				<field name="partner_id" string="client"/>
+				<field name="client_nom"/>
+				<field name="patient_id" invisible="1"/>
+				<field name="gender" readonly="1" invisible="1"/>
+				<field name="age" readonly="1" invisible="1"/>
+				<field name="type_analyse" invisible="1"/>
+				<field name="analyse"/>
+				<field name="description" />
+				<field name="valeur_normale" />
+				<field name="medecin_demander"/>
+				<field name="move_id"/>
+				<field name="move_line_id"/>
+				<field name="status" widget="badge"
+                    decoration-danger="status=='invoicing'"
+                    decoration-info="status=='sample'"
+                    decoration-success="status=='done'"
+                           optional="show"/>
+			</tree>
+		</field>
+	</record>
+	
+	<record id="view_out_invoice_tree_custom" model="ir.ui.view">
+            <field name="name">account.out.invoice.tree</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_invoice_tree"/>
+            <!--field name="mode">primary</field-->
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_id']" position="attributes">
+                    <attribute name="invisible">0</attribute>
+                </xpath>
+            </field>
+        </record>
+	
+	<!-- Voir les factures de laboratoire -->
+		<record id="action_laboratory_invoice_today" model="ir.actions.act_window">
+            <field name="name">Mes factures</field>
+            <field name="res_model">account.move</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_out_invoice_tree_custom"/>
+            <field name="search_view_id" ref="account.view_account_invoice_filter"/>
+            <field name="domain">[('libelle', '=', 'laboratoire'),('invoice_date_due','=',context_today())]</field>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Créer une facture
+              </p><p>
+                Factures des examens laboratoires
+              </p>
+            </field>
+        </record>
+		
+		<record id="action_laboratory_invoice_all" model="ir.actions.act_window">
+            <field name="name">Mes factures</field>
+            <field name="res_model">account.move</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_out_invoice_tree_custom"/>
+            <field name="search_view_id" ref="account.view_account_invoice_filter"/>
+            <field name="domain">[('libelle', '=', 'laboratoire')]</field>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Créer une facture
+              </p><p>
+                Factures des examens laboratoires
+              </p>
+            </field>
+        </record>
+	<!-- Voir tous les resultats -->
+	<record id="action_resultatlabo_all" model="ir.actions.act_window">
+		<field name="name">Tableau synthétique des Resultats Laboratoires</field>
+		<field name="res_model">fertility.examen.labo</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_id" ref="ksoftmedical.view_resultlabo_tree"/>
+		<field name="view_mode">tree</field>
+		<field name="domain">[('internal_status','=','done')]</field>
+	</record>
+
+
+	<record id="action_labo_all" model="ir.actions.act_window">
+		<field name="name">Toutes les examens</field>
+		<field name="res_model">fertility.examen.labo</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain">[]</field> 
+	</record>
+	<record id="action_labo_today" model="ir.actions.act_window">
+		<field name="name">Prévu aujourd'hui</field>
+		<field name="res_model">fertility.examen.labo</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain">[('date_request','=',context_today())]</field> 
+	</record>
+
+	<!-- Menu Demandes Externes jour -->
+	<record id="action_externe_demande_today" model="ir.actions.act_window">
+		<field name="name">Demandes externes du jour</field>
+		<field name="res_model">fertility.examen.labo.demande</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain">[('date_request','=',context_today())]</field> 
+	</record>
+	
+	<!-- Menu Demandes Externes All -->
+	<record id="action_externe_demande_all" model="ir.actions.act_window">
+		<field name="name">Toutes les demandes externes</field>
+		<field name="res_model">fertility.examen.labo.demande</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain">[]</field> 
+	</record>
+
+
+	<!-- Menu Demandes Internes All -->
+	<record id="action_interne_labo_all" model="ir.actions.act_window">
+		<field name="name">Toutes les demandes internes</field>
+		<field name="res_model">fertility.examen.labo</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain">[('internal_status','=','invoicing')]</field> 
+	</record>
+	<record id="action_interne_labo_today" model="ir.actions.act_window">
+		<field name="name">Demandes internes du jour</field>
+		<field name="res_model">fertility.examen.labo</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain">[('internal_status','=','invoicing'),('date_request','=',context_today())]</field> 
+	</record>
+	
+	<!-- Menu Prelevement jour -->
+	<record id="action_prelevement_today" model="ir.actions.act_window">
+		<field name="name">Prévu aujourd'hui</field>
+		<field name="res_model">fertility.examen.labo</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain">[('internal_status','in',['sample','invoicing']),('date_request','=',context_today())]</field> 
+	</record>
+	
+	<!-- Menu Prelevement All -->
+	<record id="action_prelevement_all" model="ir.actions.act_window">
+		<field name="name">Prélèvements</field>
+		<field name="res_model">fertility.examen.labo</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain">[('internal_status','in',['sample','invoicing'])]</field> 
+	</record>
+	
+	<!-- Menu Encodage resultat du jour -->
+	<record id="action_encodage_today" model="ir.actions.act_window">
+		<field name="name">Prévu aujourd'hui</field>
+		<field name="res_model">fertility.examen.labo</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain">[('internal_status','=','ongoing'),('date_request','=',context_today())]</field> 
+	</record>
+	
+	<!-- Menu Encodage resultat All -->
+	<record id="action_encodage_all" model="ir.actions.act_window">
+		<field name="name">Prélèvements</field>
+		<field name="res_model">fertility.examen.labo</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain">[('internal_status','=','ongoing'),]</field> 
+	</record>
+	
+	<!-- Menu resultat du jour -->
+	<record id="action_resultat_today" model="ir.actions.act_window">
+		<field name="name">Prévu aujourd'hui</field>
+		<field name="res_model">fertility.examen.labo</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain">[('internal_status','=','done'),('date_request','=',context_today())]</field> 
+	</record>
+	
+        <record id="action_resultat_form_view2" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_labo_form"/>
+            <field name="act_window_id" ref="action_resultat_today"/>
+        </record>
+        <record id="action_resultat_tree_view1" model="ir.actions.act_window.view">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_labo_tree_resultats"/>
+            <field name="act_window_id" ref="action_resultat_today"/>
+        </record>
+	
+	
+	<!-- Menu resultat All -->
+	<record id="action_resultat_all" model="ir.actions.act_window">
+		<field name="name">Résultats Validés</field>
+		<field name="res_model">fertility.examen.labo</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain">[('internal_status','=','done')]</field> 
+	</record>
+	
+	<record id="action_resultat_form_view3" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_labo_form"/>
+            <field name="act_window_id" ref="action_resultat_all"/>
+        </record>
+        <record id="action_resultat_tree_view2" model="ir.actions.act_window.view">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_labo_tree_resultats"/>
+            <field name="act_window_id" ref="action_resultat_all"/>
+        </record>
+	
+
+		
+		
+
+	<!--menuitem id="menu_labo" parent="menu_consult" groups="group_fertility_reception"
+		sequence="3"
+		name="Laboratoire"
+		/>
+		<menuitem id="menu_labo1" parent="menu_labo" groups="group_fertility_reception" action="action_labo_today"
+			sequence="1"
+			name="Prévu aujourd'hui"
+			/>
+		<menuitem id="menu_labo2" parent="menu_labo" groups="group_fertility_reception" action="action_labo_all"
+			sequence="2"
+			name="Tous les examens"
+			/-->
+			
+	
+	<!-- Menu Laboratoire -->
+	<menuitem id="menu_laboratoire"  groups="group_fertility_laboratoire,group_fertility_recept_labo"
+		sequence="20"
+		name="Laboratoire"  web_icon="ksoftmedical,static/description/labo/icon.png"
+		/>
+
+		<!-- Menu Demande -->
+		<menuitem id="menu_labo_demandes" parent="menu_laboratoire"  groups="group_fertility_recept_labo"
+		sequence="1"
+		name="A facturer"
+		/>
+			<menuitem id="menu_externe_labo_demande" parent="menu_labo_demandes"  groups="group_fertility_recept_labo"
+			sequence="1"
+			name="Demandes externes"
+			/>
+				<menuitem id="menu_labo_externe_demande1" parent="menu_externe_labo_demande"  groups="group_fertility_recept_labo"
+				sequence="1"
+				action="action_externe_demande_today"
+				name="Demande du jour"
+				/>
+				
+				<menuitem id="menu_labo_externe_demande2" parent="menu_externe_labo_demande"  groups="group_fertility_recept_labo"
+				sequence="2"
+				action="action_externe_demande_all"
+				name="Toutes les demandes"
+				/>
+				
+				
+				
+			<menuitem id="menu_interne_labo_demande" parent="menu_labo_demandes"  groups="group_fertility_recept_labo"
+			sequence="2"
+			name="Mes factures"
+			/>
+
+				<menuitem id="menu_labo_invoices1" parent="menu_interne_labo_demande" groups="group_fertility_recept_labo" 
+					action="action_laboratory_invoice_today"
+					sequence="1"
+					name="Factures du jour"
+					/>
+				<menuitem id="menu_labo_invoices2" parent="menu_interne_labo_demande" groups="group_fertility_recept_labo" 
+					action="action_laboratory_invoice_all"
+					sequence="2"
+					name="Toutes les factures"
+					/>
+
+			<!--menuitem id="menu_interne_labo_demande" parent="menu_labo_demandes"  groups="group_fertility_recept_labo"
+			sequence="2"
+			name="Demandes internes"
+			/>
+
+				<menuitem id="menu_labo5" parent="menu_interne_labo_demande" groups="group_fertility_recept_labo" 
+					action="action_interne_labo_today"
+					sequence="1"
+					name="Prévu aujourd'hui"
+					/>
+				<menuitem id="menu_labo6" parent="menu_interne_labo_demande" groups="group_fertility_recept_labo" 
+					action="action_interne_labo_all"
+					sequence="2"
+					name="Tous les examens"
+					/>
+				< <menuitem id="menu_labo_demande_interne" parent="menu_interne_labo_demande"  groups="group_fertility_laboratoire"
+				sequence="1"
+				action="action_interne_demande_today"
+				name="Demande du jour"
+				/> 
+				
+				<menuitem id="menu_labo_interne_demande2" parent="menu_interne_labo_demande"  groups="group_fertility_laboratoire"
+				sequence="2"
+				action="action_interne_demande_all"
+				name="Toutes les demandes"
+				/>-->
+
+		
+		<!-- Menu Prelevement -->
+		<menuitem id="menu_labo_prelevement" parent="menu_laboratoire"  groups="group_fertility_laboratoire"
+		sequence="2"
+		name="Prélèvement"
+		/>
+			<menuitem id="menu_labo_prelevement1" parent="menu_labo_prelevement"  groups="group_fertility_laboratoire"
+			sequence="1"
+			action="action_prelevement_today"
+			name="Prélèvement du jour"
+			/>
+			
+			<menuitem id="menu_labo_prelevement2" parent="menu_labo_prelevement"  groups="group_fertility_laboratoire"
+			sequence="2"
+			action="action_prelevement_all"
+			name="Prélèvements"
+			/>
+			
+		
+		<!-- Menu Resultat a inscrire -->
+		<menuitem id="menu_labo_inscription" parent="menu_laboratoire"  groups="group_fertility_laboratoire"
+		sequence="3"
+		name="Encodage Resultat"
+		/>
+			<menuitem id="menu_labo_inscription1" parent="menu_labo_inscription"  groups="group_fertility_laboratoire"
+			sequence="1"
+			action="action_encodage_today"
+			name="Encodage du jour"
+			/>
+			
+			<menuitem id="menu_labo_inscription2" parent="menu_labo_inscription"  groups="group_fertility_laboratoire"
+			sequence="2"
+			action="action_encodage_all"
+			name="Encodage"
+			/>
+			
+			
+		<!-- Menu Resultat inscrit -->
+		<menuitem id="menu_labo_resultat" parent="menu_laboratoire"  groups="group_fertility_laboratoire"
+		sequence="4"
+		name="Resultats validés"
+		/>
+			<menuitem id="menu_labo_resultat1" parent="menu_labo_resultat"  groups="group_fertility_laboratoire"
+			sequence="1"
+			action="action_resultat_today"
+			name="Resultat du jour"
+			/>
+			
+			<menuitem id="menu_labo_resultat2" parent="menu_labo_resultat"  groups="group_fertility_laboratoire"
+			sequence="2"
+			action="action_resultat_all"
+			name="Resultats"
+			/>
+			
+		
+		<menuitem id="menu_labo_parametres" parent="menu_laboratoire"  groups="group_fertility_laboratoire"
+		sequence="5"
+		name="Parametres labo"
+		/>
+			<menuitem id="menu_labo_parametre1" parent="menu_labo_parametres"  groups="group_fertility_laboratoire"
+			sequence="1"
+			action="action_resultat_today"
+			name="Tubes prélèvements"
+			/>
+			
+			<menuitem id="menu_labo_parametre2" parent="menu_labo_parametres"  groups="group_fertility_laboratoire"
+			sequence="2"
+			action="action_resultat_all"
+			name="Valeurs Normales"
+			/>
+			
+		<!-- Menu Resultat inscrit 
+		<menuitem id="menu_labo_impression" parent="menu_laboratoire"  groups="group_fertility_laboratoire"
+		sequence="6"
+		name="Impression des resultats"
+		/>
+
+			<menuitem id="menu_result_labo2" parent="menu_labo_impression"  groups="group_fertility_laboratoire"
+			sequence="2"
+			action="action_resultat_all"
+			name="Resultats"
+			/>-->
+		
+		
+	
+
+
+</odoo>
