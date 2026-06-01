@@ -131,7 +131,7 @@
         <field name="context">{'default_appointment_id':active_id}</field>
     </record>
 
-    <record id="view_appointment_form" model="ir.ui.view">
+	<record id="view_appointment_form" model="ir.ui.view">
         <field name="name">fertility.appointment.form</field>
         <field name="model">fertility.appointment</field>
         <field name="arch" type="xml">
