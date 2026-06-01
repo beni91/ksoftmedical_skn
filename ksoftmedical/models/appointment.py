@@ -537,17 +537,17 @@ class Appointment(models.Model):
                 self.date_conf = datetime.now()
 
                 message = "RDV CONFIRME"
-                return {
-                    'type': 'ir.actions.client',
-                    'tag': 'display_notification',
-                    'params': {
-                        'type': 'danger',
-                        'message': message,
-                        'sticky': False,
-                        'next': {'type': 'ir.actions.act_window_close'},
+                # return {
+                    # 'type': 'ir.actions.client',
+                    # 'tag': 'display_notification',
+                    # 'params': {
+                        # 'type': 'danger',
+                        # 'message': message,
+                        # 'sticky': False,
+                        # 'next': {'type': 'ir.actions.act_window_close'},
 
-                    }
-                }
+                    # }
+                # }
             elif service_nom == "SHOP OPTIQUE":
                 self.env['module.prescription'].create({
 
@@ -568,16 +568,16 @@ class Appointment(models.Model):
                 self.env['sh.announcement'].NotifShop()
 
                 message = "DEMANDE OPTIQUE ENVOYEE"
-                return {
-                    'type': 'ir.actions.client',
-                    'tag': 'display_notification',
-                    'params': {
-                        'type': 'danger',
-                        'message': message,
-                        'sticky': False,
-                        'next': {'type': 'ir.actions.act_window_close'},
-                    }
-                }
+                # return {
+                    # 'type': 'ir.actions.client',
+                    # 'tag': 'display_notification',
+                    # 'params': {
+                        # 'type': 'danger',
+                        # 'message': message,
+                        # 'sticky': False,
+                        # 'next': {'type': 'ir.actions.act_window_close'},
+                    # }
+                # }
 
             elif service_nom == "pharma":
                 # Envoi à la pharmacie
@@ -600,17 +600,17 @@ class Appointment(models.Model):
 
                 })
                 message = "DEMANDE PHARMACIE ENVOYEE"
-                return {
-                    'type': 'ir.actions.client',
-                    'tag': 'display_notification',
-                    'params': {
-                        'type': 'danger',
-                        'message': message,
-                        'sticky': False,
-                        'next': {'type': 'ir.actions.act_window_close'},
+                # return {
+                    # 'type': 'ir.actions.client',
+                    # 'tag': 'display_notification',
+                    # 'params': {
+                        # 'type': 'danger',
+                        # 'message': message,
+                        # 'sticky': False,
+                        # 'next': {'type': 'ir.actions.act_window_close'},
 
-                    }
-                }
+                    # }
+                # }
             elif service_nom == "CHIRURGIE":
                 product_id = self.product_id2
                 line_section = self.service.service
@@ -720,17 +720,17 @@ class Appointment(models.Model):
                 self.date_conf = datetime.now()
 
                 message = "RDV CONFIRME"
-                return {
-                    'type': 'ir.actions.client',
-                    'tag': 'display_notification',
-                    'params': {
-                        'type': 'danger',
-                        'message': message,
-                        'sticky': False,
-                        'next': {'type': 'ir.actions.act_window_close'},
+                # return {
+                    # 'type': 'ir.actions.client',
+                    # 'tag': 'display_notification',
+                    # 'params': {
+                        # 'type': 'danger',
+                        # 'message': message,
+                        # 'sticky': False,
+                        # 'next': {'type': 'ir.actions.act_window_close'},
 
-                    }
-                }
+                    # }
+                # }
 
 
         else:
@@ -2599,7 +2599,8 @@ class Appointment(models.Model):
                 {'ordonnace_id': ordonn_id.id, 'status': 'invoicing', 'patient_id': self.patient_id.id})
 
             # Notification Pharmacie
-            self.env['sh.announcement'].notifPharmacie()
+            #self.env['sh.announcement'].notifPharmacie()
+            
 
 
         else:
@@ -2878,6 +2879,9 @@ class Appointment(models.Model):
         # self.env.
         self.action_creer_ordonnance()
         self.action_creer_dmde_shop()
+
+        # Alternative : Fermer proprement le dialogue courant
+        return {'type': 'ir.actions.act_window_close'}
 
 
     def action_chirurgie(self):

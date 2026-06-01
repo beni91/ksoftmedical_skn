@@ -854,7 +854,7 @@
     </record>
 	
 
-    <record id="view_consultation_form" model="ir.ui.view">
+    <!--record id="view_consultation_form" model="ir.ui.view">
     <field name="name">fertility.consultation.form</field>
     <field name="model">fertility.appointment</field>
     <field name="priority" eval="25"/>
@@ -939,7 +939,7 @@
                                 <field name="pathologie" required="True" string="Diagnostics"/>
                                 <field name="explication" string="Observation"/>
                                 
-                                <!--field name="cancel_pathologie" widget="boolean_button" confirm="Voulez-vous annuler ce diagnostic ?"/-->
+                                
                                 <field name="medecin_diag" invisible="1"/>
                                 <field name="internal_status" required="1"/>
                                 <field name="saving_pathologie" required="1" string="Confirmer"
@@ -1027,11 +1027,11 @@
             </footer>
         </form>
     </field>
-</record>
+</record-->
 
 
 
-	<!--record id="view_consultation_form" model="ir.ui.view">
+	<record id="view_consultation_form" model="ir.ui.view">
         <field name="name">fertility.consultation.form</field>
         <field name="model">fertility.appointment</field>
 		<field name="priority" eval="25"/>
@@ -1158,7 +1158,7 @@
                 </footer>
             </form>
         </field>
-    </record-->
+    </record>
 	
 	<record id="action_consultation_launchwizard" model="ir.actions.act_window">
         <field name="name">Consultations Patients</field>
@@ -1202,46 +1202,16 @@
                                     <field name="price_unit" invisible="1"/>
                                     <field name="is_modify" invisible="1"/>
                                     <field name="note" invisible="1"/>
-                                    <!--field name="internal_status" invisible="0"/>
-                                    <field name="status"/-->
-                                </tree>
+                                 </tree>
                             </field>
                         </div>
                     </group>
                     <group>
                         <field name="cord_commentaire_pharma" placeholder="Commentaire"/>
                     </group>
-                    <!--group string="PRESCRIPTIONS DES LUNETTES">
-                        <button name="action_creer_dmde_shop" type="object" string="Envoyer au shop" invisible="1"/>
-                        <field name="done_lunettes"
-                               context="{'default_patient_id': patient_id}"
-                               attrs="{'readonly': [('internal_status', 'in', ['closed'])]}" nolabel="1"
-                               colspan="2">
-                            <tree editable="bottom">
-                                <field name="is_print" string="#"/>
-                                <field name="date_prescription" readonly="1"/>
-                                <field name="px" required="1"/>
-                                <field name="sphere"/>
-                                <field name="cylindre"/>
-                                <field name="axe"/>
-                                <field name="av1"/>
-                                <field name="addition"/>
-                                <field name="av2"/>
-                                <field name="medecin_id"/>
-                            </tree>
-                        </field>
-                        <field name="type_lunette"/>
-                        <field name="cord_commentaire" colspan="2" placeholder="Commentaire"/>
-                        <field name="od_dist" readonly="1"/>
-                        <field name="og_dist" readonly="1"/>
-                        <field name="dist_pp" readonly="1"/>
-                    </group-->
+
                 </sheet>
-                <!--footer-->
-                <!--button name="action_prescription_send" string="Sauver et envoyer" type="object" data-hotkey="z"
-                        class="btn-primary"/-->
-                <!--button string="Annuler" class="btn-secondary" special="cancel" data-hotkey="z"/-->
-                <!--/footer-->
+
                 <footer>
                     <button name="action_prescription_send" string="Sauver et envoyer" type="object" data-hotkey="z"
                             class="btn-primary"/>
