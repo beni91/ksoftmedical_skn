@@ -517,7 +517,7 @@
 
                     <notebook colspan="4">
                         <page string="Antécédents" name="antecedents" autofocus="autofocus">
-                            <group string="Allergies">
+                            <!--group string="Allergies">
                                 <field name="allergie" nolabel="1">
                                     <tree editable="bottom">
                                         <field name="date_detection"/>
@@ -527,16 +527,22 @@
                                         <field name="etat" widget="boolean_toggle"/>
                                     </tree>
                                 </field>
-                            </group>
+                            </group-->
                             <group string="ATCD">
-                                <field name="atcd_medical" nolabel="1">
-                                    <tree editable="bottom">
-                                        <field name="date_detection"/>
+                                <field name="atcd_medical" 
+                                        domain="[('active', '=', True)]"
+                                        nolabel="1">
+                                    <tree editable="bottom" >
+                                        <field name="date_detection" invisible="1"/>
 										<field name="type_atcd"/>
                                         <field name="allergie" required="1"/>
                                         
                                         <field name="comment"/>
                                         <field name="etat" widget="boolean_toggle"/>
+                                        <field name="cancel" string="Supprimer" widget="boolean_button"
+                                            confirm="Voulez-vous annuler cet antécédent ?"/>
+                                        <field name="attention"/>
+                                        <field name="active" invisible="1"/>
                                     </tree>
                                 </field>
                             </group>

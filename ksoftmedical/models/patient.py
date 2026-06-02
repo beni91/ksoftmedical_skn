@@ -55,12 +55,15 @@ class AtcdMedicauxPatient(models.Model):
 
     _name = 'ksfot.patient.atcd.medicaux'
 
+    _order = "date_detection desc"
+
     #name = fields.Char(string="ATCD")
     code = fields.Char(string="Code")
     etat = fields.Boolean(string="Confirmé", default=False)
-    date_detection = fields.Date(string="Date", required=True)
+    cancel = fields.Boolean(string="Annulé", default=False)
+    date_detection = fields.Date(string="Date", default=fields.Date.today(), required=True)
     type_atcd = fields.Selection([('alim','Alimentaire'),('chir','Chirurgical'),('med','Médical'),('gyneco','Gynéco-Obstetrique'),
-                                 ('fam','Familial'),('autres','Autres')], string="Type", required=True)
+                                 ('fam','Familial'),('allerg','Allergique'),('autres','Autres')], string="Type", required=True)
     select = fields.Boolean(string="Select")
     comment = fields.Text(string="Commentaire")
     allergie = fields.Many2one('ksfot.allergie', string="ATCD")
@@ -68,6 +71,12 @@ class AtcdMedicauxPatient(models.Model):
     atcd = fields.Many2one('fertility.patient', string="ATCD")
     user_id = fields.Many2one('res.users', string='Par')
     etat_atcd = fields.Selection([('draft','Brouillon'),('conf','Confirmer')], default='draft',string="Etat")
+    active = fields.Boolean(default=True)
+
+    cancel_by = fields.Many2one('res.users', readonly=True, string="Cancel par")
+    date_cancel = fields.Datetime(string='Date')
+    attention = fields.Boolean(string="Danger", default=False)
+
 
     def name_get(self):
         result = []
@@ -83,8 +92,8 @@ class AtcdMedicauxPatient(models.Model):
                 'allergie': self.allergie.id,
                 'user_id':  self.env.user.id,
                 'comment': self.comment,
+                'etat': True,
                 'etat_atcd':'conf',
-                'etat':True,
                 'date_detection': fields.Datetime.now(),
             })
 
@@ -93,6 +102,16 @@ class AtcdMedicauxPatient(models.Model):
                 self.atcd.action_save_atcd()
 
                 logging.info(" #### Texte %s",self.atcd)
+
+    @api.onchange('cancel')
+    def cancel_atcd_medical(self):
+        if self.cancel:
+            patho = self.write({
+                'cancel_by': self.env.user.id,
+                'etat':False,
+                'date_cancel': fields.Datetime.now(),
+                'active': False,
+            })
 
     @api.model
     def default_get(self, fields):
@@ -305,70 +324,289 @@ class Patient(models.Model):
                 
     #         appointment_id.write({'resume_atcd':content})
 
+
+
     def action_save_atcd(self):
         """
-        Génère un résumé HTML structuré et moderne des antécédents 
-        et allergies du patient, digne d'un grand SIH.
+        Génère un résumé HTML ergonomique des antécédents
+        pour affichage dans le dossier médical patient.
+
+        Affichage :
+            - Synthèse rapide
+            - Badge ATTENTION
+            - Type ATCD
+            - Diagnostic
+            - Commentaire en italique
+
+        Optimisé pour une lecture médicale rapide.
         """
-        for appointment_id in self:
-            if not appointment_id.atcd_medical:
-                appointment_id.write({'resume_atcd': ''})
+
+        for appointment in self:
+
+            atcds = appointment.atcd_medical
+
+            if not atcds:
+                appointment.resume_atcd = """
+                    <div style="
+                        padding:12px;
+                        color:#6b7280;
+                        font-style:italic;
+                        text-align:center;
+                    ">
+                        Aucun antécédent enregistré.
+                    </div>
+                """
                 continue
 
-            # Structure CSS moderne intégrée (compatible avec le moteur de rendu d'Odoo)
-            content = """
-            <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 15px 0; color: #1a1a1a;">
-                <table style="width: 100%; border-collapse: collapse; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                    <thead>
-                        <tr style="background-color: #011027; color: #ffffff; text-align: left;">
-                            <th style="padding: 12px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; width: 40%;">Type / Diagnostic</th>
-                            <th style="padding: 12px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; width: 60%;">Commentaires / Observations</th>
-                            
-                        </tr>
-                    </thead>
-                    <tbody>
+            # -----------------------------------------------------
+            # Statistiques
+            # -----------------------------------------------------
+
+            total_atcd = len(atcds)
+
+            total_attention = len(
+                atcds.filtered(
+                    lambda r: getattr(r, 'attention', False)
+                )
+            )
+
+            total_allergies = len(
+                atcds.filtered(
+                    lambda r: (
+                        r.type_atcd
+                        and str(r.type_atcd).lower() == 'allerg'
+                    )
+                )
+            )
+
+            # -----------------------------------------------------
+            # Bandeau synthétique
+            # -----------------------------------------------------
+
+            content = f"""
+            <div style="
+                font-family:'Helvetica Neue',Arial,sans-serif;
+                font-size:13px;
+                color:#1f2937;
+            ">
+
+                <div style="
+                    background:#f8fafc;
+                    border-left:4px solid #00A09D;
+                    border-radius:4px;
+                    padding:10px 12px;
+                    margin-bottom:10px;
+                ">
+
+                    <div style="
+                        font-weight:600;
+                        color:#011027;
+                        margin-bottom:2px;
+                    ">
+                        {total_atcd} antécédent(s) enregistré(s)
+                    </div>
+
+                    <div style="
+                        font-size:12px;
+                        color:#6b7280;
+                    ">
+                        {total_allergies} allergie(s) connue(s)
             """
 
-            # Parcours des lignes d'antécédents
-            for index, atcd_id in enumerate(appointment_id.atcd_medical):
-                # Alternance des couleurs de lignes pour une meilleure scannabilité visuelle
-                bg_color = "#ffffff" if index % 2 == 0 else "#f8fafc"
-                
-                # Sécurité sur les chaînes de caractères (évite les écritures 'False')
-                name = atcd_id.allergie.name if atcd_id.allergie else "Non spécifié"
-                comment = atcd_id.comment if atcd_id.comment else "-"
-                
-                # Gestion élégante du type (Allergie, Médical, Chirurgical...)
-                type_label = f"[{atcd_id.type_atcd.upper()}] " if hasattr(atcd_id, 'type_atcd') and atcd_id.type_atcd else ""
-                
-                # Gestion du badge de statut (Confirmé ou Brouillon)
-                status_badge = ""
-                if hasattr(atcd_id, 'etat'):
-                    if atcd_id.etat == 'conf':
-                        status_badge = '<span style="background-color: #def7ec; color: #03543f; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;">Actif</span>'
-                    else:
-                        status_badge = '<span style="background-color: #fef3c7; color: #92400e; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;">En cours</span>'
-
+            if total_attention:
                 content += f"""
-                        <tr style="background-color: {bg_color}; border-bottom: 1px solid #e2e8f0;">
-                            <td style="padding: 12px 16px; font-size: 13px; font-weight: 600; color: #011027;">
-                                <p><span style="color: #00A09D; font-size: 11px; font-weight: 700;">{type_label}</span>
-                                {name}</p>
-                            </td>
-                            <td style="padding: 12px 16px; font-size: 13px; color: #4a5568; line-height: 1.5;">
-                                {comment}
-                            </td>
-                        </tr>
+                        •
+                        <span style="
+                            color:#dc2626;
+                            font-weight:600;
+                        ">
+                            {total_attention} nécessitant une attention particulière
+                        </span>
                 """
 
             content += """
-                    </tbody>
-                </table>
+                    </div>
+
+                </div>
+
+                <ul style="
+                    list-style:none;
+                    padding:0;
+                    margin:0;
+                ">
+            """
+
+            # -----------------------------------------------------
+            # Détail des antécédents
+            # -----------------------------------------------------
+
+            for atcd in atcds:
+
+                type_label = ""
+
+                if atcd.type_atcd:
+                    try:
+                        type_label = dict(
+                            atcd._fields['type_atcd'].selection
+                        ).get(
+                            atcd.type_atcd,
+                            atcd.type_atcd
+                        )
+                    except Exception:
+                        type_label = atcd.type_atcd
+
+                name = ""
+
+                if atcd.allergie:
+                    name = atcd.allergie.name
+
+                comment = (atcd.comment or "").strip()
+
+                attention_badge = ""
+
+                if getattr(atcd, 'attention', False):
+                    attention_badge = """
+                        <span style="
+                            display:inline-block;
+                            background:#dc2626;
+                            color:white;
+                            font-size:10px;
+                            font-weight:700;
+                            padding:2px 6px;
+                            border-radius:4px;
+                            margin-right:6px;
+                        ">
+                            ATTENTION
+                        </span>
+                    """
+
+                content += f"""
+                    <li style="
+                        padding:6px 0;
+                        border-bottom:1px solid #edf2f7;
+                    ">
+
+                        <div style="
+                            line-height:1.2;
+                            color:#011027;
+                            font-weight:600;
+                        ">
+
+                            {attention_badge}
+
+                            <span style="
+                                color:#00A09D;
+                                text-transform:uppercase;
+                                font-size:11px;
+                                font-weight:700;
+                            ">
+                                {type_label}
+                            </span>
+
+                            <span style="
+                                color:#94a3b8;
+                                margin:0 3px;
+                            ">
+                                -
+                            </span>
+
+                            <span>
+                                {name}
+                            </span>
+
+                        </div>
+                """
+
+                if comment:
+
+                    content += f"""
+                        <div style="
+                            margin-left:20px;
+                            margin-top:1px;
+                            color:#6b7280;
+                            font-size:12px;
+                            font-style:italic;
+                            line-height:1.2;
+                        ">
+                            ({comment})
+                        </div>
+                    """
+
+                content += """
+                    </li>
+                """
+
+            content += """
+                </ul>
             </div>
             """
+
+            appointment.resume_atcd = content
+
+    # def action_save_atcd(self):
+    #     """
+    #     Génère un résumé HTML structuré et moderne des antécédents 
+    #     et allergies du patient, digne d'un grand SIH.
+    #     """
+    #     for appointment_id in self:
+    #         if not appointment_id.atcd_medical:
+    #             appointment_id.write({'resume_atcd': ''})
+    #             continue
+
+    #         # Structure CSS moderne intégrée (compatible avec le moteur de rendu d'Odoo)
+    #         content = """
+    #         <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 15px 0; color: #1a1a1a;">
+    #             <table style="width: 100%; border-collapse: collapse; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+    #                 <thead>
+    #                     <tr style="background-color: #011027; color: #ffffff; text-align: left;">
+    #                         <th style="padding: 12px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; width: 40%;">Type / Diagnostic</th>
+    #                         <th style="padding: 12px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; width: 60%;">Commentaires / Observations</th>
+                            
+    #                     </tr>
+    #                 </thead>
+    #                 <tbody>
+    #         """
+
+    #         # Parcours des lignes d'antécédents
+    #         for index, atcd_id in enumerate(appointment_id.atcd_medical):
+    #             # Alternance des couleurs de lignes pour une meilleure scannabilité visuelle
+    #             bg_color = "#ffffff" if index % 2 == 0 else "#f8fafc"
+                
+    #             # Sécurité sur les chaînes de caractères (évite les écritures 'False')
+    #             name = atcd_id.allergie.name if atcd_id.allergie else "Non spécifié"
+    #             comment = atcd_id.comment if atcd_id.comment else "-"
+                
+    #             # Gestion élégante du type (Allergie, Médical, Chirurgical...)
+    #             type_label = f"[{atcd_id.type_atcd.upper()}] " if hasattr(atcd_id, 'type_atcd') and atcd_id.type_atcd else ""
+                
+    #             # Gestion du badge de statut (Confirmé ou Brouillon)
+    #             status_badge = ""
+    #             if hasattr(atcd_id, 'etat'):
+    #                 if atcd_id.etat == 'conf':
+    #                     status_badge = '<span style="background-color: #def7ec; color: #03543f; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;">Actif</span>'
+    #                 else:
+    #                     status_badge = '<span style="background-color: #fef3c7; color: #92400e; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;">En cours</span>'
+
+    #             content += f"""
+    #                     <tr style="background-color: {bg_color}; border-bottom: 1px solid #e2e8f0;">
+    #                         <td style="padding: 12px 16px; font-size: 13px; font-weight: 600; color: #011027;">
+    #                             <p><span style="color: #00A09D; font-size: 11px; font-weight: 700;">{type_label}</span>
+    #                             {name}</p>
+    #                         </td>
+    #                         <td style="padding: 12px 16px; font-size: 13px; color: #4a5568; line-height: 1.5;">
+    #                             {comment}
+    #                         </td>
+    #                     </tr>
+    #             """
+
+    #         content += """
+    #                 </tbody>
+    #             </table>
+    #         </div>
+    #         """
             
-            # Sauvegarde dans le champ HTML
-            appointment_id.write({'resume_atcd': content})
+    #         # Sauvegarde dans le champ HTML
+    #         appointment_id.write({'resume_atcd': content})
             
     def _compute_invoiced_total_amount(self):
         AccountMove = self.env['account.move']
