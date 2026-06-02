@@ -1445,7 +1445,7 @@ class PathologieAppointment(models.Model):
             patho = self.write({
                 'cancel_by': self.env.user.id,
                 'confirm_status':'cancel',
-                'cancel_pathologie':True,
+                
                 'date_cancel': fields.Datetime.now(),
                 'active': False,
             })
@@ -1936,32 +1936,176 @@ class Appointment(models.Model):
     
     @api.depends('diagnostics_ids')
     def _get_last_diagnostics(self):
-        #content =""
-        for appointment_id in self:
-            rhs = gp = ''
-            list_diag = []
-            diagnostics = self.env['module.diagnostics'].search([('patient_id','=',appointment_id.patient_id.id)])
-            list_diag = []
-            content =""
-            if diagnostics:
-                content += '<table class="table">'
-                content += '<tr><th width="20%" style="text-align:center">DATE</th><th width="30%" style="text-align:center">DIAGNOSTICS</th>'
-                content += '<th width="30%" style="text-align:center">COMMENTAIRE</th><th width="20%" style="text-align:center">MEDECIN</th></tr>'
-                content += '<tr><th colspan="4" style="text-align:center;" class="table-info">Affichage limité aux 3 derniers diagnostics. Pour voir plus, cliquez sur le button "Diagnostics"</th>'
-                list_diag = diagnostics[-3:]
-                #raise UserError(diagnostics)
-                for diag_id in list_diag:
-                    content += '<tr><td>'+ str((diag_id.date_diagnostic).strftime("%d/%m/%Y")) +'</td>'
-                    content += '<td>'+ str(diag_id.pathologie.name) +'</td>'
-                    content += '<td>'+ str(diag_id.explication) +'</td>'
-                    content += '<td>'+ str(diag_id.medecin_diag.partner_id.display_name) +'</td></tr>'
-                
-                content += '</table>'
-                
-            #appointment_id.write({'resume_diagn':content})
-            
-            #for diag in self:
-            appointment_id.resume_diagnost = content
+        """
+        Génère un résumé ergonomique des 3 derniers diagnostics.
+
+        Optimisé pour affichage rapide par le médecin.
+        """
+
+        Diagnostic = self.env['module.diagnostics']
+
+        for appointment in self:
+
+            diagnostics = Diagnostic.search(
+                [('patient_id', '=', appointment.patient_id.id)],
+                order='date_diagnostic desc',
+                limit=3
+            )
+
+            if not diagnostics:
+                appointment.resume_diagnost = """
+                    <div style="
+                        padding:12px;
+                        text-align:center;
+                        color:#6b7280;
+                        font-style:italic;
+                    ">
+                        Aucun diagnostic enregistré.
+                    </div>
+                """
+                continue
+
+            content = f"""
+            <div style="
+                font-family:'Helvetica Neue',Arial,sans-serif;
+                font-size:13px;
+                color:#1f2937;
+            ">
+
+                <div style="
+                    background:#f8fafc;
+                    border-left:4px solid #f59e0b;
+                    border-radius:4px;
+                    padding:10px 12px;
+                    margin-bottom:10px;
+                ">
+
+                    <div style="
+                        font-weight:600;
+                        color:#011027;
+                    ">
+                        {len(diagnostics)} dernier(s) diagnostic(s)
+                    </div>
+
+                    <div style="
+                        font-size:12px;
+                        color:#6b7280;
+                    ">
+                        Affichage limité aux 3 diagnostics les plus récents.
+                    </div>
+
+                </div>
+
+                <ul style="
+                    list-style:none;
+                    margin:0;
+                    padding:0;
+                ">
+            """
+
+            for diag in diagnostics:
+
+                date_diag = (
+                    diag.date_diagnostic.strftime("%d/%m/%Y")
+                    if diag.date_diagnostic
+                    else ""
+                )
+
+                diagnostic = (
+                    diag.pathologie.name
+                    if diag.pathologie
+                    else "Diagnostic non renseigné"
+                )
+
+                commentaire = (
+                    diag.explication.strip()
+                    if diag.explication
+                    else ""
+                )
+
+                medecin = (
+                    diag.medecin_diag.partner_id.display_name
+                    if diag.medecin_diag
+                    and diag.medecin_diag.partner_id
+                    else ""
+                )
+
+                content += f"""
+                    <li style="
+                        padding:8px 0;
+                        border-bottom:1px solid #edf2f7;
+                    ">
+
+                        <div style="
+                            display:flex;
+                            justify-content:space-between;
+                            align-items:center;
+                            margin-bottom:2px;
+                        ">
+
+                            <span style="
+                                color:#f59e0b;
+                                font-size:11px;
+                                font-weight:700;
+                            ">
+                                {date_diag}
+                            </span>
+
+                            <span style="
+                                font-size:11px;
+                                color:#64748b;
+                            ">
+                                {medecin}
+                            </span>
+
+                        </div>
+
+                        <div style="
+                            font-weight:600;
+                            color:#011027;
+                            line-height:1.2;
+                        ">
+                            {diagnostic}
+                        </div>
+                """
+
+                if commentaire:
+
+                    content += f"""
+                        <div style="
+                            margin-top:2px;
+                            color:#6b7280;
+                            font-size:12px;
+                            font-style:italic;
+                            line-height:1.2;
+                        ">
+                            ({commentaire})
+                        </div>
+                    """
+
+                content += """
+                    </li>
+                """
+
+            content += """
+                </ul>
+
+                <div style="
+                    margin-top:10px;
+                    padding-top:8px;
+                    border-top:1px solid #edf2f7;
+                    font-size:11px;
+                    color:#64748b;
+                    text-align:center;
+                ">
+                    Pour consulter l'historique complet, cliquez sur le bouton
+                    <b>Diagnostics</b>.
+                </div>
+
+            </div>
+            """
+
+            appointment.resume_diagnost = content
 
     def action_save_consultation(self):
         ## Examen medical générale
@@ -1970,8 +2114,8 @@ class Appointment(models.Model):
         diagn_vide = False
         for appointment_id in self:
 
-            atcde_vide = appointment_id.atcd_medical.filtered(lambda atcd: atcd.etat == False)
-            diagn_vide = appointment_id.diagnostics_ids.filtered(lambda diag: diag.saving_pathologie == False)
+            atcde_vide = appointment_id.atcd_medical.filtered(lambda atcd: atcd.etat == False and atcd.active == True)
+            diagn_vide = appointment_id.diagnostics_ids.filtered(lambda diag: diag.saving_pathologie == False and diag.active == True)
 
             if atcde_vide or diagn_vide:
                 raise UserError("Veuillez confirmer tous les antécédents et diagnostics avant de sauvegarder la consultation")
