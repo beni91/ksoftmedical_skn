@@ -27,7 +27,7 @@ class PathologieModule(models.Model):
 
     _name = 'module.diagnostics'
     _description = 'Diagnostics'
-    _order = 'date_diagnostic desc'
+    _order = 'date_diagnostic desc, id desc'
 
     diag_name = fields.Char(string="ID Diagnostics")
     patient_id = fields.Many2one('fertility.patient', string='Patient')

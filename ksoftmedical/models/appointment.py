@@ -1415,7 +1415,7 @@ class PathologieAppointment(models.Model):
     _order = 'date_diagnostic desc'
 
     appointment_id = fields.Many2one('fertility.appointment', string='Appointment')
-    saving_pathologie = fields.Boolean(string="OK")
+    saving_pathologie = fields.Boolean(string="OK", default=True)
     cancel_pathologie = fields.Boolean(string="NO")
     confirm_status = fields.Selection([('draft', 'Brouillon'), ('conf', 'Confirmer'), ('cancel', 'Annuler')],
                                       default='draft', string='Etat')
@@ -1428,7 +1428,7 @@ class PathologieAppointment(models.Model):
         if self.appointment_id:
             self.patient_id = self.appointment_id.patient_id.id
 
-    @api.onchange('saving_pathologie')
+    #@api.onchange('saving_pathologie')
     def save_pathologie_medical(self):
         if self.saving_pathologie:
             patho = self.create({
@@ -1438,6 +1438,21 @@ class PathologieAppointment(models.Model):
                 #'saving_pathologie':True,
                 #'date_diagnostic': fields.Datetime.now(),
             })
+
+    def save_desease_medical(self, pathologies):
+        # Les nouvelles lignes saisies sont déjà créées par le formulaire.
+        # Le bouton termine leur validation.
+        nouveaux = pathologies.filtered(
+            lambda diag: diag.active and diag.confirm_status == 'draft'
+        )
+
+        if nouveaux:
+            nouveaux.write({
+                'saving_pathologie': True,
+                'confirm_status': 'conf',
+            })
+
+        return nouveaux
 
     @api.onchange('cancel_pathologie')
     def cancel_pathologie_medical(self):
@@ -1640,7 +1655,7 @@ class Appointment(models.Model):
     # atcd_description = fields.Text(related='patient_id.atcd_description')
     # ## ATCD Ophta ###
     allergie = fields.One2many(related='patient_id.allergie', string="Allergie")
-    atcd_medical = fields.One2many(related='patient_id.atcd_medical', string="ATCD Médicaux")
+    atcd_medical = fields.One2many(related='patient_id.atcd_medical', readonly=False, string="ATCD Médicaux")
 
     lunettes = fields.Selection(related='patient_id.lunettes')
     # lunettes_comment = fields.Text(related='patient_id.lunettes_comm')
@@ -1948,7 +1963,7 @@ class Appointment(models.Model):
 
             diagnostics = Diagnostic.search(
                 [('patient_id', '=', appointment.patient_id.id)],
-                order='date_diagnostic desc',
+                order='date_diagnostic desc, id desc',
                 limit=3
             )
 
@@ -2114,11 +2129,19 @@ class Appointment(models.Model):
         diagn_vide = False
         for appointment_id in self:
 
-            atcde_vide = appointment_id.atcd_medical.filtered(lambda atcd: atcd.etat == False and atcd.active == True)
-            diagn_vide = appointment_id.diagnostics_ids.filtered(lambda diag: diag.saving_pathologie == False and diag.active == True)
+            # atcde_vide = appointment_id.atcd_medical.filtered(lambda atcd: atcd.etat == False and atcd.active == True)
+            # diagn_vide = appointment_id.diagnostics_ids.filtered(lambda diag: diag.saving_pathologie == False and diag.active == True)
 
-            if atcde_vide or diagn_vide:
-                raise UserError("Veuillez confirmer tous les antécédents et diagnostics avant de sauvegarder la consultation")
+            # if atcde_vide or diagn_vide:
+            #     raise UserError("Veuillez confirmer tous les antécédents et diagnostics avant de sauvegarder la consultation")
+
+            # Confirmer automatiquement les nouvelles lignes.
+            self.env['module.diagnostics'].save_desease_medical(
+                appointment_id.diagnostics_ids
+            )
+            self.env['ksfot.patient.atcd.medicaux'].save_patient_atcd_medical(
+                appointment_id.atcd_medical
+            )
 
             if appointment_id:
                 content += '<h5 style="border: 1px solid #333;box-shadow: 8px 8px 5px #444;padding: 8px 12px;background-color:#CCCCCC;text-color:#ffffff; text-align:center">Vue par le '+ str(appointment_id.date) +' <b>Dr '+ str(appointment_id.doctor_id.name) +'</b> pour '+ str(appointment_id.product_id.name) +'</h5>'
@@ -2133,10 +2156,23 @@ class Appointment(models.Model):
                 content += '<tr><td style="width:49%;vertical-align:top; padding:5px;"><p><b>Traitement:</b><br/>'+ str(appointment_id.traitement) +'</p></td><td style="width:49%;"></td></tr>'
      
                 content += '</table>'
-              
+
+                
+                             
             appointment_id.write({'resume_consult':content})
             #return content
-        
+            # Actualiser le résumé des antécédents du patient et diagnostics.
+            appointment_id.patient_id.action_save_atcd()
+            appointment_id._get_last_diagnostics()
+            
+
+        # Recharger le formulaire et ses résumés.
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'reload',
+        }
+
+         
     @api.onchange('is_diagnostic')
     def check_diagnistic_ligne(self):
         if self.is_diagnostic == True:

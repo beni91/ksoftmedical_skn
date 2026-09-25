@@ -780,20 +780,351 @@
                        
                         <page id="gyneco_ids" string="Consultations"
                               attrs="{'invisible': [('internal_status', '=', 'attente')]}">
-                            <group>
+                            <!--group>
 								
                                 <div name="button_box" class="oe_button_box">
                                     <button string="Consulter le patient" type="object"
                                             name="action_consultation"
                                             class="oe_stat_button" icon="fa-stethoscope"/>
+                                    <button name="action_save_consultation" string="Enregistrer la consultation" 
+                                        type="object" data-hotkey="z" class="btn-primary" 
+                                        style="background-color: #011027; border-color: #011027; font-weight: bold; padding: 8px 20px;"/>
+                                    
                                 </div>
                                 
-                            </group>
-							<group string="Zone de consultation">
+                            </group-->
+                            <header class="oe_right oe_button_box">
+                                        <button name="action_save_consultation" string="Enregistrer la consultation" 
+                                            type="object" data-hotkey="z" class="btn btn-success"/>
+
+                                        <button name="%(action_wizard_dossier_patient)d"
+                                            type="action"
+                                            class="oe_stat_button"
+                                            icon="fa-address-card">
+                                            <div class="o_stat_info">
+                                                    <span class="o_stat_text"
+                                                        style="color:#495057;font-weight:700;text-transform:uppercase;">
+                                                        Voir le dossier 
+                                                    </span>
+                                                </div>
+                                        </button>
+								</header>
+							<!--group string="Zone de consultation">
                                 <field name="resume_consult" nolabel="1" readonly="1" force_save="1"
 								placeholder="Résumé de la consultation"/>
-                            </group>
-                            
+                            </group-->
+
+                            <group col="1">
+                                <!--div class="row"
+                                    style="margin-left:-5px;margin-right:-5px;">
+                                < ===================================================== -->
+                                <!-- ANTECEDENTS -->
+                                <!-- ===================================================== -->
+
+                                    <!--div class="col-lg-6"
+                                            style="padding-left:5px;padding-right:5px;">
+                                        <div class="card shadow-sm h-100">
+                                            <div class="card-header bg-danger text-white py-2">
+
+                                                <i class="fa fa-history mr-2"/>
+
+                                                <strong>Antécédents médicaux</strong>
+
+                                                <button string="Ajouter"
+                                                        type="object"
+                                                        name="action_patient"
+                                                        class="btn btn-light btn-sm float-right"/>
+
+                                            </div>
+
+                                            <div class="card-body"
+                                                style="max-height:200px;overflow-y:auto;">
+
+                                                <field name="resume_atcd"
+                                                    widget="html"
+                                                    readonly="1"
+                                                    nolabel="1"/>
+
+                                            </div>
+                                        </div>
+
+                                    </div-->
+
+
+                                    <!-- ===================================================== -->
+                                    <!-- SIGNES VITAUX -->
+                                    <!-- ===================================================== -->
+
+                                    <!--div class="col-lg-6"
+                                            style="padding-left:5px;padding-right:5px;">
+                                        <div class="card shadow-sm h-100">
+                                            <div class="card-header bg-primary"
+                                                data-toggle="collapse"
+                                                data-target="#vitalSigns"
+                                                style="cursor:pointer;">
+
+                                                <i class="fa fa-heartbeat text-danger mr-2"/>
+
+                                                <strong>Signes vitaux</strong>
+
+                                                <span class="float-right">
+                                                    <i class="fa fa-chevron-down"/>
+                                                </span>
+
+                                            </div>
+
+                                            <div id="vitalSigns" class="collapse">
+
+                                                <div class="card-body" style="max-height:200px;overflow-y:auto;">
+
+                                                    <field name="resume_signes_vitaux"
+                                                        widget="html"
+                                                        readonly="1"
+                                                        nolabel="1"/>
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div-->
+
+
+                                <!-- ===================================================== -->
+                                <!-- ANTECEDENTS -->
+                                <!-- ===================================================== -->
+
+                                <div class="card shadow-sm mt-3">
+
+                                    <div class="card-header bg-danger text-white py-2">
+
+                                        <i class="fa fa-history mr-2"/>
+
+                                        <strong>Antécédents médicaux</strong>
+
+                                    </div>
+
+                                    <div class="card-body">
+                                        <field name="atcd_medical"
+                                                domain="[('active', '=', True)]"
+                                                context="{'default_patient_id': patient_id}"
+                                                nolabel="1"
+                                                class="w-100">
+
+                                                    <tree editable="bottom"
+                                                        decoration-danger="attention == True"
+                                                        decoration-muted="etat == False">
+                                                        <field name="date_detection"
+                                                            invisible="1"/>
+
+                                                        <field name="type_atcd"
+                                                            string="Type"
+                                                            required="1"/>
+
+                                                        <field name="allergie"
+                                                            string="Antécédent / Allergie"
+                                                            required="1"/>
+
+                                                        <field name="comment"
+                                                            string="Observation clinique"
+                                                            placeholder="Réaction, gravité, traitement ou conduite à tenir..."/>
+
+                                                        <field name="etat"
+                                                            string="Actif"
+                                                            widget="boolean_toggle"/>
+
+                                                        <field name="attention"
+                                                            string="Alerte"
+                                                            widget="boolean_toggle"/>
+
+                                                        <field name="cancel"
+                                                            string="Annuler"
+                                                            widget="boolean_button"
+                                                            confirm="Voulez-vous vraiment annuler cet antécédent ?"/>
+
+                                                        <field name="active"
+                                                            invisible="1"/>
+
+                                                    </tree>
+                                                </field>
+
+                                    </div>
+
+                                </div>
+
+                                <!-- ===================================================== -->
+                                <!-- CONSULTATION -->
+                                <!-- ===================================================== -->
+
+                                <div class="row"
+                                    style="margin-left:-5px;margin-right:-5px;">
+
+                                    <!-- COLONNE GAUCHE -->
+
+                                    <div class="col-lg-6"
+                                        style="padding-left:5px;padding-right:5px;">
+
+                                        <div class="card shadow-sm mb-3">
+
+                                            <div class="card-header bg-light">
+
+                                                <i class="fa fa-comment-medical mr-2"/>
+
+                                                Plaintes principales
+
+                                            </div>
+
+                                            <div class="card-body">
+
+                                                <field name="anamnese" widget="html" 
+                                                    nolabel="1"
+                                                    placeholder="Motif principal de consultation..."/>
+
+                                            </div>
+
+                                        </div>
+
+
+                                        <div class="card shadow-sm mb-3">
+
+                                            <div class="card-header bg-light">
+
+                                                <i class="fa fa-file-medical-alt mr-2"/>
+
+                                                Histoire de la maladie
+
+                                            </div>
+
+                                            <div class="card-body">
+
+                                                <field name="hstr_affection" widget="html" 
+                                                    nolabel="1"/>
+
+                                            </div>
+
+                                        </div>
+
+
+                                        <div class="card shadow-sm">
+
+                                            <div class="card-header bg-light">
+
+                                                <i class="fa fa-pills mr-2"/>
+
+                                                Traitements antérieurs
+
+                                            </div>
+
+                                            <div class="card-body">
+
+                                                <field name="traitement" widget="html" 
+                                                    nolabel="1"/>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <!-- COLONNE DROITE -->
+
+                                    <div class="col-lg-6"
+                                        style="padding-left:5px;padding-right:5px;">
+
+                                        <div class="card shadow-sm mb-3">
+
+                                            <div class="card-header bg-light">
+
+                                                <i class="fa fa-stethoscope mr-2"/>
+
+                                                Examen physique
+
+                                            </div>
+
+                                            <div class="card-body">
+
+                                                <field name="examen_physique" widget="html" 
+                                                    nolabel="1"/>
+
+                                            </div>
+
+                                        </div>
+
+
+                                        <div class="card shadow-sm">
+
+                                            <div class="card-header bg-light">
+
+                                                <i class="fa fa-notes-medical mr-2"/>
+
+                                                Compléments d'examen
+
+                                            </div>
+
+                                            <div class="card-body">
+
+                                                <field name="cpm_anamnese" widget="html" 
+                                                    nolabel="1"/>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- ===================================================== -->
+                                <!-- DIAGNOSTICS -->
+                                <!-- ===================================================== -->
+
+                                <div class="card shadow-sm mt-3">
+
+                                    <div class="card-header bg-warning text-dark">
+
+                                        <i class="fa fa-stethoscope mr-2"/>
+
+                                        <strong>Diagnostics</strong>
+
+                                    </div>
+
+                                    <div class="card-body">
+
+                                        <group class="mb-3">
+                                            <field name="is_diagnostic" colspan="4" widget="boolean_toggle"/>
+                                        </group>
+                                        <field name="diagnostics_ids" colspan="4" 
+                                            context="{'default_patient_id': patient_id, 'default_sex': gender, 'default_age': age}" 
+                                            domain="[('active', '=', True),('confirm_status', 'in', ['conf','draft'])]"
+                                            nolabel="1">
+                                            <tree editable="top" deletable="false" >
+                                                <field name="patient_id" invisible="1"/>
+                                                <field name="sex" invisible="1"/>
+                                                <field name="age" invisible="1"/>
+                                                <field name="date_diagnostic" invisible="1"/>
+                                                <field name="pathologie" required="True" string="Diagnostics"/>
+                                                <field name="explication" string="Observation"/>
+                                                
+                                                <field name="medecin_diag" invisible="1"/>
+                                                <field name="internal_status" required="1"/>
+                                                <field name="saving_pathologie" required="1" string="Confirmer"
+                                                    widget="boolean_button"
+                                                confirm="Voulez-vous enregistrer ce diagnostic ?"/>
+                                                <field name="cancel_pathologie" string="Supprimer" widget="boolean_button"
+                                                    confirm="Voulez-vous annuler ce diagnostic ?"/>
+                                                <field name="active" invisible="1"/>
+                                            </tree>
+                                        </field>
+
+                                    </div>
+
+                                </div>
+
+                    </group>
+
+
                         </page>
 
                         <page id="imagerie_ids" string="Demandes"

@@ -59,7 +59,7 @@ class AtcdMedicauxPatient(models.Model):
 
     #name = fields.Char(string="ATCD")
     code = fields.Char(string="Code")
-    etat = fields.Boolean(string="Confirmé", default=False)
+    etat = fields.Boolean(string="Confirmé", default=True)
     cancel = fields.Boolean(string="Annulé", default=False)
     date_detection = fields.Date(string="Date", default=fields.Date.today(), required=True)
     type_atcd = fields.Selection([('alim','Alimentaire'),('chir','Chirurgical'),('med','Médical'),('gyneco','Gynéco-Obstetrique'),
@@ -84,7 +84,7 @@ class AtcdMedicauxPatient(models.Model):
             result.append((rec.id, "%s" % (rec.allergie.name)))       
         return result
     
-    @api.onchange('etat')
+    #@api.onchange('etat')
     def get_patient_atcd_medical(self):
         if self.etat:
             atcd = self.create({
@@ -102,6 +102,20 @@ class AtcdMedicauxPatient(models.Model):
                 self.atcd.action_save_atcd()
 
                 logging.info(" #### Texte %s",self.atcd)
+
+    def save_patient_atcd_medical(self, antecedents):
+        nouveaux = antecedents.filtered(
+            lambda atcd: atcd.active and atcd.etat_atcd == 'draft'
+        )
+
+        if nouveaux:
+            nouveaux.write({
+                'etat': True,
+                'etat_atcd': 'conf',
+                'user_id': self.env.user.id,
+            })
+
+        return nouveaux
 
     @api.onchange('cancel')
     def cancel_atcd_medical(self):
@@ -125,13 +139,6 @@ class MvtAdministratifPatient(models.Model):
 
     # #name = fields.Char(string="ATCD")
     datemodif = fields.Date(string="Date de modification")
-    # actuel = fields.Boolean(string="Situation actuel", default=False)
-    # categorie = fields.Selection([('prive','Privé'),('convention','Abonné')], string="Catégorie", required=False)
-    # classe = fields.Selection([('agent','Agent'),('epoux','Epoux(se)'),('enf','Enfants')], string="Classe")
-    # matricule = fields.Char(string="Matricule")
-    # convention = fields.Many2one('res.partner', domain="[('is_company', '=', True)]")
-    # user_id = fields.Many2one('res.users', string='Modifié par')
-    # patient_id = fields.Many2one('fertility.patient', string="Patient")
     etat = fields.Selection([('archived','Archived'),('encours','En cours')], string="Statut")
 
 class PatientAntecedent(models.Model):
@@ -140,74 +147,7 @@ class PatientAntecedent(models.Model):
     _order = "patient_id, date"
     _inherit = ['mail.thread']
 
-    # # patient_id= fields.Many2one('fertility.patient', ondelete='cascade')
-
-    # antecedent_name = fields.Char(string='ID')
-
-    # def name_get(self):
-        # result = []
-        # for rec in self:
-            # result.append((rec.id, "%s" % (rec.antecedent_name)))       
-        # return result
-
-
-
-    # # Obstétricaux et Gynécologiques
-    # gestite = fields.Char(string='Gestité',tracking=True)
-    # parite = fields.Char(string='Parité',tracking=True)
-    # enfant_vivant = fields.Char(string='Enfants vivants',tracking=True)
-    # age_dernier_accouchement = fields.Char(string='Age du dernier accouchement',tracking=True)
-    # total_accouchement = fields.Text(string='Nombre total d’Accouchements',tracking=True)
-    # total_accouchement_spontane = fields.Text(string='Vaginal spontané',tracking=True)
-    # total_accouchement_instru = fields.Text(string='Vaginal Instrum',tracking=True)
-    # total_accouchement_cesarienne = fields.Text(string='Césarienne : Interruption Volontaire de grossesse',tracking=True)
-    # fausse_spontane = fields.Text(string='Fausse Couche Spontanée',tracking=True)
-    # fausse_tardive = fields.Text(string='Fausse Couche Tardive',tracking=True)
-    # grossesse_ectopique = fields.Text(string='Grossesse Ectopique',tracking=True)
-    # interrupt_med_grossesse = fields.Text(string='Interruption médicale de la grossesse',tracking=True)
-    # enfant_autres = fields.Text(string='Enfants avec autre partenaire',tracking=True)
-    # ddr = fields.Char(string='DDR',tracking=True)
-    # age_premiere_regles = fields.Text(string='Age aux premières règles',tracking=True)
-    # # Familiaux et héréditairesBoolean
-    # infertilite = fields.Text(string='Notion d’infertilité dans la famille',tracking=True)
-    # # Médicaux (si oui, préciser la durée et le traitement en cours,tracking=True)
-    # diabete = fields.Text(string='Diabète',tracking=True)
-    # hypertension = fields.Text(string='Hypertension artérielle',tracking=True)
-    # obesite = fields.Text(string='Obésité',tracking=True)
-    # asthme = fields.Text(string='Asthme',tracking=True)
-    # dysthyroidie = fields.Text(string='Dysthyroidie',tracking=True)
-    # med_description = fields.Text(string='Autre (à préciser)',tracking=True)
-    # # Chirurgicaux(Si OUI, préciser l’année,tracking=True)
-    # coelioscopie = fields.Text(string='Coelioscopie',tracking=True)
-    # myomectomie = fields.Text(string='Myomectomie',tracking=True)
-    # kystectomie = fields.Text(string='Kystectomie',tracking=True)
-    # curetage = fields.Text(string='Curetage',tracking=True)
-    # cicatrice_sous = fields.Text(string='Cicatrice Médiane sous ombilicale',tracking=True)
-    # retention_placentaire = fields.Text(string='Rétention placentaire',tracking=True)
-    # cicatrice_sus = fields.Text(string='Cicatrice Médiane sus ombilicale',tracking=True)
-    # appendicectomie = fields.Text(string='Appendicectomie',tracking=True)
-    # pfannestiel = fields.Text(string='Pfannestiel',tracking=True)
-    # chr_description = fields.Text(string='Autre (à préciser)',tracking=True)
-    # # Autres antécédents
-    # autres_tabac = fields.Text(string='Tabac',tracking=True)
-    # autres_alcool = fields.Text(string='Alcool',tracking=True)
-    # autres_description = fields.Text(string='Autres',tracking=True)
-    # # ATCD
-    # atcd_grossesse = fields.Text(string='Nombre de Grossesses obtenues',tracking=True)
-    # atcd_fiv = fields.Text(string='FIV-ICSI (nombre)',tracking=True)
-    # atcd_don = fields.Text(string='Don (nombre)',tracking=True)
-    # atcd_embryontransfert = fields.Text(string='Transfert Embryon(nombre)',tracking=True)
-    # atcd_embryonj3 = fields.Text(string='Embryon J3 (nombre)',tracking=True)
-    # atcd_blastocyste = fields.Text(string='Blastocyste (nombre,)',tracking=True)
-    # atcd_echec = fields.Text(string='Echec (nombre)',tracking=True)
-    # atcd_embryonrestant = fields.Text(string='Embryons congelés restants (nombre)',tracking=True)
-    # atcd_description = fields.Text(string='Autres informations',tracking=True)
-
-    # ### ATCD Ophtalmologique
-    # ### Allergie
-    # allergie = fields.One2many('ksfot.patient.allergie', 'atcd', string="Allergie")
-    # atcd_medical = fields.One2many('ksfot.patient.atcd.medicaux', 'atcd', string="ATCD Médicaux")
-    # histoire_occ = fields.Text(string="Hist. Famil. Occulaire")
+    
 
     lunettes = fields.Selection([('oui','OUI'),('non','NON')], string="Port des lunettes")
     derniere_consult = fields.Date(string="Derniere consul. Ophta")
