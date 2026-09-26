@@ -477,7 +477,7 @@
                                 </button>
 
                                 <button type="action"
-                                        name="%(action_wizard_dossier_patient)d"
+                                        name="%(action_wizard_reporting_appointment)d"
                                         class="oe_stat_button"
                                         icon="fa-history">
 
@@ -797,8 +797,8 @@
                                         <button name="action_save_consultation" string="Enregistrer la consultation" 
                                             type="object" data-hotkey="z" class="btn btn-success"/>
 
-                                        <button name="%(action_wizard_dossier_patient)d"
-                                            type="action"
+                                        <button type="action"
+                                            name="%(action_wizard_reporting_appointment)d"
                                             class="oe_stat_button"
                                             icon="fa-address-card">
                                             <div class="o_stat_info">

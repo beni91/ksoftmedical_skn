@@ -2260,7 +2260,8 @@ class Appointment(models.Model):
             
     def open_list_medicament(self):
         if self:
-            list_medicmnt = self.action_open_list_medicament(self.patient_id)
+            #list_medicmnt = self.action_open_list_medicament(self.patient_id.id)
+            list_medicmnt = False
             return list_medicmnt  
                 
     def open_list_imagerie(self):
@@ -2314,9 +2315,9 @@ class Appointment(models.Model):
         action.update({'target': 'new','domain':[('patient_id','=',patient),('internal_status','=','done')]})
         return action
         
-    def action_open_list_medicament(self, patient):
+    def action_open_list_medicament(self):
         action = self.env.ref('ksoftmedical.action_hsitorique_medicament_prescris').read()[0]
-        action.update({'target': 'new','domain':[('patient_id','=',patient)]})
+        action.update({'target': 'new','domain':[('patient_id','=',self.patient_id.id)]})
         return action
         
     def action_open_sommaire_laboresult(self):
