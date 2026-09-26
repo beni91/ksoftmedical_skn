@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <record id="wizard_reporting_appointment_view" model="ir.ui.view">
+    <!--record id="wizard_reporting_appointment_view" model="ir.ui.view">
         <field name="name">wizard.reporting.appointment.view.form</field>
         <field name="model">fertility.wizard.dossier.medical.patient</field>
         <field name="arch" type="xml">
             <form string="">
-                <!--button name="get_dossier_content" type="object" string="Afficher"/-->
+                <button name="get_dossier_content" type="object" string="Afficher"/>
                 <sheet>
-                    <!--group string="Identité patient">
+                    <group string="Identité patient">
 						<group>
 							<field name="patient_id" context="{'default_patient_id': patient_id}"/>
 							<field name="nbre_ligne"/>
@@ -20,7 +20,7 @@
 							<field name="medecin" widget="selection"/>
 							<field name="speciality" widget="selection" invisible="1"/>
 						</group>
-					</group-->
+					</group>
 					<group string="Résumé dossier patient">
 						<field name="content" widget="html" nolabel="1" readonly="1"/>
 					</group>
@@ -31,14 +31,63 @@
                 </footer>
             </form>
         </field>
+    </record-->
+	
+	<record id="wizard_reporting_appointment_view" model="ir.ui.view">
+        <field name="name">fertility.wizard.dossier.medical.patient.modern.form</field>
+        <field name="model">fertility.wizard.dossier.medical.patient</field>
+        <field name="arch" type="xml">
+            <form string="Dossier médical du patient" create="false" edit="true" delete="false">
+                <header>
+                    <button name="get_dossier_content" type="object" string="Actualiser" class="oe_highlight"/>
+                    <button name="action_previous_page" type="object" string="Précédentes"
+                            attrs="{'invisible': [('has_previous', '=', False)]}"/>
+                    <button name="action_next_page" type="object" string="Suivantes"
+                            attrs="{'invisible': [('has_next', '=', False)]}"/>
+                </header>
+                <field name="source_appointment_id" invisible="1" force_save="1"/>
+                <field name="page" invisible="1" force_save="1"/>
+                <field name="has_previous" invisible="1"/>
+                <field name="has_next" invisible="1"/>
+                <field name="total_count" invisible="1"/>
+                <!-- Sans sheet : le dossier utilise la largeur disponible. -->
+                <div class="p-3">
+                    <div class="row mb-2">
+                        <div class="col-12 col-md-2">
+                            <label for="service"/><field name="service" class="w-100" options="{'no_create': True, 'no_open': True}"/>
+                        </div>
+                        <div class="col-12 col-md-2">
+                            <label for="medecin"/><field name="medecin" class="w-100" options="{'no_create': True, 'no_open': True}"/>
+                        </div>
+                        <div class="col-12 col-md-2">
+                            <label for="speciality"/><field name="speciality" class="w-100" options="{'no_create': True, 'no_open': True}"/>
+                        </div>
+                        <div class="col-12 col-md-2">
+                            <label for="type_consultation"/><field name="type_consultation" class="w-100"/>
+                        </div>
+                        <div class="col-12 col-md-2">
+                            <label for="nbre_ligne"/><field name="nbre_ligne" class="w-100"/>
+                        </div>
+                        <div class="col-12 col-md-2 pt-3">
+                            <field name="page_label" readonly="1" nolabel="1"/>
+                        </div>
+                    </div>
+                    <field name="appointment_id" invisible="1"/>
+                    <field name="content" widget="html" readonly="1" nolabel="1"
+                           class="w-100" options="{'resizable': False, 'codeview': False}"/>
+                </div>
+            </form>
+        </field>
     </record>
-    <record id="action_wizard_reporting_appointment"  model="ir.actions.act_window">
-        <field name="name">Dossier Medical</field>
+    <record id="action_wizard_reporting_appointment" model="ir.actions.act_window">
+        <field name="name">Dossier médical du patient</field>
         <field name="res_model">fertility.wizard.dossier.medical.patient</field>
         <field name="view_mode">form</field>
-        <field name="binding_view_types">form</field>
-        <field name="target">new</field>
-   </record>
+        <field name="view_id" ref="wizard_reporting_appointment_view"/>
+        <field name="target">current</field>
+        <field name="context">{'form_view_initial_mode': 'edit'}</field>
+    </record>
+
    
    <record id="action_wizard_reporting_appointment_form" model="ir.actions.act_window.view">
         <field name="sequence" eval="1"/>

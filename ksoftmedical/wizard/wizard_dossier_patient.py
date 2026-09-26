@@ -1,389 +1,402 @@
-from odoo import api, fields, models
+# -*- coding: utf-8 -*-
+from html import escape as html_escape, unescape as html_unescape
 import logging
+import re
+
+from odoo import api, fields, models, _
+from odoo.exceptions import UserError, ValidationError
+from odoo.tools import html_sanitize
+
 _logger = logging.getLogger(__name__)
+
 
 class WizardDossierPatient(models.TransientModel):
     _name = 'fertility.wizard.dossier.medical.patient'
     _description = 'Wizard dossier medical patient'
 
-    def get_examen_labo(self, lab_request_id):
-        lab_exams = self.env['fertility.examen.labo'].search([('examen_id', '=', lab_request_id)])
-        content = "" 
+    @api.model
+    def _default_source_appointment(self):
+        context = self.env.context
+        if context.get('active_model') not in (None, 'fertility.appointment'):
+            return False
+        active_id = context.get('active_id')
+        if not active_id:
+            return False
+        try:
+            active_id = int(active_id)
+        except (TypeError, ValueError):
+            return False
+        return self.env['fertility.appointment'].browse(active_id).exists().id
 
-        #if lab_exams
-        content += '<div>'
-        
-        content += '<table width="100%" border="1">'
-        content += '<tr><th colspan="5" style="background-color:#52be80;text-align:center"><b>LABORATOIRE</b></th></tr>'
+    source_appointment_id = fields.Many2one(
+        'fertility.appointment', readonly=True,
+        default=_default_source_appointment, string='Consultation source')
+    content = fields.Html(
+        compute='_compute_content', string='', readonly=True,
+        sanitize=True, strip_style=False, strip_classes=False)
+    nbre_ligne = fields.Integer(string='Consultations par page', default=5)
+    service = fields.Many2one(
+        'product.template', domain="[('is_consultation','=',True)]",
+        string='Consultations')
+    medecin = fields.Many2one('fertility.doctor', string='Médecin')
+    speciality = fields.Many2one('fertility.doctor.speciality', string='Spécialité')
+    appointment_id = fields.Many2one('fertility.appointment', string='Consultation ID')
+    type_consultation = fields.Selection([
+        ('stand', 'Standard'), ('ophta', 'Ophtalmologie'), ('dent', 'Dentiste'),
+        ('gync', 'Gynéco-Obstétrique'), ('vasc', 'Vasculaire'),
+        ('nephr', 'Néphrologue'), ('autres', 'Autres')],
+        string='Type de consultation')
+    # Un filtre vide conserve tous les types dans l'historique initial.
+    page = fields.Integer(default=1, string='Page')
+    total_count = fields.Integer(compute='_compute_content', string='Consultations')
+    has_previous = fields.Boolean(compute='_compute_content')
+    has_next = fields.Boolean(compute='_compute_content')
+    page_label = fields.Char(compute='_compute_content', string='Affichage')
 
-        content += '<tr style="text-align:center"><th width="30"><b>Analyses</b></th><th width="25"><b>Résultat</b></th>'
-        content += '<th width="20"><b>V.N</b></th><th width="20"><b>Cliniques</b></th></tr>'
-        for lab in lab_exams:
-            exam = result = vn = ""
-            analyse_name =  str(lab.analyse.name) if lab.analyse.name else ''
-            exam =  str(lab.examen_text) 
-            result =  str(lab.description) 
-            vn = str(lab.valeur_normale)
-            content += '<tr><td>'+analyse_name + '</td><td style="text-align:center"><b>'+ result + '</b></td><td style="text-align:center">'+ vn + '</td><td>'+str(lab.examen_text)+ '</td></tr>'
+    @api.constrains('nbre_ligne', 'page')
+    def _check_pagination(self):
+        for wizard in self:
+            if wizard.nbre_ligne < 1 or wizard.page < 1:
+                raise ValidationError(_('Le nombre de consultations et la page doivent être positifs.'))
 
-        content += '</table>'
-        content += '</div></br>'
+    @api.onchange('service', 'medecin', 'speciality', 'appointment_id',
+                  'type_consultation', 'nbre_ligne', 'source_appointment_id')
+    def _onchange_filters(self):
+        self.page = 1
 
-        return content
+    @api.depends('source_appointment_id', 'service', 'medecin', 'speciality',
+                 'appointment_id', 'type_consultation', 'nbre_ligne', 'page')
+    def _compute_content(self):
+        for wizard in self:
+            wizard.total_count = 0
+            wizard.has_previous = False
+            wizard.has_next = False
+            wizard.page_label = ''
+            wizard.content = wizard.get_appointment_report()
 
-    def get_diagnostic(self, appointment_id):
-        diagnostic_ids = self.env['module.diagnostics'].search([('appointment_id', '=', appointment_id)])
-        content = "" 
+    def _speciality_domain(self):
+        """Utilise une relation réelle, sans inventer son nom dans les modèles métier."""
+        if not self.speciality:
+            return []
+        Doctor = self.env['fertility.doctor']
+        candidates = [name for name, field in Doctor._fields.items()
+                      if field.type in ('many2one', 'many2many')
+                      and getattr(field, 'comodel_name', None) == 'fertility.doctor.speciality']
+        if len(candidates) != 1:
+            raise UserError(_(
+                'Le filtre Spécialité nécessite de préciser la relation du modèle '
+                'fertility.doctor vers fertility.doctor.speciality. '
+                'Aucune relation unique ne peut être déterminée.'))
+        return [('doctor_id.' + candidates[0], 'in', self.speciality.ids)]
 
-        content += '<div>'
-        content += '<table width="100%" border="1">'
-        content += '<tr><th colspan="5" style="background-color:#52be80;text-align:center"><b>DIAGNOSTICS</b></th></tr>'
+    def _appointment_domain(self, patient):
+        domain = [('patient_id', '=', patient.id)]
+        if self.service:
+            domain.append(('product_id', '=', self.service.id))
+        if self.medecin:
+            domain.append(('doctor_id', '=', self.medecin.id))
+        if self.appointment_id:
+            domain.append(('id', '=', self.appointment_id.id))
+        if self.type_consultation:
+            domain.append(('type_consultation', '=', self.type_consultation))
+        return domain + self._speciality_domain()
 
-        content += '<tr style="text-align:center"><th width="35"><b>Pathologie</b></th><th width="20"><b>Observation</b></th></tr>'
-        for diag in diagnostic_ids:
-            diagn_name =observ= ""
-            diagn_name =  str(diag.pathologie.name)
-            observ =  str(diag.description) 
-            content += '<tr><td>'+diagn_name + '</td><td><b>'+observ + '</b></td></tr>'
+    def _text(self, value, empty='—'):
+        if value is False or value is None or value == '':
+            return html_escape(empty)
+        return html_escape(str(value), quote=True)
 
-            content += '</table>'
-            content += '</div>'
+    def _field_html(self, record, name, empty='Non renseigné'):
+        value = record[name]
+        if value is False or value is None or value == '':
+            return self._text(None, empty)
+        text = str(value)
+        # Certains champs Text/Char contiennent aussi du contenu d'editeur HTML.
+        html_tags = r'</?(?:p|div|span|br|strong|b|em|i|u|s|ul|ol|li|table|thead|tbody|tfoot|tr|td|th|h[1-6]|a|img|blockquote|pre|code|font|hr|script|style)\b[^>]*>'
+        if record._fields[name].type == 'html' or re.search(html_tags, text, re.I):
+            return str(html_sanitize(text))
+        decoded = html_unescape(text)
+        if re.search(html_tags, decoded, re.I):
+            return str(html_sanitize(decoded))
+        return self._text(value).replace('\n', '<br/>')
 
-        return content
-        
+    def _date_html(self, record, name):
+        value = record[name]
+        if not value:
+            return '—'
+        if record._fields[name].type == 'datetime':
+            local_date = fields.Datetime.context_timestamp(self, fields.Datetime.to_datetime(value))
+            return self._text(local_date.strftime('%d/%m/%Y à %H:%M'))
+        return self._text(fields.Date.to_date(value).strftime('%d/%m/%Y'))
+
+    def _selection_html(self, record, name):
+        labels = record.fields_get([name])[name].get('selection', [])
+        return self._text(dict(labels).get(record[name], record[name]))
+
+    def _card(self, title, body, alert=False):
+        if not body:
+            return ''
+        color = '#9a5353' if alert else '#3f6869'
+        background = '#fcf6f6' if alert else '#ffffff'
+        return (
+            '<div style="margin-bottom:8px;border:1px solid #dce4e8;'
+            'border-radius:7px;background:%s;overflow-wrap:break-word;">'
+            '<div style="padding:7px 10px;border-bottom:1px solid #e7ecef;'
+            'color:%s;font-weight:600;font-size:12px;">%s</div>'
+            '<div style="padding:8px 10px;">%s</div></div>'
+        ) % (background, color, self._text(title), body)
+
+    def _columns(self, left, right):
+        if not left or not right:
+            return left or right
+        return (
+            '<div class="row" style="margin-left:-4px;margin-right:-4px;">'
+            '<div class="col-12 col-md-6" style="padding-left:4px;padding-right:4px;min-width:0;">%s</div>'
+            '<div class="col-12 col-md-6" style="padding-left:4px;padding-right:4px;min-width:0;">%s</div>'
+            '</div>'
+        ) % (left, right)
+
+    def _render_html_table(self, headings, rows):
+        if not rows:
+            return ''
+        header = ''.join('<th style="padding:6px;text-align:left;background:#f2f5f7;'
+                         'border-bottom:1px solid #dce4e8;">%s</th>' % self._text(h) for h in headings)
+        body = ''.join('<tr>%s</tr>' % ''.join(
+            '<td style="padding:6px;vertical-align:top;border-bottom:1px solid #edf0f2;'
+            'overflow-wrap:anywhere;">%s</td>' % cell for cell in row) for row in rows)
+        return ('<table style="width:100%%;table-layout:fixed;border-collapse:collapse;font-size:12px;">'
+                '<thead><tr>%s</tr></thead><tbody>%s</tbody></table>') % (header, body)
+
+    def _group_records(self, model, field, ids):
+        grouped = {}
+        if ids:
+            for record in self.env[model].search([(field, 'in', ids)]):
+                key = record[field].id
+                grouped.setdefault(key, self.env[model])
+                grouped[key] |= record
+        return grouped
+
+    def get_examen_labo(self, lab_request_id, records=None):
+        if records is None:
+            records = self.env['fertility.examen.labo'].search([('examen_id', '=', lab_request_id)]) if lab_request_id else self.env['fertility.examen.labo']
+        rows = [[self._text(lab.analyse.name), self._field_html(lab, 'description', '—'),
+                 self._field_html(lab, 'valeur_normale', '—'), self._field_html(lab, 'examen_text', '—')]
+                for lab in records]
+        return self._card('Laboratoire', self._render_html_table(['Analyse', 'Résultat', 'V.N.', 'Clinique'], rows))
+
+    def get_diagnostic(self, appointment_id, records=None):
+        if records is None:
+            records = self.env['module.diagnostics'].search([('appointment_id', '=', appointment_id)]) if appointment_id else self.env['module.diagnostics']
+        rows = [[self._text(diag.pathologie.name), self._field_html(diag, 'description', '—')]
+                for diag in records]
+        return self._card('Diagnostics', self._render_html_table(['Pathologie', 'Observation'], rows))
+
     def get_traitement(self, appointment_id):
-        ## 
-        content = ""
-        if appointment_id.traitement:
-            content += '<div>'
-            content += '</br>'
-            content += '<table width="100%" border=0>'
-            content += '<tr style="background-color:#52be80;text-align:center" ><th><b>TRAITEMENT</b></th></tr>'
-           
-            content += '<tr><td style="text-align:justify; padding:5px !important">'+ str(appointment_id.traitement) +'</td></tr>'
-        return content
-        
+        return self._card('Traitement', self._field_html(appointment_id, 'traitement')) if appointment_id.traitement else ''
+
     def get_motif(self, appointment_id):
-        ## 
-        content = ""
-        if appointment_id.motif_rdv:
-            content += '<div>'
-            content += '</br>'
-            content += '<table width="100%" border=0>'
-            content += '<tr style="background-color:#52be80;text-align:center" ><th><b>MOTIF DE CONSULTATION</b></th></tr>'
-           
-            content += '<tr><td style="text-align:justify; padding:5px !important">'+ str(appointment_id.motif_rdv) +'</td></tr>'
-        return content
-                
-    def get_anamnèse(self, appointment_id):
-        ## Examen medical générale
-        content = ""
-        if appointment_id:
-            content += '<div>'
-            content += '</br>'
-            content += '<table width="100%" border=0>'
-            content += '<tr style="background-color:#52be80;text-align:center" ><th><b>ANAMNESE</b></th></tr>'
-            if appointment_id.anamnese:
-                content += '<tr style="text-align:left" ><th><b>Plaintes:</b></th></tr>'
-                content += '<tr style="text-align:justify; padding:5px !important"><td>'+ str(appointment_id.anamnese) +'</td></tr>'
-            
-            if appointment_id.hstr_affection:
-                content += '<tr style="text-align:left" ><th><b>Histoire de la maladie</b></th></tr>'
-                content += '<tr style="text-align:justify; padding:5px !important"><td>'+ str(appointment_id.hstr_affection) +'</td></tr>'
-            
-            if appointment_id.allergie or appointment_id.atcd_medical:
-                content += '<tr style="text-align:left" ><th><b>Antécédents</b></th></tr>'
-                content += '<tr><td>'
-                content += '<table width="100%" border=1>'
-                
-                content += '<tr style="text-align:center" ><th><b>ATCD</b></th><th><b>Allergie</b></th></tr>'
-                # for allergie_id in appointment_id.allergie:
-                content += '<tr>'
-                content += '<td><ul>'
-                for atcd_id in appointment_id.atcd_medical:
-                    content += '<li>'+ str(atcd_id.allergie.name) +'</li>'
-                content += '</ul></td>'  
-                
-                content += '<td><ul>'
-                for allergie_id in appointment_id.allergie:
-                    content += '<li>'+ str(allergie_id.allergie_details.name) +'</li>'
-                content += '</ul></td>'  
-                content += '</tr>'
-                    # content += '<table width="100%" border=1>'
-                    # content += '<tr style="text-align:center" ><th><b>Allergie</b></th><th><b>Commentaire</b></th></tr>'
-                    # for allergie_id in appointment_id.allergie:
-                        # content += '<tr><td width="50%">'+ str(allergie_id.allergie_details.name) +'</td><td width="50%">'+ str(allergie_id.comment) +'</td></tr>'
-                    
-                    # content += '</table></br>'
-                
-                # if appointment_id.atcd_medical:
-                    # content += '<table width="100%" border=1>'
-                    # content += '<tr style="text-align:center" ><th><b>ATCD</b></th><th><b>Type ATCD</b></th></tr>'
-                    # for atcd_id in appointment_id.atcd_medical:
-                        # content += '<tr><td width="50%">'+ str(atcd_id.allergie.name) +'</td><td width="50%">'+ str(atcd_id.type_atcd) +'</td></tr>'
-                    
-                content += '</table></br>'
-                content += '</td></tr>'
+        if not appointment_id.motif_rdv:
+            return ''
+        return '<div style="margin-top:5px;"><strong>Motif : </strong>%s</div>' % self._field_html(appointment_id, 'motif_rdv')
 
-            if appointment_id.cpm_anamnese:
-                content += '<tr style="text-align:left; padding:5px !important" ><th><b>Complément d\'anamnèse</b></th></tr>'
-                content += '<tr style="text-align:justify"><td>'+ str(appointment_id.cpm_anamnese) +'</td></tr>'
-                
-            content += '</table>'
-            content += '</div>'
-            content += '</br>'
+    def _antecedents(self, appointment):
+        atcd = '<ul style="margin:0;padding-left:18px;">%s</ul>' % ''.join(
+            '<li>%s</li>' % self._text(record.allergie.name) for record in appointment.atcd_medical
+        ) if appointment.atcd_medical else 'Non renseignés'
+        allergies = '<ul style="margin:0;padding-left:18px;">%s</ul>' % ''.join(
+            '<li>%s</li>' % self._text(record.allergie_details.name) for record in appointment.allergie
+        ) if appointment.allergie else 'Non renseignées'
+        return self._columns(self._card('Antécédents de la consultation', atcd),
+                             self._card('Allergies de la consultation', allergies, alert=bool(appointment.allergie)))
 
-        return content
-    
-    def get_examen_medical(self, appointment_id):
-        ## Examen medical générale
-        content = ""
-        if appointment_id.type_consultation == "stand":
-            content += '<div>'
-            content += '<table width="100%" border=0>'
-            content += '<tr style="background-color:#52be80;text-align:center" ><th colspan="7"><b>EXAMEN MEDICAL</b></th></tr>'
-            content += '<tr style="text-align:center" ><th colspan="7"><b>EXAMEN MEDICAL GENERAL</b></th></tr>'
-            content += '<tr><td>'
-            if appointment_id.done_feuille_signes_vitaux:
-                content += '<table width="100%" border=0>'
-                content += '<tr style="text-align:left" ><th><b>Signes Vitaux</b></th></tr>'
-                content += '</table>'
-                content += '<table width="100%" border=1>'
-                content += '<tr style="text-align:center"><th><b>T°<b/></th><th><b>TA</b></th><th><b>Glyc.</b></th><th><b>FC</b></th><th><b>FR</b></th><th><b>Taille</b></th><th><b>Poids</b></th></tr>'
-                for signes in appointment_id.done_feuille_signes_vitaux:
-                    
-                    # bmp =  float(signes.bmi) if signes.bmi else ''
-                    # etat = ""
-                    # if signes.bmi_state == "sp":
-                        # etat = "SousPoids"
-                    # elif signes.bmi_state  == "normal" :
-                        # etat = "Normal"
-                    # elif signes.bmi_state == "srp":
-                        # etat = "Surpoids"
-                    # elif signes.bmi_state == "obez1" :
-                        # etat = "Obèsité modérée"
-                    # elif signes.bmi_state == "obez2" :
-                        # etat = "Obèsité sévère"
-                    # else:
-                        # etat = "Obèsité morbide"
-                    
-                    content += '<tr style="text-align:center"><td>'+str(signes.temperature)+'</td><td>'+str(signes.tension)+'</td>'
-                    content += '<td>'+str(signes.pulsation)+'</td><td>'+str(signes.glycemie)+'</td><td>'+str(signes.saturation)+'</td>'
-                    content += '<td>'+str(signes.taille)+'</td><td>'+str(signes.poids)+'</td></tr>'
-                content += '</td></tr></table></br>'   
-                
-            content += '<tr style="text-align:left" ><th><b>Evaluation Générale</b></th></tr>'
-            content += '<tr style="text-align:justify; padding:5px !important;"><td>'+ str(appointment_id.examen_physique) +'</td></tr>'
-            content += '</table>'
-            content += '</div>'
-            content += '</br>'
+    def get_anamnèse(self, appointment_id, include_antecedents=True):
+        blocks = []
+        for name, label in [('anamnese', 'Plaintes'), ('hstr_affection', 'Histoire de la maladie'),
+                            ('cpm_anamnese', "Complément d’anamnèse")]:
+            if appointment_id[name]:
+                blocks.append(self._card(label, self._field_html(appointment_id, name)))
+        # Compatibilité avec les appels externes de la méthode existante.
+        if include_antecedents:
+            blocks.append(self._antecedents(appointment_id))
+        return ''.join(blocks)
 
+    def _vitals_table(self, records):
+        # Aucun champ de fréquence respiratoire ni unité non confirmée n'est inventé.
+        columns = [('temperature', 'T°'), ('tension', 'TA'), ('glycemie', 'Glycémie'),
+                   ('pulsation', 'FC'), ('saturation', 'Saturation'),
+                   ('taille', 'Taille'), ('poids', 'Poids')]
+        rows = [[self._text(record[name]) for name, label in columns] for record in records]
+        return self._card('Signes vitaux', self._render_html_table([label for name, label in columns], rows))
+
+    def get_examen_medical(self, appointment_id, include_vitals=True):
+        if appointment_id.type_consultation != 'stand':
+            return ''
+        content = self._vitals_table(appointment_id.done_feuille_signes_vitaux) if include_vitals else ''
+        if appointment_id.examen_physique:
+            content += self._card('Examen physique', self._field_html(appointment_id, 'examen_physique'))
         return content
-        
+
     def get_signes_vitaux(self, signes_id):
-        signes_id = self.env['module.feuille.surveillance'].search([('feuille_signesV_id', '=', signes_id)])
-        content = ""
-
-        content += '<div>'
-        content += '</br>'
-        content += '<table width="100%" border=1>'
-        content += '<tr style="background-color:#CCCCCC;text-align:center" ><th colspan="7"><b>SIGNES VITAUX</b></th></tr>'
-        content += '<tr style="text-align:center"><th><b>T°<b/></th><th><b>TA</b></th><th><b>Glyc.</b></th><th><b>FC</b></th><th><b>FR</b></th><th><b>Taille</b></th><th><b>Poids</b></th></tr>'
-        for signes in signes_id:
-            content += '<tr style="text-align:center"><td>'+str(signes.temperature)+'</td><td>'+str(signes.tension)+'</td>'
-            content += '<td>'+str(signes.pulsation)+'</td><td>'+str(signes.glycemie)+'</td><td>'+str(signes.saturation)+'</td>'
-            content += '<td>'+str(signes.taille)+'</td><td>'+str(signes.poids)+'</td></tr>'
-        content += '</table>'
-        content += '</div>'
-        content += '</br>'
-
-        return content
+        records = self.env['module.feuille.surveillance'].search([
+            ('feuille_signesV_id', '=', signes_id)]) if signes_id else self.env['module.feuille.surveillance']
+        return self._vitals_table(records)
 
     def get_examen_imagerie2(self, lab_request_id):
-        lab_exams = self.env['fertility.examen.imagerie2'].search([('examen_id', '=', lab_request_id)])
-        content = ""
-        content += '<table width="900" border=1>'
-        content += '<tr style="text-align:center"><td width="900" colspan="14"><b>EXAMENS IMAGERIE</b></td></tr>'
-        content += '<tr style="text-align:center"><td width="100"><b>Date demande</b></td><td width="400"><b>Examen</b></td></tr>'
-        #content += '<tr><td width="900" colspan="4">Cliniques: </br>' + lab_exams.cliniques + '<td></tr>'
-        for lab in lab_exams:
-            #analyse_name =  str(lab.analyse.name) if lab.analyse.name else ''
-            #exam =  str(lab.examen_text) if lab.examen_text else ''
-            #result =  str(lab.description) if lab.description else ''
-            #vn = str(lab.valeur_normale) if lab.valeur_normale else s''
-            content += '<tr><td width="100">' + lab.date_request.strftime('%Y-%m-%d') + '</td><td>'+str(lab.examen_text)+ '</td></tr>'
-            content += '</table>'
+        records = self.env['fertility.examen.imagerie2'].search([
+            ('examen_id', '=', lab_request_id)]) if lab_request_id else self.env['fertility.examen.imagerie2']
+        rows = [[self._date_html(lab, 'date_request'), self._field_html(lab, 'examen_text', '—')] for lab in records]
+        return self._card('Examens d’imagerie', self._render_html_table(['Date de demande', 'Examen'], rows))
 
-        return content
+    def get_pharmacie(self, lab_request_id, records=None):
+        if records is None:
+            records = self.env['module.ordonnance.line'].search([
+                ('appointment_id', '=', lab_request_id)]) if lab_request_id else self.env['module.ordonnance.line']
+        rows = [[self._text(line.product.name), self._field_html(line, 'posologie', '—'),
+                 self._text(line.medecin_id.display_name)] for line in records]
+        return self._card('Prescriptions', self._render_html_table(['Produit', 'Posologie', 'Demandeur'], rows))
 
-    def get_pharmacie(self, lab_request_id):
-        lab_exams = self.env['module.ordonnance.line'].search([('appointment_id', '=', lab_request_id)])
-        #print(lab_exams)
-
-        content = ""
-        content += '</br>'
-        content += '<div>'
-        content += '<table width="100%" border="1">'
-        content += '<tr><th colspan="5" style="background-color:#52be80;text-align:center"><b>PHARMACIE</b></th></tr>'
-        content += '<tr style="text-align:center">'
-        content += '<td width="20"><b>Produits</b></td><td width="20"><b>Posologie</b></td><td width="10"><b>Demandeur</b></td></tr>'
-
-        for lab in lab_exams:
-            posologie = str(lab.posologie) 
-            produit = str(lab.product.name) 
-
-            content += '<tr><td>' + produit + '</td><td style="text-align:center">' + posologie + '</td><td style="text-align:center">' + str(lab.medecin_id.display_name) + '</td></tr>'
-        content += '</table>'
-        content += '</div>'
-        content += '</br>'
-
-        return content
-
-    def get_examen_imagerie(self, lab_request_id):
-        lab_exams = self.env['fertility.examen.imagerie'].search([('examen_id', '=', lab_request_id)])
-        print(lab_exams)
-
-        content = ""
-        content += '<div>'
-        #if lab_exams:
-        content += '<table width="100%" border="1">'
-        content += '<tr><th style="background-color:#52be80;text-align:center"><b>IMAGERIE</b></th></tr>'
-        
-
-        for lab in lab_exams:
-            content += '<tr><td>'
+    def get_examen_imagerie(self, lab_request_id, records=None):
+        if records is None:
+            records = self.env['fertility.examen.imagerie'].search([
+                ('examen_id', '=', lab_request_id)]) if lab_request_id else self.env['fertility.examen.imagerie']
+        parts = []
+        for lab in records:
+            body = []
             if lab.analyse.name:
-                content += '<p><b>Analyse : </b>'+ str(lab.analyse.name) +'</p>'
-                
+                body.append('<div><strong>%s</strong></div>' % self._text(lab.analyse.name))
             if lab.clinique:
-                content += '<p><b>Clinique : </b>'+ str(lab.clinique) +'</p>'
-                
+                body.append('<div style="margin-top:4px;"><strong>Clinique : </strong>%s</div>' % self._field_html(lab, 'clinique'))
             if lab.protocol:
-                content += '<p><b>Protocole : </b></p>'
-                content += '<p>'+ str(lab.protocol) +'</p>'
-            content += '</td></tr>'
-            
-            # content += '<table width="100%" border="1">'
-            # content += '<tr style="text-align:center">'
-            # content += '<td><b>Analyse :'+ str(lab.analyse.name) +'</b></td><td><b>Clinique:'+ str(lab.clinique) +'</b></td></tr>'
-            
-            # content += '<tr><td colspan="2">' + str(lab.protocol)  + '</td></tr>'
-        content += '</table>'
-        content += '</div>'
-        content += '</br>'
+                body.append('<div style="margin-top:4px;"><strong>Protocole</strong></div><div>%s</div>' % self._field_html(lab, 'protocol'))
+            parts.append('<div style="padding:5px 0;border-bottom:1px solid #edf0f2;">%s</div>' % (''.join(body) or 'Non renseigné'))
+        return self._card('Imagerie', ''.join(parts))
 
-        return content
-          
+    def _patient_header(self, patient):
+        partner = patient.partner_id
+        details = [
+            ('Sexe', self._selection_html(patient, 'gender')),
+            ('Naissance', self._date_html(patient, 'birth')),
+            ('Téléphone', self._text(partner.phone)),
+            ('Catégorie', self._selection_html(patient, 'categorie')),
+            ('Convention', self._text(patient.parent_id.display_name)),
+            ('Adresse', self._text(partner.street)),
+            ('Profession', self._text(partner.function))]
+        items = ''.join('<span style="display:inline-block;margin:3px 16px 3px 0;">'
+                        '<span style="color:#697b88;">%s : </span>%s</span>' % (label, value)
+                        for label, value in details)
+        return ('<div style="background:#fff;border:1px solid #dce4e8;border-left:4px solid #5f8b88;'
+                'border-radius:8px;padding:12px;margin-bottom:10px;">'
+                '<div style="font-size:11px;color:#697b88;">DOSSIER MÉDICAL · HISTORIQUE DES CONSULTATIONS</div>'
+                '<div style="font-size:21px;font-weight:600;color:#294751;margin:3px 0;">%s</div>'
+                '<div>%s</div></div>') % (self._text(partner.display_name), items)
+
     def get_appointment_report(self):
-        # context = self.env.context
-        # return '<h1>'+  str(context.get('patient_id')) + '</p>'
-        # load patient consultation
+        self.ensure_one()
+        source = self.source_appointment_id.exists()
+        if not source or not source.patient_id:
+            return self._card('Dossier médical', 'Ouvrez le dossier depuis une consultation disposant d’un patient.')
+        patient = source.patient_id
+        Appointment = self.env['fertility.appointment']
+        domain = self._appointment_domain(patient)
+        total = Appointment.search_count(domain)
+        limit = max(self.nbre_ligne or 5, 1)
+        last_page = max((total + limit - 1) // limit, 1)
+        current_page = min(max(self.page or 1, 1), last_page)
+        offset = (current_page - 1) * limit
+        appointments = Appointment.search(domain, order='date desc, id desc', limit=limit, offset=offset)
+        self.total_count = total
+        self.has_previous = current_page > 1
+        self.has_next = current_page < last_page
+        self.page_label = _('Consultations %s–%s sur %s · Page %s/%s') % (
+            offset + 1 if total else 0, offset + len(appointments), total, current_page, last_page)
 
-        active_id = self._context.get('active_id')
-        brw_id = self.env['fertility.appointment'].browse(int(active_id))
-        patient_id = brw_id.patient_id.id
-        #patient_id = self.env.context.get('patient_id')
-        #patient_id = 33
-        #print("ID du Patient",patient_id)
+        # Une recherche par rubrique pour la page, sans sudo ni SQL direct.
+        request_ids = appointments.mapped('consult_examen_id').ids
+        labs = self._group_records('fertility.examen.labo', 'examen_id', request_ids)
+        imaging = self._group_records('fertility.examen.imagerie', 'examen_id', request_ids)
+        diagnoses = self._group_records('module.diagnostics', 'appointment_id', appointments.ids)
+        prescriptions = self._group_records('module.ordonnance.line', 'appointment_id', appointments.ids)
+        # Le resume provient toujours de la derniere consultation du patient,
+        # independamment des filtres et de la page de l'historique.
+        latest_appointment = Appointment.search(
+            [('patient_id', '=', patient.id)], order='date desc, id desc', limit=1)
+        antecedents = self._field_html(latest_appointment, 'resume_atcd') if latest_appointment else 'Non renseigné'
 
-        appointments = self.env['fertility.appointment'].search([('patient_id','=',patient_id)])
-       
-        content = ""
-        content += '<table width="900" border=0>'
-        content += '<tr><td width="900"><b><h4 style="text-align:center">RAPPORT DE CONSULTATION<h4></b></td></tr>'
-        content += '</table>'
-        
-        content += '<div style="margin-bottom:2px;height:150px !important; padding:10px; border: 1px solid gray;">'
-        content += '<table width="49%" border="0" style="float:left; width:49%">'
-        content += '<tr><td width="200"><b>Patient</b></td><td width="600">' + str(brw_id.patient_id.partner_id.display_name) + '</td></tr>'
-        content += '<tr><td width="200"><b>Sexe</b></td><td width="600">' + str(brw_id.patient_id.gender) + '</td></tr>'
-        content += '<tr><td width="200"><b>Date Naiss.</b></td><td width="600">' + brw_id.patient_id.birth.strftime('%d-%m-%Y') + '</td></tr>'
-        content += '<tr><td width="200"><b>Tél.</b></td><td width="600">' + str(brw_id.patient_id.partner_id.phone) + '</td></tr>'
-        content += '<tr><td width="200"><b>Adresse</b></td><td width="600">' + str(brw_id.patient_id.partner_id.street) + '</td></tr>'
-        content += '<tr><td width="200"><b>Profession</b></td><td width="600">' + str(brw_id.patient_id.partner_id.function) + '</td></tr>'
-        content += '</table>'
-           
+        antecedents_card = (
+            '<div style="margin-bottom:10px;border:1px solid #dc3545;'
+            'border-radius:7px;overflow:hidden;background:#fff;">'
 
-        content += '<table width="49%" border="0" style="float:right; width:49%">'
-        content += '<tr><td width="200"><b>Catégorie</b></td><td width="600">' + str(brw_id.patient_id.categorie) + '</td></tr>'
-        content += '<tr><td width="200"><b>Convention</b></td><td width="600">' + str(brw_id.patient_id.parent_id.display_name) + '</td></tr>'
+            '<div style="background:#dc3545;color:#fff;'
+            'padding:9px 12px;font-weight:700;font-size:14px;">'
+            'ANTÉCÉDENTS'
+            '</div>'
 
-        content += '</table>'
-        content += '</div>'
-      
+            '<div style="padding:10px 12px;">%s</div>'
+            '</div>'
+        ) % antecedents
 
-        content += '</br>'
+        parts = [
+            self._patient_header(patient),
+            antecedents_card,
+            '<div style="color:#697b88;margin:0 0 8px;">%s</div>'
+            % self._text(self.page_label),
+        ]
+        if not appointments:
+            parts.append(self._card('Historique', 'Aucune consultation ne correspond aux filtres sélectionnés.'))
         for appointment in appointments:
-            content += '</br>'
-            content += '<center><table width="800" border=1 class="center">'
-            content += '<tr><td width="200"><b>Date et Heure</b></td><td width="600" style="text-align:center">' + appointment.date.strftime('%Y-%m-%d') + '</td></tr>'
-            content += '<tr><td width="200"><b>Consultation</b></td><td width="600" style="text-align:center">' + str(appointment.product_id.name) + '</td></tr>'
-            content += '<tr><td width="200" ><b>Docteur</b></td><td width="600" style="text-align:center">' + str(appointment.doctor_id.name) + '</td></tr>'
-            content += '<tr><td width="200" ><b>Motif</b></td><td width="600" style="text-align:center">' + str(appointment.motif_rdv) + '</td></tr>'
-            content += '</table></center>'
-
-            # add vital sign
-            content += '</br>'
-            
-            ## Motif de la consultation
-            if appointment.motif_rdv:
-                content += self.get_motif(appointment) 
-            
-            ## Anamnèse
-            if appointment:
-                content += self.get_anamnèse(appointment) 
-            
-            ## Examen médical
-            if appointment.type_consultation:
-                content += self.get_examen_medical(appointment) 
-            
-            ## Examen laboratoire
-            if appointment.labo_ids:
-                content += self.get_examen_labo(appointment.consult_examen_id.id)
-           
-            ## Examen imagerie    
-            if appointment.imagerie_ids:
-                content += self.get_examen_imagerie(appointment.consult_examen_id.id)
-            
-            ## Autres examen et tests
-            
-            ## Diagnostics
+            header = ('<div style="background:#edf3f4;padding:10px 12px;border-bottom:1px solid #dce4e8;">'
+                      '<strong style="color:#294751;">%s · %s</strong>'
+                      '<span style="display:inline-block;margin-left:12px;color:#566d78;">%s</span>%s</div>') % (
+                          self._date_html(appointment, 'date'), self._text(appointment.product_id.name),
+                          self._text(appointment.doctor_id.name), self.get_motif(appointment))
+            body = ''
+            if appointment.type_consultation == 'stand':
+                body += self._vitals_table(appointment.done_feuille_signes_vitaux)
+            left = self.get_anamnèse(appointment, include_antecedents=False)
+            right = self.get_examen_medical(appointment, include_vitals=False)
             if appointment.diagnostics_ids:
-                content += self.get_diagnostic(appointment.id)
-                
-            ## Traitements
-            if appointment.traitement:
-                content += self.get_traitement(appointment)
-                
-            ## Prescriptions
+                right += self.get_diagnostic(appointment.id, diagnoses.get(appointment.id, self.env['module.diagnostics']))
+            right += self.get_traitement(appointment)
+            body += self._columns(left, right)
+            request_id = appointment.consult_examen_id.id
+            lab_content = self.get_examen_labo(request_id, labs.get(request_id, self.env['fertility.examen.labo'])) if appointment.labo_ids else ''
+            image_content = self.get_examen_imagerie(request_id, imaging.get(request_id, self.env['fertility.examen.imagerie'])) if appointment.imagerie_ids else ''
+            body += self._columns(lab_content, image_content)
             if appointment.done_ordonnance:
-                content += self.get_pharmacie(appointment.id)
-                
-            ## Suivelllance
-            ## Suivi ambulatoire
-            ## Suivi hospitalier
-            ## Recommandations
-                
-            
-        return content
-    
-    def get_dossier_content(self):
-        # context = self.env.context
-        # return '<h1>'+  str(context.get('patient_id')) + '</p>'
-        # load patient consultation
+                body += self.get_pharmacie(appointment.id, prescriptions.get(appointment.id, self.env['module.ordonnance.line']))
+            parts.append('<div style="border:1px solid #dce4e8;border-radius:8px;background:white;'
+                         'margin-bottom:14px;">%s<div style="padding:10px;">%s</div></div>' % (header, body))
+        return '<div style="width:100%%;background:#f5f7f9;padding:10px;color:#334651;font-size:13px;line-height:1.45;">%s</div>' % ''.join(parts)
 
-        active_id = self._context.get('active_id')
-    
-    content = fields.Html(default=get_appointment_report, string="", readonly=True)
-    nbre_ligne = fields.Integer(string="Nbre de ligne", default=5)
-    service = fields.Many2one('product.template', domain="[('is_consultation','=',True)]", string="Consultations")  
-    medecin = fields.Many2one('fertility.doctor', string="Médecin")
-    speciality = fields.Many2one('fertility.doctor.speciality', string="Spécialité")
-    appointment_id = fields.Many2one('fertility.appointment', string="Consultation ID")
-    
-    type_consultation = fields.Selection([('stand', 'Standard'),('ophta', 'Ophtamologie'),('dent', 'Dentiste'),
-                                            ('gync', 'Gynéco-Obstétrique'),('vasc', 'Vasculaire'),('nephr', 'Nephrologue'),
-                                            ('autres', 'Autres'),], default='stand',string="Type de consultation")
+    def _reopen_dossier(self):
+        self.ensure_one()
+        view = self.env['ir.ui.view'].search([
+            ('model', '=', self._name), ('type', '=', 'form'),
+            ('name', '=', 'fertility.wizard.dossier.medical.patient.modern.form')], limit=1)
+        return {'name': _('Dossier médical du patient'), 'type': 'ir.actions.act_window',
+                'res_model': self._name, 'res_id': self.id, 'view_mode': 'form',
+                'views': [(view.id or False, 'form')], 'target': 'current',
+                'context': dict(self.env.context)}
+
+    def get_dossier_content(self):
+        self.ensure_one()
+        self.page = 1
+        self._compute_content()
+        return self._reopen_dossier()
+
+    def action_previous_page(self):
+        self.ensure_one()
+        limit = max(self.nbre_ligne or 5, 1)
+        last_page = max((self.total_count + limit - 1) // limit, 1)
+        self.page = max(min(self.page or 1, last_page) - 1, 1)
+        return self._reopen_dossier()
+
+    def action_next_page(self):
+        self.ensure_one()
+        limit = max(self.nbre_ligne or 5, 1)
+        last_page = max((self.total_count + limit - 1) // limit, 1)
+        self.page = min(max(self.page or 1, 1) + 1, last_page)
+        return self._reopen_dossier()
 
 
 class WizardReservationDuJour(models.TransientModel):
